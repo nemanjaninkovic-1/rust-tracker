@@ -13,18 +13,20 @@ RustTasker is a full-stack task management web application built entirely in Rus
 
 ## Project Structure
 
+```text
 rust-tasker/
-├── backend/ # Actix-Web API server
-│ ├── src/
-│ └── Dockerfile
-├── frontend/ # Leptos web application
-│ ├── src/
-│ └── Dockerfile
-├── common/ # Shared data models
-│ └── src/
-├── docker-compose.yml # Docker Compose orchestration
-├── .env # Environment variables
+├── backend/              # Actix-Web API server
+│   ├── src/
+│   └── Dockerfile
+├── frontend/             # Leptos web application
+│   ├── src/
+│   └── Dockerfile
+├── common/               # Shared data models
+│   └── src/
+├── docker-compose.yml    # Docker Compose orchestration
+├── .env                  # Environment variables
 └── README.md
+```
 
 ## Requirements
 
