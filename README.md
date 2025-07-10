@@ -40,7 +40,7 @@ No need to install Rust, PostgreSQL, or frontend tooling locally.
 1. Clone the repository:
 
    ```bash
-   git clone <https://github.com/yourusername/rust-tasker.git>
+   git clone <https://github.com/nemanjaninkovic-1/rust-tracker.git>
    cd rust-tasker
    ```
 
