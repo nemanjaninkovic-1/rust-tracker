@@ -1,6 +1,6 @@
 # RustTasker
 
-RustTasker is a full-stack task management web application built entirely in Rust. It features a fast backend using Actix-Web, a reactive frontend using Leptos, and a PostgreSQL database. The entire project is containerized using Docker and Docker Compose for easy setup and deployment.
+RustTasker is a full-stack task management web application built entirely in Rust. It features a fast backend using Axum, a reactive frontend using Leptos, and a PostgreSQL database. The entire project is containerized using Docker and Docker Compose for easy setup and deployment.
 
 ## Features
 
@@ -15,7 +15,7 @@ RustTasker is a full-stack task management web application built entirely in Rus
 
 ```text
 rust-tracker/
-├── backend/              # Actix-Web API server
+├── backend/              # Axum API server
 │   ├── src/
 │   └── Dockerfile
 ├── frontend/             # Leptos web application
