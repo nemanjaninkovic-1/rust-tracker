@@ -14,7 +14,7 @@ RustTasker is a full-stack task management web application built entirely in Rus
 ## Project Structure
 
 ```text
-rust-tasker/
+rust-tracker/
 ├── backend/              # Actix-Web API server
 │   ├── src/
 │   └── Dockerfile
@@ -40,8 +40,8 @@ No need to install Rust, PostgreSQL, or frontend tooling locally.
 1. Clone the repository:
 
    ```bash
-   git clone <https://github.com/nemanjaninkovic-1/rust-tracker.git>
-   cd rust-tasker
+   git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
+   cd rust-tracker
    ```
 
 2. Build and run the application:
@@ -61,7 +61,7 @@ This will:
 Create a `.env` file based on `.env.example`:
 
 ```env
-DATABASE_URL=postgres://postgres:password@db:5432/rusttasker
+DATABASE_URL=postgres://postgres:password@db:5432/rusttracker
 RUST_LOG=info
 ```
 
