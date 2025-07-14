@@ -21,16 +21,16 @@ impl Database {
 
         let row = sqlx::query(
             r#"
-            INSERT INTO tasks (id, title, description, status, category, due_date, created_at, updated_at)
+            INSERT INTO tasks (id, title, description, status, priority, due_date, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id, title, description, status, category, due_date, created_at, updated_at
+            RETURNING id, title, description, status, priority, due_date, created_at, updated_at
             "#,
         )
         .bind(id)
         .bind(&request.title)
         .bind(&request.description)
         .bind(status)
-        .bind(request.category)
+        .bind(request.priority)
         .bind(request.due_date)
         .bind(now)
         .bind(now)
@@ -42,7 +42,7 @@ impl Database {
             title: row.get("title"),
             description: row.get("description"),
             status: row.get("status"),
-            category: row.get("category"),
+            priority: row.get("priority"),
             due_date: row.get("due_date"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
@@ -52,7 +52,7 @@ impl Database {
     pub async fn get_tasks(&self, filter: Option<TaskFilter>) -> Result<Vec<Task>, AppError> {
         let rows = sqlx::query(
             r#"
-            SELECT id, title, description, status, category, due_date, created_at, updated_at
+            SELECT id, title, description, status, priority, due_date, created_at, updated_at
             FROM tasks
             ORDER BY created_at DESC
             "#,
@@ -67,7 +67,7 @@ impl Database {
                 title: row.get("title"),
                 description: row.get("description"),
                 status: row.get("status"),
-                category: row.get("category"),
+                priority: row.get("priority"),
                 due_date: row.get("due_date"),
                 created_at: row.get("created_at"),
                 updated_at: row.get("updated_at"),
@@ -80,7 +80,7 @@ impl Database {
                 .into_iter()
                 .filter(|task| {
                     let status_match = filter.status.is_none_or(|s| task.status == s);
-                    let category_match = filter.category.is_none_or(|c| task.category == c);
+                    let priority_match = filter.priority.is_none_or(|p| task.priority == p);
                     let due_before_match = filter
                         .due_before
                         .is_none_or(|d| task.due_date.is_some_and(|due| due < d));
@@ -88,7 +88,7 @@ impl Database {
                         .due_after
                         .is_none_or(|d| task.due_date.is_some_and(|due| due > d));
 
-                    status_match && category_match && due_before_match && due_after_match
+                    status_match && priority_match && due_before_match && due_after_match
                 })
                 .collect()
         } else {
@@ -101,7 +101,7 @@ impl Database {
     pub async fn get_task_by_id(&self, id: Uuid) -> Result<Task, AppError> {
         let row = sqlx::query(
             r#"
-            SELECT id, title, description, status, category, due_date, created_at, updated_at
+            SELECT id, title, description, status, priority, due_date, created_at, updated_at
             FROM tasks WHERE id = $1
             "#,
         )
@@ -115,7 +115,7 @@ impl Database {
                 title: row.get("title"),
                 description: row.get("description"),
                 status: row.get("status"),
-                category: row.get("category"),
+                priority: row.get("priority"),
                 due_date: row.get("due_date"),
                 created_at: row.get("created_at"),
                 updated_at: row.get("updated_at"),
@@ -140,18 +140,18 @@ impl Database {
             SET title = COALESCE($2, title),
                 description = COALESCE($3, description),
                 status = COALESCE($4, status),
-                category = COALESCE($5, category),
+                priority = COALESCE($5, priority),
                 due_date = COALESCE($6, due_date),
                 updated_at = $7
             WHERE id = $1
-            RETURNING id, title, description, status, category, due_date, created_at, updated_at
+            RETURNING id, title, description, status, priority, due_date, created_at, updated_at
             "#,
         )
         .bind(id)
         .bind(&request.title)
         .bind(&request.description)
         .bind(request.status)
-        .bind(request.category)
+        .bind(request.priority)
         .bind(request.due_date)
         .bind(now)
         .fetch_one(&self.pool)
@@ -162,7 +162,7 @@ impl Database {
             title: row.get("title"),
             description: row.get("description"),
             status: row.get("status"),
-            category: row.get("category"),
+            priority: row.get("priority"),
             due_date: row.get("due_date"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),

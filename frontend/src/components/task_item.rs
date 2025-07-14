@@ -3,7 +3,11 @@ use common::{Task, TaskStatus, UpdateTaskRequest};
 use leptos::*;
 
 #[component]
-pub fn TaskItem<F>(task: Task, on_update: F) -> impl IntoView
+pub fn TaskItem<F>(
+    task: Task,
+    on_update: F,
+    #[prop(optional)] set_dragging_task_id: Option<WriteSignal<Option<uuid::Uuid>>>,
+) -> impl IntoView
 where
     F: Fn() + 'static + Copy,
 {
@@ -26,13 +30,14 @@ where
             TaskStatus::Todo => TaskStatus::InProgress,
             TaskStatus::InProgress => TaskStatus::Completed,
             TaskStatus::Completed => TaskStatus::Todo,
+            TaskStatus::Backlog => TaskStatus::Todo, // Backlog tasks go to Todo when toggled
         };
 
         let request = UpdateTaskRequest {
             title: None,
             description: None,
             status: Some(new_status),
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -67,51 +72,65 @@ where
         TaskStatus::Todo => "bg-gray-100 text-gray-800",
         TaskStatus::InProgress => "bg-blue-100 text-blue-800",
         TaskStatus::Completed => "bg-green-100 text-green-800",
+        TaskStatus::Backlog => "bg-purple-100 text-purple-800",
     };
 
-    let category_color = match task.category {
-        common::TaskCategory::Work => "bg-purple-100 text-purple-800",
-        common::TaskCategory::Personal => "bg-indigo-100 text-indigo-800",
-        common::TaskCategory::Shopping => "bg-pink-100 text-pink-800",
-        common::TaskCategory::Health => "bg-red-100 text-red-800",
-        common::TaskCategory::Other => "bg-gray-100 text-gray-800",
+    let priority_color = match task.priority {
+        common::TaskPriority::Low => "bg-gray-100 text-gray-800",
+        common::TaskPriority::Medium => "bg-blue-100 text-blue-800",
+        common::TaskPriority::High => "bg-yellow-100 text-yellow-800",
+        common::TaskPriority::Urgent => "bg-red-100 text-red-800",
     };
 
     view! {
-        <div class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <div class="flex items-center space-x-2 mb-1">
-                        <h3 class="font-medium text-gray-900">{&task.title}</h3>
-                        <span class={format!("px-2 py-1 text-xs font-medium rounded-full {status_color}")}>
-                            {format!("{:?}", task.status)}
-                        </span>
-                        <span class={format!("px-2 py-1 text-xs font-medium rounded-full {category_color}")}>
-                            {format!("{:?}", task.category)}
-                        </span>
-                    </div>
-
+        <div
+            class="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow h-32 w-full max-w-md mx-auto flex flex-row cursor-grab active:cursor-grabbing"
+            draggable="true"
+            on:dragstart=move |_| {
+                if let Some(setter) = set_dragging_task_id {
+                    setter.set(Some(task.id));
+                }
+            }
+            on:dragend=move |_| {
+                if let Some(setter) = set_dragging_task_id {
+                    setter.set(None);
+                }
+            }
+        >
+            // Left content area with title and description
+            <div class="flex-1 p-3 flex flex-col justify-between min-w-0">
+                <div>
+                    <h3 class="font-medium text-gray-900 text-sm line-clamp-2 leading-tight mb-2">
+                        {&task.title}
+                    </h3>
                     {task.description.as_ref().map(|desc| view! {
-                        <p class="text-sm text-gray-600 mb-1">{desc}</p>
+                        <p class="text-xs text-gray-600 line-clamp-2">{desc}</p>
                     })}
-
-                    <div class="flex items-center space-x-4 text-xs text-gray-500">
-                        <span>
-                            "Created: " {task.created_at.format("%m/%d/%Y").to_string()}
-                        </span>
-                        {task.due_date.map(|due| view! {
-                            <span>
-                                "Due: " {due.format("%m/%d/%Y").to_string()}
-                            </span>
-                        })}
-                    </div>
                 </div>
 
-                <div class="flex items-center space-x-2 ml-4">
+                {task.due_date.map(|due| view! {
+                    <div class="text-xs text-orange-600 font-medium mt-2">
+                        "Due: " {due.format("%m/%d/%Y").to_string()}
+                    </div>
+                })}
+            </div>
+
+            // Right sidebar with badges and actions
+            <div class="w-24 p-3 flex flex-col justify-between items-center border-l border-gray-100 bg-gray-50">
+                <div class="flex flex-col gap-1 items-center">
+                    <span class={format!("px-2 py-1 text-xs font-medium rounded-full {status_color}")}>
+                        {format!("{:?}", task.status)}
+                    </span>
+                    <span class={format!("px-2 py-1 text-xs font-medium rounded-full {priority_color}")}>
+                        {format!("{:?}", task.priority)}
+                    </span>
+                </div>
+
+                <div class="flex flex-col gap-1 w-full">
                     <button
                         on:click=toggle_status
                         disabled=move || is_updating.get()
-                        class="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 transition-colors"
+                        class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded hover:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 transition-colors w-full"
                     >
                         {move || if is_updating.get() { "..." } else { "Toggle" }}
                     </button>
@@ -119,7 +138,7 @@ where
                     <button
                         on:click=delete_task_handler
                         disabled=move || is_deleting.get()
-                        class="px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 disabled:opacity-50 transition-colors"
+                        class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded hover:bg-red-200 focus:outline-none focus:ring-1 focus:ring-red-500 disabled:opacity-50 transition-colors w-full"
                     >
                         {move || if is_deleting.get() { "..." } else { "Delete" }}
                     </button>

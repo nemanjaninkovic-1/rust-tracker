@@ -5,7 +5,9 @@ use uuid::Uuid;
 #[cfg(feature = "sqlx")]
 use sqlx::Type;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, Default, PartialOrd, Ord,
+)]
 #[cfg_attr(feature = "sqlx", derive(Type))]
 #[cfg_attr(
     feature = "sqlx",
@@ -16,21 +18,23 @@ pub enum TaskStatus {
     Todo,
     InProgress,
     Completed,
+    Backlog,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, Default, PartialOrd, Ord,
+)]
 #[cfg_attr(feature = "sqlx", derive(Type))]
 #[cfg_attr(
     feature = "sqlx",
-    sqlx(type_name = "task_category", rename_all = "PascalCase")
+    sqlx(type_name = "task_priority", rename_all = "PascalCase")
 )]
-pub enum TaskCategory {
-    Work,
-    Personal,
-    Shopping,
-    Health,
+pub enum TaskPriority {
+    Low,
     #[default]
-    Other,
+    Medium,
+    High,
+    Urgent,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -39,7 +43,7 @@ pub struct Task {
     pub title: String,
     pub description: Option<String>,
     pub status: TaskStatus,
-    pub category: TaskCategory,
+    pub priority: TaskPriority,
     pub due_date: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
@@ -49,7 +53,7 @@ pub struct Task {
 pub struct CreateTaskRequest {
     pub title: String,
     pub description: Option<String>,
-    pub category: TaskCategory,
+    pub priority: TaskPriority,
     pub due_date: Option<DateTime<Utc>>,
 }
 
@@ -58,14 +62,14 @@ pub struct UpdateTaskRequest {
     pub title: Option<String>,
     pub description: Option<String>,
     pub status: Option<TaskStatus>,
-    pub category: Option<TaskCategory>,
+    pub priority: Option<TaskPriority>,
     pub due_date: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TaskFilter {
     pub status: Option<TaskStatus>,
-    pub category: Option<TaskCategory>,
+    pub priority: Option<TaskPriority>,
     pub due_before: Option<DateTime<Utc>>,
     pub due_after: Option<DateTime<Utc>>,
 }

@@ -2,7 +2,7 @@
 mod integration_tests {
     use axum_test::TestServer;
     use chrono::Utc;
-    use common::{CreateTaskRequest, TaskCategory, TaskStatus, UpdateTaskRequest};
+    use common::{CreateTaskRequest, TaskPriority, TaskStatus, UpdateTaskRequest};
     use serial_test::serial;
     use sqlx::PgPool;
     use std::{env, sync::Arc};
@@ -76,10 +76,10 @@ mod integration_tests {
 
         // Step 2: Create multiple tasks
         let tasks_to_create = vec![
-            CreateTaskRequest {
+            CreatePriorityRequest {
                 title: "Work Task 1".to_string(),
-                description: Some("Important work task".to_string()),
-                category: TaskCategory::Work,
+                description: Some("Low important task".to_string()),
+                priority: TaskPriority::Low,
                 due_date: Some(Utc::now() + chrono::Duration::days(7)),
             },
             CreateTaskRequest {

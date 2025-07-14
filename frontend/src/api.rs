@@ -19,8 +19,8 @@ pub async fn fetch_tasks(filter: Option<TaskFilter>) -> Result<Vec<Task>, String
             params.push(format!("status={status:?}"));
         }
 
-        if let Some(category) = filter.category {
-            params.push(format!("category={category:?}"));
+        if let Some(priority) = filter.priority {
+            params.push(format!("priority={priority:?}"));
         }
 
         if let Some(due_before) = filter.due_before {

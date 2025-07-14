@@ -1,5 +1,5 @@
 use crate::api;
-use common::{CreateTaskRequest, TaskCategory};
+use common::{CreateTaskRequest, TaskPriority};
 use leptos::*;
 
 #[component]
@@ -10,7 +10,7 @@ where
 {
     let (title, set_title) = create_signal(String::new());
     let (description, set_description) = create_signal(String::new());
-    let (category, set_category) = create_signal(TaskCategory::Other);
+    let (priority, set_priority) = create_signal(TaskPriority::Medium);
     let (is_submitting, set_is_submitting) = create_signal(false);
     let (error, set_error) = create_signal(None::<String>);
 
@@ -39,7 +39,7 @@ where
         let request = CreateTaskRequest {
             title: title_value,
             description: description_value,
-            category: category.get(),
+            priority: priority.get(),
             due_date: None, // TODO: Add date picker
         };
 
@@ -55,7 +55,7 @@ where
                 Ok(_) => {
                     set_title.set(String::new());
                     set_description.set(String::new());
-                    set_category.set(TaskCategory::Other);
+                    set_priority.set(TaskPriority::Medium);
                     on_submit();
                     if let Some(close_fn) = on_close {
                         close_fn();
@@ -99,27 +99,26 @@ where
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    "Category"
+                    "Priority"
                 </label>
                 <select
                     on:change=move |ev| {
                         let value = event_target_value(&ev);
-                        let cat = match value.as_str() {
-                            "Work" => TaskCategory::Work,
-                            "Personal" => TaskCategory::Personal,
-                            "Shopping" => TaskCategory::Shopping,
-                            "Health" => TaskCategory::Health,
-                            _ => TaskCategory::Other,
+                        let prio = match value.as_str() {
+                            "Low" => TaskPriority::Low,
+                            "Medium" => TaskPriority::Medium,
+                            "High" => TaskPriority::High,
+                            "Urgent" => TaskPriority::Urgent,
+                            _ => TaskPriority::Medium,
                         };
-                        set_category.set(cat);
+                        set_priority.set(prio);
                     }
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                    <option value="Other">"Other"</option>
-                    <option value="Work">"Work"</option>
-                    <option value="Personal">"Personal"</option>
-                    <option value="Shopping">"Shopping"</option>
-                    <option value="Health">"Health"</option>
+                    <option value="Low">"Low"</option>
+                    <option value="Medium" selected>"Medium"</option>
+                    <option value="High">"High"</option>
+                    <option value="Urgent">"Urgent"</option>
                 </select>
             </div>
 

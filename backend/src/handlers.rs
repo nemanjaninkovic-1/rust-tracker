@@ -15,7 +15,7 @@ pub async fn list_tasks(
 ) -> Result<Json<Vec<Task>>, AppError> {
     let filter = TaskFilter {
         status: filter.status,
-        category: filter.category,
+        priority: filter.priority,
         due_before: filter.due_before,
         due_after: filter.due_after,
     };
@@ -56,7 +56,7 @@ pub async fn delete_task(
 #[derive(Deserialize)]
 pub struct TaskFilterQuery {
     pub status: Option<common::TaskStatus>,
-    pub category: Option<common::TaskCategory>,
+    pub priority: Option<common::TaskPriority>,
     pub due_before: Option<chrono::DateTime<chrono::Utc>>,
     pub due_after: Option<chrono::DateTime<chrono::Utc>>,
 }

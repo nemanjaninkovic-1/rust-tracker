@@ -1,18 +1,18 @@
 #[cfg(test)]
 mod tests {
-    use common::{CreateTaskRequest, TaskCategory, TaskStatus};
+    use common::{CreateTaskRequest, TaskPriority, TaskStatus};
 
     #[test]
     fn test_task_creation_request_validation() {
         let request = CreateTaskRequest {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
-            category: TaskCategory::Work,
+            priority: common::TaskPriority::Low,
             due_date: None,
         };
 
         assert_eq!(request.title, "Test Task");
-        assert_eq!(request.category, TaskCategory::Work);
+        assert_eq!(request.priority, TaskPriority::Low);
         assert!(request.description.is_some());
     }
 
@@ -24,8 +24,8 @@ mod tests {
 
     #[test]
     fn test_task_category_default() {
-        let category = TaskCategory::default();
-        assert_eq!(category, TaskCategory::Other);
+        let category = TaskPriority::default();
+        assert_eq!(category, TaskPriority::Medium);
     }
 }
 
