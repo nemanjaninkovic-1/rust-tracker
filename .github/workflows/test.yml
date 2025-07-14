@@ -191,7 +191,7 @@ jobs:
         run: |
           echo "=== Build Requirements Check ==="
           echo "📦 Checking workspace structure for Docker builds..."
-          
+
           # Check required files for Docker builds
           ls -la Cargo.* 2>/dev/null | head -5
           echo ""
