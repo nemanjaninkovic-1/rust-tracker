@@ -1,0 +1,36 @@
+# Dockerfile for running RustTracker tests
+FROM rust:1.80-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    curl \
+    git \
+    pkg-config \
+    libssl-dev \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install wasm-pack for frontend testing
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+# Install Rust components
+RUN rustup component add rustfmt clippy
+RUN rustup target add wasm32-unknown-unknown
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Ensure scripts are executable
+RUN chmod +x ./scripts/*.sh
+
+# Set environment variables for testing
+ENV TEST_DATABASE_URL=postgres://postgres:password@test-db:5432/rusttracker_test
+ENV RUST_LOG=info
+ENV CARGO_TERM_COLOR=always
+
+# Default command runs the test suite
+CMD ["./scripts/test-suite.sh", "--tests-only"]

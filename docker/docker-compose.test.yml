@@ -1,0 +1,51 @@
+services:
+  test-db:
+    image: postgres:15
+    container_name: rusttracker-test-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: rusttracker_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - test_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rusttracker_test"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+    command: |
+      postgres
+
+  test-runner:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.test
+    container_name: rusttracker-test-runner
+    depends_on:
+      test-db:
+        condition: service_healthy
+    environment:
+      TEST_DATABASE_URL: postgres://postgres:password@test-db:5432/rusttracker_test
+      TEST_DB_HOST: test-db
+      TEST_DB_PORT: 5432
+      PGPASSWORD: password
+      RUST_LOG: info
+    volumes:
+      - ..:/app
+      - test_cargo_cache:/usr/local/cargo/registry
+      - test_target_cache:/app/target
+    working_dir: /app
+    command:
+      [
+        "bash",
+        "-c",
+        "sleep 5 && chmod +x ./scripts/test-suite.sh && ./scripts/test-suite.sh --tests-only",
+      ]
+
+volumes:
+  test_db_data:
+  test_cargo_cache:
+  test_target_cache:

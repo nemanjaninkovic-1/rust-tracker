@@ -1,0 +1,43 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "RustTracker Frontend - Task Management Web Application"
+repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Leptos framework
+leptos = { version = "0.6", features = ["csr"] }
+leptos_meta = { version = "0.6", features = ["csr"] }
+leptos_router = { version = "0.6", features = ["csr"] }
+
+# WASM and web APIs
+wasm-bindgen = "0.2"
+web-sys = "0.3"
+js-sys = "0.3"
+gloo-net = { version = "0.5", features = ["http"] }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde-wasm-bindgen = "0.6"
+
+# Common types
+uuid = { workspace = true }
+chrono = { workspace = true, features = ["wasmbind"] }
+common = { path = "../common" }
+
+# Logging for WASM
+console_error_panic_hook = "0.1"
+tracing = "0.1"
+tracing-wasm = "0.2"
+
+[dependencies.wasm-bindgen-futures]
+version = "0.4"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
