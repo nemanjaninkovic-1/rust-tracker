@@ -166,20 +166,32 @@ jobs:
           echo "Starting services for E2E testing..."
           docker compose -f docker/docker-compose.yml up -d
 
-          # Wait for services
-          sleep 45
+          # Wait for services to be ready
+          echo "Waiting for services to start..."
+          sleep 60
 
-          # Test API endpoints
-          echo "Testing API endpoints..."
+          # Check if containers are running
+          echo "=== Container Status ==="
+          docker compose -f docker/docker-compose.yml ps
 
-          # Test health endpoint
-          curl -f http://localhost:8080/health || (echo "Health endpoint failed" && exit 1)
+          # Check container logs for debugging
+          echo "=== Backend Logs ==="
+          docker compose -f docker/docker-compose.yml logs backend | tail -10
 
-          # Test tasks endpoint
-          curl -f http://localhost:8080/api/tasks || (echo "Tasks endpoint failed" && exit 1)
+          echo "=== Frontend Logs ==="
+          docker compose -f docker/docker-compose.yml logs frontend | tail -10
 
-          # Test frontend
-          curl -f http://localhost:3000 || (echo "Frontend failed" && exit 1)
+          # Test using the host ports (since they should be mapped)
+          echo "Testing API endpoints via exposed ports..."
+
+          # Test health endpoint via exposed port
+          curl -f http://localhost:8080/health || (echo "Health endpoint failed via localhost:8080" && exit 1)
+
+          # Test tasks endpoint via exposed port
+          curl -f http://localhost:8080/api/tasks || (echo "Tasks endpoint failed via localhost:8080" && exit 1)
+
+          # Test frontend via exposed port
+          curl -f http://localhost:3000 || (echo "Frontend failed via localhost:3000" && exit 1)
 
           echo "E2E tests completed successfully"
 
