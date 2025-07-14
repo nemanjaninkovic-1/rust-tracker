@@ -46,18 +46,25 @@ RustTracker uses a Makefile as the primary build system for development. All dev
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
-   cd rust-tracker
-   ```
+```bash
+git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
+cd rust-tracker
+```
 
-2. Run the setup script:
+1. Run the setup script:
 
-   ```bash
-   make setup
-   ```
+```bash
+make setup
+```
 
 This will automatically build and start all services with health checks using the Makefile.
+
+1. Use stop to stop services or clean to clean up after:
+
+```bash
+make stop # Stops all services
+make clean # Stop services and clean up
+```
 
 ### Makefile Commands
 
@@ -73,8 +80,6 @@ make logs        # View logs for all services
 make clean       # Stop services and clean up
 make db          # Connect to database shell
 make quick-test  # Run quick test suite (common crate tests work)
-# make test          # WIP: Comprehensive test suite (needs implementation)
-# make backend-shell # WIP: Backend container shell (lacks tools)
 ```
 
 ## Tech Stack
@@ -110,6 +115,8 @@ rust-tracker/
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
 │   │   ├── error.rs                # Error handling
+│   │   ├── auth.rs                 # Authentication logic
+│   │   ├── rate_limit.rs           # Rate limiting middleware
 │   │   └── tests/                  # Comprehensive test suite
 │   │       ├── mod.rs              # Test module exports
 │   │       ├── database_tests.rs   # Database layer tests (23 tests)
@@ -133,6 +140,7 @@ rust-tracker/
 │   │   │   ├── task_form.rs        # Task creation/editing form
 │   │   │   ├── task_item.rs        # Individual task display
 │   │   │   ├── task_list.rs        # Task list container
+│   │   │   ├── modal.rs            # Modal dialog components
 │   │   │   └── mod.rs              # Component exports
 │   │   └── pages/                  # App pages
 │   │       ├── home.rs             # Main task management page
@@ -147,10 +155,8 @@ rust-tracker/
 │           ├── mod.rs              # Test module exports
 │           └── data_structures.rs  # Data structure tests (22 tests)
 └── scripts/                    # Development tools
-    ├── setup.sh                   # Initial setup
-    ├── dev.sh                     # Development helper
-    ├── test-runner.sh              # Comprehensive test runner
-    └── build-quiet.sh              # Quiet build script
+    ├── quick-test.sh              # Quick test runner
+    └── test-suite.sh              # Comprehensive test runner
 ```
 
 ## Architecture Overview
@@ -235,7 +241,6 @@ All endpoints use JSON format and the Task model from the `common` crate. The AP
 
 ```bash
 make quick-test  # Run quick test suite (common crate tests work)
-# make test      # WIP: Comprehensive test suite (needs implementation)
 ```
 
 ## Environment Configuration
@@ -295,13 +300,10 @@ make quick-test # Run quick tests
 
 - [ ] **Make test command**: `make test` needs implementation - comprehensive test suite runner
 - [ ] **Backend shell improvements**: `make backend-shell` lacks proper debugging tools
-- [ ] **Edition2024 dependency issue**: Backend tests require Rust nightly due to base64ct-1.8.0 edition2024 requirement
-- [ ] **Makefile organization**: 11 working commands, 2 marked as TODO
+- [ ] **Makefile organization**: Available commands need consolidation and documentation
 - [ ] **Performance optimization**: Consider implementing cargo workspace caching for faster builds
-- [ ] **Rate limiting**: Implement and document rate limiting configuration
-- [ ] **Health checks**: Enhance health check endpoints with detailed status
-- [ ] **Monitoring**: Add Prometheus metrics and Grafana dashboards
-- [ ] **Authentication system**: JWT-based user authentication and authorization
+- [ ] **Rate limiting**: Document and enhance rate limiting configuration (basic implementation exists)
+- [ ] **Authentication system**: Enhance JWT-based user authentication and authorization (basic implementation exists)
 - [ ] **Real-time updates**: WebSocket support for live task synchronization
 - [ ] **Advanced filtering**: Full-text search and custom filter combinations
 - [ ] **Bulk operations**: Multi-task selection and batch processing
@@ -338,12 +340,3 @@ See [Getting Started](#getting-started) for detailed setup instructions.
 ## License
 
 [MIT License](LICENSE) - see LICENSE file for details.
-
-## Related Documentation
-
-This README contains all project documentation. Previously separate files have been consolidated:
-
-- **Architecture Details**: See [Architecture Overview](#architecture-overview) section
-- **API Documentation**: See [API Endpoints](#api-endpoints) section  
-- **Testing Guide**: See [Running Tests](#running-tests) section
-- **Development Setup**: See [Getting Started](#getting-started) section
