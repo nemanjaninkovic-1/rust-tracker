@@ -974,6 +974,7 @@ This README contains all project documentation. Previously separate files have b
 ## Notes for GitHub Copilot Agent
 
 - The backend is a REST API using Axum and connects to PostgreSQL at `db:5432`
+- The backend is a REST API using Axum and connects to PostgreSQL at `db:5432`
 - The frontend is built using Leptos and makes API calls to the backend
 - Shared Rust types are located in the `common` crate
 - Backend exposes `/api` routes with full CRUD operations
