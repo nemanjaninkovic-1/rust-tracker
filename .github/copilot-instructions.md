@@ -1,10 +1,12 @@
 # Copilot Instructions for RustTracker
 
+**No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (✗) when indicating status, validation, or pass/fail conditionsST API server
+
 ## Project Overview
 
 RustTracker is a full-stack task management web application built entirely in Rust with:
 
-- Backend: Axum R- **No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (✗) when indicating status, validation, or pass/fail conditionsST API server
+- Backend: Axum
 - Front # Backend tests REQUIRE database - use make test instead
   # ✗ DON'T: cargo test -p backend (will fail without database)
   # ✓ DO: make test: Leptos reactive web application
@@ -16,7 +18,7 @@ RustTracker is a full-stack task management web application built entirely in Ru
 
 ### Project Structure
 
-```
+```text
 rust-tracker/
 ├── README.md                       # Project documentation
 ├── Cargo.toml                      # Workspace configuration
@@ -87,6 +89,33 @@ rust-tracker/
 
 ## Development Guidelines
 
+### CRITICAL: Make Command Priority Rule
+
+**HARD RULE: Always use make commands for project operations unless there is no make command available for the specific action you want to perform.**
+
+Available make commands (use these instead of manual docker/cargo commands):
+
+- `make setup` - Initial setup and start all services
+- `make start` - Start all services
+- `make stop` - Stop all services
+- `make restart` - Restart all services
+- `make rebuild` - Rebuild and start all services
+- `make test` - Run comprehensive test suite
+- `make logs` - Show logs for all services
+- `make clean` - Stop services and clean up
+- `make db` - Connect to database
+
+**Examples**:
+
+- ✓ Use: `make restart`
+- ✗ Don't use: `docker compose restart`
+- ✓ Use: `make test`
+- ✗ Don't use: `cargo test` or manual docker commands
+- ✓ Use: `make rebuild`
+- ✗ Don't use: `docker compose down && docker compose up --build`
+
+Only use manual docker/cargo commands when the required functionality is not available through make commands.
+
 ### Component Architecture
 
 - **Backend**: Located in `backend/`, exposes REST API under `/api` prefix, connects to PostgreSQL at `db:5432`, runs on port 8080
@@ -125,8 +154,10 @@ All endpoints use JSON format with proper error handling, CORS support, and stru
 
 ### Quick Commands
 
+**ALWAYS use these make commands instead of manual docker/cargo commands:**
+
 ```bash
-# Essential commands
+# Essential commands (USE THESE)
 make setup      # Initial setup and start all services
 make test       # Run comprehensive test suite
 make start      # Start all services
@@ -137,7 +168,7 @@ make logs       # Show logs for all services
 make clean      # Stop services and clean up
 make db         # Connect to database
 
-# Manual commands
+# Manual commands (ONLY when no make command exists)
 docker compose up --build          # Build and start all services
 docker compose down -v             # Stop and remove containers with volumes
 ```

@@ -78,10 +78,10 @@ where
     };
 
     view! {
-        <div class="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
+        <div class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow">
             <div class="flex items-start justify-between">
                 <div class="flex-1">
-                    <div class="flex items-center space-x-2 mb-2">
+                    <div class="flex items-center space-x-2 mb-1">
                         <h3 class="font-medium text-gray-900">{&task.title}</h3>
                         <span class={format!("px-2 py-1 text-xs font-medium rounded-full {status_color}")}>
                             {format!("{:?}", task.status)}
@@ -92,7 +92,7 @@ where
                     </div>
 
                     {task.description.as_ref().map(|desc| view! {
-                        <p class="text-sm text-gray-600 mb-2">{desc}</p>
+                        <p class="text-sm text-gray-600 mb-1">{desc}</p>
                     })}
 
                     <div class="flex items-center space-x-4 text-xs text-gray-500">

@@ -1,6 +1,6 @@
 use crate::{
     api,
-    components::{TaskForm, TaskList},
+    components::{Modal, TaskForm, TaskList},
 };
 use common::Task;
 use leptos::*;
@@ -10,6 +10,7 @@ pub fn HomePage() -> impl IntoView {
     let (tasks, set_tasks) = create_signal(Vec::<Task>::new());
     let (is_loading, set_is_loading) = create_signal(true);
     let (error, set_error) = create_signal(None::<String>);
+    let (show_modal, set_show_modal) = create_signal(false);
 
     let load_tasks = create_action(move |_: &()| async move { api::fetch_tasks(None).await });
 
@@ -42,12 +43,21 @@ pub fn HomePage() -> impl IntoView {
 
     view! {
         <div class="max-w-4xl mx-auto">
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">"Task Management"</h1>
-                <p class="text-gray-600">"Organize your tasks and boost your productivity."</p>
+            <div class="mb-4 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">"Task Management"</h1>
+                    <p class="text-xs text-gray-500">"Updated: 2025-07-14 10:59"</p>
+                </div>
+                <button
+                    on:click=move |_| set_show_modal.set(true)
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span>"Add Task"</span>
+                </button>
             </div>
-
-            <TaskForm on_submit=refresh_tasks />
 
             {move || {
                 if is_loading.get() {
@@ -83,6 +93,17 @@ pub fn HomePage() -> impl IntoView {
                     }.into_view()
                 }
             }}
+
+            <Modal
+                show=show_modal
+                on_close=move || set_show_modal.set(false)
+                title="Add New Task".to_string()
+            >
+                <TaskForm
+                    on_submit=refresh_tasks
+                    on_close=Some(move || set_show_modal.set(false))
+                />
+            </Modal>
         </div>
     }
 }

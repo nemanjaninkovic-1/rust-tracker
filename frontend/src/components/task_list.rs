@@ -26,72 +26,71 @@ where
     });
 
     view! {
-        <div class="space-y-6">
-            <div class="bg-white rounded-lg shadow-sm border p-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">"Filter Tasks"</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            "Status"
-                        </label>
-                        <select
-                            on:change=move |ev| {
-                                let value = event_target_value(&ev);
-                                let status = match value.as_str() {
-                                    "Todo" => Some(TaskStatus::Todo),
-                                    "InProgress" => Some(TaskStatus::InProgress),
-                                    "Completed" => Some(TaskStatus::Completed),
-                                    _ => None,
-                                };
-                                set_filter_status.set(status);
-                            }
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="">"All Status"</option>
-                            <option value="Todo">"Todo"</option>
-                            <option value="InProgress">"In Progress"</option>
-                            <option value="Completed">"Completed"</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            "Category"
-                        </label>
-                        <select
-                            on:change=move |ev| {
-                                let value = event_target_value(&ev);
-                                let category = match value.as_str() {
-                                    "Work" => Some(TaskCategory::Work),
-                                    "Personal" => Some(TaskCategory::Personal),
-                                    "Shopping" => Some(TaskCategory::Shopping),
-                                    "Health" => Some(TaskCategory::Health),
-                                    "Other" => Some(TaskCategory::Other),
-                                    _ => None,
-                                };
-                                set_filter_category.set(category);
-                            }
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="">"All Categories"</option>
-                            <option value="Work">"Work"</option>
-                            <option value="Personal">"Personal"</option>
-                            <option value="Shopping">"Shopping"</option>
-                            <option value="Health">"Health"</option>
-                            <option value="Other">"Other"</option>
-                        </select>
-                    </div>
+        <div class="space-y-3">
+            // Compact filter bar - UPDATED LAYOUT
+            <div class="flex flex-wrap items-center gap-3 pb-3 border-b-2 border-blue-200 bg-blue-50 px-3 py-2 rounded">
+                <span class="text-sm font-medium text-blue-700">"Filter:"</span>
+                <select
+                    on:change=move |ev| {
+                        let value = event_target_value(&ev);
+                        let status = match value.as_str() {
+                            "Todo" => Some(TaskStatus::Todo),
+                            "InProgress" => Some(TaskStatus::InProgress),
+                            "Completed" => Some(TaskStatus::Completed),
+                            _ => None,
+                        };
+                        set_filter_status.set(status);
+                    }
+                    class="text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                    <option value="">"All Status"</option>
+                    <option value="Todo">"Todo"</option>
+                    <option value="InProgress">"In Progress"</option>
+                    <option value="Completed">"Completed"</option>
+                </select>
+                <select
+                    on:change=move |ev| {
+                        let value = event_target_value(&ev);
+                        let category = match value.as_str() {
+                            "Work" => Some(TaskCategory::Work),
+                            "Personal" => Some(TaskCategory::Personal),
+                            "Shopping" => Some(TaskCategory::Shopping),
+                            "Health" => Some(TaskCategory::Health),
+                            "Other" => Some(TaskCategory::Other),
+                            _ => None,
+                        };
+                        set_filter_category.set(category);
+                    }
+                    class="text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                    <option value="">"All Categories"</option>
+                    <option value="Work">"Work"</option>
+                    <option value="Personal">"Personal"</option>
+                    <option value="Shopping">"Shopping"</option>
+                    <option value="Health">"Health"</option>
+                    <option value="Other">"Other"</option>
+                </select>
+                <div class="ml-auto text-sm text-gray-500">
+                    {move || {
+                        let count = filtered_tasks.get().len();
+                        if count == 1 {
+                            "1 task".to_string()
+                        } else {
+                            format!("{} tasks", count)
+                        }
+                    }}
                 </div>
             </div>
 
-            <div class="space-y-4">
+            // Tasks section - now the main focus
+            <div class="space-y-2">
                 {move || {
                     let tasks = filtered_tasks.get();
                     if tasks.is_empty() {
                         view! {
-                            <div class="text-center py-12 bg-white rounded-lg shadow-sm border">
-                                <div class="text-gray-400 text-6xl mb-4">"📝"</div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">"No tasks found"</h3>
+                            <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                                <div class="text-gray-400 text-4xl mb-3">"📝"</div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">"No tasks found"</h3>
                                 <p class="text-gray-500">"Create your first task to get started!"</p>
                             </div>
                         }.into_view()
