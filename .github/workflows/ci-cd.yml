@@ -25,28 +25,28 @@ jobs:
         run: |
           cat > .env << EOF
           # Database configuration
-          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5432
 
           # Backend configuration
           RUST_LOG=info
-          PORT=8080
+          PORT=${{ secrets.PORT }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           JWT_EXPIRY_HOURS=24
 
           # Frontend configuration
-          FRONTEND_PORT=3000
+          FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}
 
           # Environment
           APP_ENV=production
 
           # Rate limiting settings
-          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE || '100' }}
-          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS || '60000' }}
+          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE }}
+          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS }}
           EOF
 
       - name: Run quick test suite
@@ -120,27 +120,27 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     needs: build-and-test
-    
+
     env:
-      # Database configuration
-      DATABASE_URL: postgresql://postgres:SecurePass123@db:5432/rusttracker
-      POSTGRES_DB: rusttracker
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: SecurePass123
+      # Database configuration - constructed from secrets
+      DATABASE_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
       # Backend configuration
       RUST_LOG: info
-      PORT: 8080
-      JWT_SECRET: 9Kf2BmWpX7vYq3RzN8HtE5SaG4JdLcVnUx6AbC1iMhOyP0QwZ
+      PORT: ${{ secrets.PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_EXPIRY_HOURS: 24
       # Frontend configuration
-      FRONTEND_PORT: 3000
+      FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
       # Environment
       APP_ENV: test
       # Rate limiting settings
-      MAX_REQUESTS_PER_MINUTE: 100
-      RATE_LIMIT_WINDOW_MS: 60000
+      MAX_REQUESTS_PER_MINUTE: ${{ secrets.MAX_REQUESTS_PER_MINUTE }}
+      RATE_LIMIT_WINDOW_MS: ${{ secrets.RATE_LIMIT_WINDOW_MS }}
 
     steps:
       - uses: actions/checkout@v4
@@ -174,17 +174,17 @@ jobs:
           echo "=== Frontend Logs ==="
           docker compose -f docker/docker-compose.yml logs frontend | tail -10
 
-          # Test using the host ports (since they should be mapped)
+          # Test using the exposed ports from secrets
           echo "Testing API endpoints via exposed ports..."
 
           # Test health endpoint via exposed port
-          curl -f http://localhost:8080/health || (echo "Health endpoint failed via localhost:8080" && exit 1)
+          curl -f http://localhost:${{ secrets.PORT }}/health || (echo "Health endpoint failed via localhost:${{ secrets.PORT }}" && exit 1)
 
           # Test tasks endpoint via exposed port
-          curl -f http://localhost:8080/api/tasks || (echo "Tasks endpoint failed via localhost:8080" && exit 1)
+          curl -f http://localhost:${{ secrets.PORT }}/api/tasks || (echo "Tasks endpoint failed via localhost:${{ secrets.PORT }}" && exit 1)
 
           # Test frontend via exposed port
-          curl -f http://localhost:3000 || (echo "Frontend failed via localhost:3000" && exit 1)
+          curl -f http://localhost:${{ secrets.FRONTEND_PORT }} || (echo "Frontend failed via localhost:${{ secrets.FRONTEND_PORT }}" && exit 1)
 
           echo "E2E tests completed successfully"
 
@@ -210,28 +210,28 @@ jobs:
         run: |
           cat > .env << EOF
           # Database configuration
-          DATABASE_URL=${STAGING_DATABASE_URL:-postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'rusttracker' }}}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          DATABASE_URL=${STAGING_DATABASE_URL:-postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5432
 
           # Backend configuration
           RUST_LOG=info
-          PORT=8080
+          PORT=${{ secrets.PORT }}
           JWT_SECRET=${STAGING_JWT_SECRET:-${{ secrets.JWT_SECRET }}}
           JWT_EXPIRY_HOURS=24
 
           # Frontend configuration
-          FRONTEND_PORT=3000
+          FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}
 
           # Environment
           APP_ENV=staging
 
           # Rate limiting settings
-          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE || '100' }}
-          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS || '60000' }}
+          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE }}
+          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS }}
           EOF
 
       - name: Deploy to staging
@@ -263,21 +263,21 @@ jobs:
         run: |
           cat > .env << EOF
           # Database configuration
-          DATABASE_URL=${PRODUCTION_DATABASE_URL:-postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'rusttracker' }}}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          DATABASE_URL=${PRODUCTION_DATABASE_URL:-postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5432
 
           # Backend configuration
           RUST_LOG=warn
-          PORT=8080
+          PORT=${{ secrets.PORT }}
           JWT_SECRET=${PRODUCTION_JWT_SECRET:-${{ secrets.JWT_SECRET }}}
           JWT_EXPIRY_HOURS=24
 
           # Frontend configuration
-          FRONTEND_PORT=3000
+          FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}
 
           # Environment
           APP_ENV=production
