@@ -11,9 +11,6 @@ Cargo.lock
 *.swo
 *~
 
-# GitHub
-.github/
-
 # OS
 .DS_Store
 .DS_Store?
@@ -27,13 +24,16 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+secrets.env
+.secrets
+
+# GitHub secrets (keep template but exclude actual secrets)
+.github/secrets.env
+.github/secrets-actual.env
 
 # Logs
 *.log
 logs/
-
-# Docker
-.dockerignore
 
 # Node.js (for any frontend tooling)
 node_modules/

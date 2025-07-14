@@ -1,0 +1,22 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "RustTracker Common - Shared Types and Models"
+repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
+
+[dependencies]
+serde = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+
+# Optional SQLx support for backend
+sqlx = { version = "0.7", features = ["postgres", "macros"], optional = true }
+
+[features]
+default = []
+sqlx = ["dep:sqlx"]
+
+[dev-dependencies]
+serde_json = { workspace = true }
