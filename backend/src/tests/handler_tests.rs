@@ -197,26 +197,26 @@ mod handler_tests {
     async fn test_list_tasks_with_filters() {
         let server = setup_test_server().await;
 
-        // Create tasks with different categories
-        let work_task = CreateTaskRequest {
-            title: "Work Task".to_string(),
+        // Create tasks with different priorities
+        let high_priority_task = CreateTaskRequest {
+            title: "High Priority Task".to_string(),
             description: None,
             priority: TaskPriority::High,
             due_date: None,
         };
 
-        let personal_task = CreateTaskRequest {
-            title: "Personal Task".to_string(),
+        let low_priority_task = CreateTaskRequest {
+            title: "Low Priority Task".to_string(),
             description: None,
             priority: TaskPriority::Low,
             due_date: None,
         };
 
-        server.post("/api/tasks").json(&work_task).await;
-        server.post("/api/tasks").json(&personal_task).await;
+        server.post("/api/tasks").json(&high_priority_task).await;
+        server.post("/api/tasks").json(&low_priority_task).await;
 
-        // Test category filter
-        let response = server.get("/api/tasks?category=Work").await;
+        // Test priority filter
+        let response = server.get("/api/tasks?priority=High").await;
         assert_eq!(response.status_code(), StatusCode::OK);
 
         let tasks: Vec<common::Task> = response.json();
@@ -395,7 +395,8 @@ mod handler_tests {
     async fn test_large_task_title() {
         let server = setup_test_server().await;
 
-        let large_title = "a".repeat(1000);
+        // Test with title at database limit (255 characters)
+        let large_title = "a".repeat(255);
         let create_request = CreateTaskRequest {
             title: large_title.clone(),
             description: Some("Description".to_string()),
@@ -405,11 +406,25 @@ mod handler_tests {
 
         let response = server.post("/api/tasks").json(&create_request).await;
 
-        // Should succeed (assuming no database constraint preventing it)
+        // Should succeed with title at database limit
         assert_eq!(response.status_code(), StatusCode::CREATED);
 
         let task: common::Task = response.json();
         assert_eq!(task.title, large_title);
+
+        // Test that titles over 255 characters are rejected
+        let oversized_title = "a".repeat(256);
+        let oversized_request = CreateTaskRequest {
+            title: oversized_title,
+            description: Some("Description".to_string()),
+            priority: TaskPriority::High,
+            due_date: None,
+        };
+
+        let response = server.post("/api/tasks").json(&oversized_request).await;
+
+        // Should fail with bad request due to database constraint
+        assert_eq!(response.status_code(), StatusCode::BAD_REQUEST);
     }
 
     #[tokio::test]

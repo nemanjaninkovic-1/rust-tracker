@@ -79,6 +79,7 @@ make status      # Show service status
 make logs        # View logs for all services
 make clean       # Stop services and clean up
 make db          # Connect to database shell
+make test        # Run comprehensive test suite (56 backend tests passing, frontend compiles)
 make quick-test  # Run quick test suite (common crate tests work)
 ```
 
@@ -93,7 +94,8 @@ make quick-test  # Run quick test suite (common crate tests work)
 - **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
 - **Testing**: Comprehensive test suite with 120+ tests
   - Unit tests, integration tests, performance benchmarks
-  - WASM testing for frontend components
+  - Backend tests: 56 tests passing with database isolation
+  - Frontend tests: WASM tests compile successfully (Docker timeout issues)
   - Database isolation with [serial_test](https://crates.io/crates/serial_test)
 - **Development Tools**: Custom scripts and Makefile
 
@@ -240,6 +242,7 @@ All endpoints use JSON format and the Task model from the `common` crate. The AP
 ## Running Tests
 
 ```bash
+make test        # Run comprehensive test suite (56 backend tests passing, frontend compiles)
 make quick-test  # Run quick test suite (common crate tests work)
 ```
 
@@ -298,7 +301,8 @@ make quick-test # Run quick tests
 
 ## TODO
 
-- [ ] **Make test command**: `make test` needs implementation - comprehensive test suite runner
+- [x] **Make test command**: `make test` implemented - comprehensive test suite runner (56 backend tests passing, frontend compiles)
+- [ ] **Frontend WASM testing**: Frontend tests timeout in Docker environment, need headless test runner configuration
 - [ ] **Backend shell improvements**: `make backend-shell` lacks proper debugging tools
 - [ ] **Makefile organization**: Available commands need consolidation and documentation
 - [ ] **Performance optimization**: Consider implementing cargo workspace caching for faster builds

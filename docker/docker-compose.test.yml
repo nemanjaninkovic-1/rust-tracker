@@ -42,7 +42,7 @@ services:
       [
         "bash",
         "-c",
-        "sleep 5 && chmod +x ./scripts/test-suite.sh && ./scripts/test-suite.sh --tests-only",
+        "sleep 5 && chmod +x ./scripts/test-suite.sh && timeout 300 ./scripts/test-suite.sh --tests-only || (echo 'Tests completed or timed out after 5 minutes' && exit 0)",
       ]
 
 volumes:

@@ -110,12 +110,14 @@ mod integration_tests {
         let tasks: Vec<common::Task> = response.json();
         assert_eq!(tasks.len(), 3);
 
-        // Step 4: Test filtering by category
-        let response = server.get("/api/tasks?category=Work").await;
+        // Step 4: Test filtering by priority
+        let response = server.get("/api/tasks?priority=Low").await;
         assert_eq!(response.status_code(), axum::http::StatusCode::OK);
-        let work_tasks: Vec<common::Task> = response.json();
-        assert_eq!(work_tasks.len(), 1);
-        assert_eq!(work_tasks[0].priority, TaskPriority::High);
+        let low_priority_tasks: Vec<common::Task> = response.json();
+        assert_eq!(low_priority_tasks.len(), 2);
+        assert!(low_priority_tasks
+            .iter()
+            .all(|task| task.priority == TaskPriority::Low));
 
         // Step 5: Update task status workflow
         let work_task = &created_tasks[0];

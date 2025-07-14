@@ -4,9 +4,9 @@ COMPOSE_CMD := docker compose -f docker/docker-compose.yml --env-file .env
 # ✅ VERIFIED WORKING COMMANDS:
 # - setup, build, start, stop, restart, rebuild, status, logs, clean
 # - db (database shell access)
-# - quick-test (works with common crate tests, notes dependency issues for full tests)
+# - test (comprehensive test suite with database setup)
+# - quick-test (quick test suite for common crate)
 # ❌ TODO/DEVELOPMENT NEEDED:
-# - test (needs implementation)
 # - backend-shell (container lacks shell tools)
 
 .PHONY: help setup build start stop restart rebuild logs clean status db test quick-test backend-shell dev-frontend build-css
@@ -26,14 +26,14 @@ help:
 	@echo "  make logs          - Show logs for all services"
 	@echo "  make clean         - Stop services and clean up"
 	@echo "  make db            - Connect to database shell"
-	@echo "  make quick-test    - Run quick test suite (common crate tests work)"
+	@echo "  make test          - Run comprehensive test suite (tests are working, 3 isolation issues to fix)"
+	@echo "  make quick-test    - Run quick test suite (common crate only)"
 	@echo ""
 	@echo "Frontend Development:"
 	@echo "  make dev-frontend  - Start frontend development server"
 	@echo "  make build-css     - Build Tailwind CSS"
 	@echo ""
 	@echo "TODO/Development Needed:"
-	@echo "  make test          - Run comprehensive test suite (needs implementation)"
 	@echo "  make backend-shell - Backend container shell (lacks tools)"
 	@echo ""
 	@echo "Quick Start:"
@@ -117,6 +117,16 @@ db:
 	@echo "Connecting to database..."
 	@$(COMPOSE_CMD) exec db psql -U postgres -d rusttracker
 
+# =============================================================================
+# Working - Testing
+# =============================================================================
+
+test:
+	@echo "Running comprehensive test suite..."
+	@echo "This will run all tests including backend tests with proper database setup"
+	@docker compose -f docker/docker-compose.test.yml down -v 2>/dev/null || true
+	@docker compose -f docker/docker-compose.test.yml up --build --abort-on-container-exit
+	@docker compose -f docker/docker-compose.test.yml down -v 2>/dev/null || true
 
 quick-test:
 	@echo "Running Docker-based quick test suite..."
@@ -125,11 +135,6 @@ quick-test:
 # =============================================================================
 # TODO - Development Needed
 # =============================================================================
-
-test:
-	@echo "TODO: Comprehensive test suite needs implementation"
-	@echo "Current issue: Docker containers lack Rust toolchain for testing"
-	@echo "Consider: dedicated test containers or local Rust environment"
 
 backend-shell:
 	@echo "TODO: Backend container shell access needs debugging"

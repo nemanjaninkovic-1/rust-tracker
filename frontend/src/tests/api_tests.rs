@@ -5,7 +5,8 @@ mod api_tests {
     use uuid::Uuid;
     use wasm_bindgen_test::*;
 
-    wasm_bindgen_test_configure!(run_in_browser);
+    // Configure to run in Node.js environment (headless)
+    // wasm_bindgen_test_configure!(run_in_browser);
 
     const API_BASE: &str = "http://localhost:8080/api";
 
