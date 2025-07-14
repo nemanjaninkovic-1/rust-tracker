@@ -131,7 +131,7 @@ jobs:
           test -f Cargo.lock && echo "✅ Cargo.lock found" || echo "❌ Cargo.lock missing"
           test -f backend/Dockerfile && echo "✅ Backend Dockerfile found" || echo "❌ Backend Dockerfile missing"
           test -d backend/migrations && echo "✅ Migrations directory found" || echo "❌ Migrations directory missing"
-          test -f docker-compose.yml && echo "✅ Docker Compose found" || echo "❌ Docker Compose missing"
+          test -f docker/docker-compose.yml && echo "✅ Docker Compose found" || echo "❌ Docker Compose missing"
 
           # Verify project structure
           echo "=== Project Structure ==="
@@ -174,7 +174,7 @@ jobs:
           echo "=== Docker File Verification ==="
           test -f backend/Dockerfile && echo "✅ Backend Dockerfile found" || echo "❌ Backend Dockerfile missing"
           test -f frontend/Dockerfile && echo "✅ Frontend Dockerfile found" || echo "❌ Frontend Dockerfile missing"
-          test -f docker-compose.yml && echo "✅ Docker Compose found" || echo "❌ Docker Compose missing"
+          test -f docker/docker-compose.yml && echo "✅ Docker Compose found" || echo "❌ Docker Compose missing"
 
           # Validate Dockerfile syntax
           echo "=== Dockerfile Syntax Validation ==="
@@ -183,7 +183,7 @@ jobs:
 
           # Verify Docker Compose syntax
           echo "=== Docker Compose Validation ==="
-          docker compose config --quiet && echo "✅ Docker Compose syntax valid" || echo "❌ Docker Compose syntax invalid"
+          docker compose -f docker/docker-compose.yml config --quiet && echo "✅ Docker Compose syntax valid" || echo "❌ Docker Compose syntax invalid"
 
           echo "Docker configuration validation completed!"
 
