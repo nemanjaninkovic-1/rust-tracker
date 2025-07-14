@@ -2,10 +2,12 @@
 
 ## Project Overview
 
-RustTracker is a full-stack task management web application built entirely in Rust. It features:
+RustTracker is a full-stack task management web application built entirely in Rust with:
 
-- Backend: Axum REST API server
-- Frontend: Leptos reactive web application
+- Backend: Axum R- **No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (✗) when indicating status, validation, or pass/fail conditionsST API server
+- Front # Backend tests REQUIRE database - use make test instead
+  # ✗ DON'T: cargo test -p backend (will fail without database)
+  # ✓ DO: make test: Leptos reactive web application
 - Database: PostgreSQL
 - Containerization: Docker and Docker Compose
 - Shared models between frontend and backend
@@ -16,20 +18,16 @@ RustTracker is a full-stack task management web application built entirely in Ru
 
 ```
 rust-tracker/
-├── 📋 README.md                    # Project documentation
-├── ⚙️  Cargo.toml                  # Workspace configuration
-├── 🔧 Makefile                     # Development shortcuts
-├── 🐳 docker/                      # Docker configuration
-│   ├── docker-compose.yml         # Container orchestration
-│   ├── docker-compose.test.yml    # Test environment
-│   └── Dockerfile.test            # Testing container
-├── 🌍 .env                         # Environment variables
-├── 📄 PROJECT.md                   # Detailed project overview
-├── � TESTING.md                   # Testing documentation
-├── 📈 TEST_COVERAGE_SUMMARY.md     # Test coverage overview
-
-├── �📦 backend/                     # Axum REST API
-│   ├── 🦀 src/
+├── README.md                       # Project documentation
+├── Cargo.toml                      # Workspace configuration
+├── Makefile                        # Development shortcuts
+├── docker/                         # Docker configuration
+│   ├── docker-compose.yml          # Container orchestration
+│   ├── docker-compose.test.yml     # Test environment
+│   └── Dockerfile.test             # Testing container
+├── .env                            # Environment variables
+├── backend/                        # Axum REST API
+│   ├── src/
 │   │   ├── main.rs                 # Server entry point
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
@@ -41,41 +39,43 @@ rust-tracker/
 │   │       ├── error_tests.rs      # Error handling tests (8 tests)
 │   │       ├── integration_tests.rs # Integration tests (6 tests)
 │   │       └── benchmarks.rs       # Performance benchmarks (8 tests)
-│   ├── 🗄️  migrations/             # Database schema
+│   ├── migrations/                 # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
-│   └── 🐳 Dockerfile               # Backend container
-├── 🎨 frontend/                    # Leptos WASM app
-│   ├── 🦀 src/
+│   └── Dockerfile                  # Backend container
+├── frontend/                       # Leptos WASM app
+│   ├── src/
 │   │   ├── lib.rs                  # App entry point
 │   │   ├── api.rs                  # HTTP client
-│   │   ├── api_tests.rs            # API client tests (12 tests)
-│   │   ├── component_tests.rs      # Component logic tests (15 tests)
 │   │   ├── components/             # UI components
 │   │   │   ├── header.rs           # Application header
 │   │   │   ├── task_form.rs        # Task creation/editing form
 │   │   │   ├── task_item.rs        # Individual task display
 │   │   │   ├── task_list.rs        # Task list container
 │   │   │   └── mod.rs              # Component exports
-│   │   └── pages/                  # App pages
-│   │       ├── home.rs             # Main task management page
-│   │       └── mod.rs              # Page exports
-│   ├── 🌐 index.html               # HTML entry point
-│   ├── ⚙️  nginx.conf               # Web server config
-│   └── 🐳 Dockerfile               # Frontend container
-├── 📚 common/                      # Shared types
-│   └── 🦀 src/
+│   │   ├── pages/                  # App pages
+│   │   │   ├── home.rs             # Main task management page
+│   │   │   └── mod.rs              # Page exports
+│   │   └── tests/                  # Test modules
+│   │       ├── api_tests.rs        # API client tests (12 tests)
+│   │       ├── component_tests.rs  # Component logic tests (15 tests)
+│   │       └── mod.rs              # Test exports
+│   ├── index.html                  # HTML entry point
+│   ├── nginx.conf                  # Web server config
+│   └── Dockerfile                  # Frontend container
+├── common/                         # Shared types
+│   └── src/
 │       ├── lib.rs                  # Data models and enums
-│       └── tests.rs                # Data structure tests (22 tests)
-└── 🛠️  scripts/                    # Development tools
-    ├── setup.sh                   # Initial setup
-    ├── dev.sh                     # Development helper
-    ├── test-runner.sh              # Comprehensive test runner
-    └── build-quiet.sh              # Quiet build script
+│       └── tests/                  # Data structure tests (22 tests)
+│           ├── data_structures.rs
+│           └── mod.rs
+└── scripts/                        # Development tools
+    ├── test-suite.sh               # Comprehensive test runner
+    └── quick-test.sh               # Quick test script
 ```
 
 ### Technology Stack
 
-- **Language**: Rust 🦀 (Full-stack single language)
+- **Language**: Rust (Full-stack single language)
 - **Backend**: Axum framework + SQLx + PostgreSQL
 - **Frontend**: Leptos framework + WASM + Tailwind CSS
 - **Database**: PostgreSQL with custom enum types
@@ -83,53 +83,35 @@ rust-tracker/
 - **Build System**: Cargo workspaces
 - **Web Server**: Nginx (for frontend static files)
 - **Testing**: Comprehensive test suite with 123+ tests
-  - Unit tests, integration tests, performance benchmarks
-  - WASM testing for frontend components
-  - Database isolation with serial_test
-  - GitHub Actions CI/CD pipeline
 - **Development Tools**: Custom scripts and Makefile
 
 ## Development Guidelines
 
-### Backend (Axum)
+### Component Architecture
 
-- Located in `backend/` directory
-- Exposes REST API endpoints under `/api` prefix
-- Connects to PostgreSQL at `db:5432` (Docker network)
-- Uses SQLx for database operations
-- Runs on port 8080
+- **Backend**: Located in `backend/`, exposes REST API under `/api` prefix, connects to PostgreSQL at `db:5432`, runs on port 8080
+- **Frontend**: Located in `frontend/`, reactive Leptos application, makes API calls to backend, runs on port 3000
+- **Common**: Located in `common/`, contains shared data models and types used by both frontend and backend
 
-### Frontend (Leptos)
+### Data Models
 
-- Located in `frontend/` directory
-- Reactive web application using Leptos framework
-- Makes API calls to backend using fetch API
-- Runs on port 3000
-- Uses shared types from `common` crate
+Task model with enhanced fields:
 
-### Common Crate
-
-- Located in `common/` directory
-- Contains shared data models and types
-- Used by both backend and frontend
-- Defines Task model with enhanced fields:
-  - UUID-based primary keys
-  - TaskStatus enum (Todo, InProgress, Completed)
-  - TaskCategory enum (Work, Personal, Shopping, Health, Other)
-  - Due dates with chrono DateTime support
-  - Created/updated timestamps
-- Ensures type safety across the full stack
+- UUID-based primary keys
+- TaskStatus enum (Todo, InProgress, Completed)
+- TaskCategory enum (Work, Personal, Shopping, Health, Other)
+- Due dates with chrono DateTime support
+- Created/updated timestamps
 
 ### Database
 
-- PostgreSQL database
-- Connection string: `postgres://postgres:password@db:5432/rusttracker`
-- Uses SQLx for migrations and queries
+- PostgreSQL database with SQLx for migrations and queries
+- Connection: `postgres://postgres:password@db:5432/rusttracker`
 - Data persisted in Docker volume
 
 ## API Endpoints
 
-Standard REST API for task management:
+REST API for task management:
 
 - `GET /api/tasks` - List all tasks
 - `POST /api/tasks` - Create new task
@@ -137,60 +119,41 @@ Standard REST API for task management:
 - `DELETE /api/tasks/:id` - Delete task
 - `GET /health` - Health check endpoint
 
-All endpoints use JSON format and the Task model from the `common` crate. The API includes proper error handling, CORS support, and structured logging.
+All endpoints use JSON format with proper error handling, CORS support, and structured logging.
 
 ## Development Workflow
 
-### Running the Application
+### Quick Commands
 
 ```bash
-# Build and start all services
-docker compose up --build
-
-# Stop and remove containers with volumes
-docker compose down -v
-
-# Development shortcuts via Makefile
+# Essential commands
 make setup      # Initial setup and start all services
+make test       # Run comprehensive test suite
 make start      # Start all services
 make stop       # Stop all services
 make restart    # Restart all services
 make rebuild    # Rebuild and start all services
 make logs       # Show logs for all services
 make clean      # Stop services and clean up
-make status     # Show service status
 make db         # Connect to database
-make test       # Run tests
+
+# Manual commands
+docker compose up --build          # Build and start all services
+docker compose down -v             # Stop and remove containers with volumes
 ```
 
 ### Environment Configuration
 
-- Uses `.env` file for environment variables
-- Key variables:
-  - `DATABASE_URL`: PostgreSQL connection string
-  - `RUST_LOG`: Logging level
+Key environment variables in `.env`:
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `RUST_LOG`: Logging level
 
 ### Container Architecture
 
 - **Backend**: Builds from `backend/Dockerfile`, exposes port 8080
 - **Frontend**: Builds from `frontend/Dockerfile`, exposes port 3000
 - **Database**: PostgreSQL container with persistent volume
-
-### Development Scripts
-
-- `scripts/setup.sh` - Initial project setup and environment configuration
-- `scripts/dev.sh` - Development helper script with commands:
-  - `start` - Start all services
-  - `stop` - Stop all services
-  - `restart` - Restart all services
-  - `rebuild` - Rebuild and start all services
-  - `logs` - Show logs for all services
-  - `clean` - Stop services and clean up
-  - `status` - Show service status
-  - `db` - Connect to database
-  - `test` - Run tests
-- `scripts/test-runner.sh` - Comprehensive test execution script with database setup
-- `scripts/build-quiet.sh` - Quiet build script for CI environments
 
 ## Code Style and Patterns
 
@@ -200,7 +163,7 @@ make test       # Run tests
 - Follow language idioms and established coding conventions
 - Use consistent naming for variables, functions, classes, and files
 - Prefer modular, focused, and reusable code
-- Respect the existing project architecture and technology conventions
+- Respect existing project architecture and technology conventions
 - Provide clear, practical suggestions for fixing issues
 - Keep responses concise, relevant, and easy to apply
 - Prioritize stability and maintainability in all output
@@ -208,34 +171,23 @@ make test       # Run tests
 ### Documentation Standards
 
 - **Professional Formatting**: Maintain professional documentation standards
-- **No Emoticons**: Avoid using emoticons, emojis, or decorative symbols in documentation
+- **No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (❌) when indicating status, validation, or pass/fail conditions
 - **Clear Language**: Use precise, technical language appropriate for software documentation
 - **Consistent Style**: Follow established markdown formatting conventions
-- **Visual Clarity**: Use diagrams and code blocks for technical communication instead of visual decorations
+- **Visual Clarity**: Use diagrams and code blocks for technical communication
 
-### General Rust Guidelines
+### Rust Development Patterns
 
 - Use standard Rust formatting and naming conventions
 - Leverage Rust's type system and ownership model
 - Handle errors appropriately with `Result` types
 - Use async/await for I/O operations
-
-### Backend Patterns
-
 - Structure handlers using Axum extractors
 - Use SQLx for database operations
 - Implement proper error handling and HTTP status codes
-- Use shared types from `common` crate
-
-### Frontend Patterns
-
 - Use Leptos components and reactive signals
 - Implement proper state management
 - Handle async operations with Leptos resources
-- Use shared types from `common` crate for API communication
-
-### Shared Code
-
 - Define common data structures in `common` crate
 - Use serde for JSON serialization/deserialization
 - Ensure types are compatible between frontend and backend
@@ -250,7 +202,7 @@ make test       # Run tests
 - **Error Testing**: Verify all error paths and edge cases
 - **Mock Data**: Use consistent test data factories for repeatability
 
-### 🚨 CRITICAL: Test-First Development Workflow
+### CRITICAL: Test-First Development Workflow
 
 **ALWAYS run tests and update documentation after every code change or fix!**
 
@@ -259,23 +211,10 @@ make test       # Run tests
 1. **Immediate Verification**:
 
    ```bash
-   # Check compilation
-   cargo check --workspace
-
-   # PREFERRED: Run tests with proper database setup
-   make test
-
-   # Alternative: Use test runner script
-   ./scripts/test-runner.sh
-
-   # Docker-based testing (recommended for CI)
-   docker compose -f docker/docker-compose.yml -f docker/Dockerfile.test up --build
-
-   # Only for unit tests without database dependencies
-   cargo test -p common
+   cargo check --workspace          # Check compilation
+   make test                        # PREFERRED: Run tests with database setup
+   ./scripts/test-runner.sh         # Alternative: Use test runner script
    ```
-
-   **⚠️ Important**: Database-dependent tests (backend) require a PostgreSQL test database. Use `make test` or the test scripts to ensure proper setup.
 
 2. **Test Updates Required When**:
 
@@ -293,25 +232,14 @@ make test       # Run tests
    - Modifying architecture → Update README.md and copilot-instructions.md
 
 4. **Before Committing**:
-
    ```bash
-   # REQUIRED: Full test suite with database setup
-   make test
-
-   # Alternative: Comprehensive test runner
-   ./scripts/test-runner.sh
-
-   # Code quality checks
-   cargo clippy --workspace -- -D warnings
-   cargo fmt --check
-
-   # Docker-based verification (optional but recommended)
-   docker compose up --build -d
-   docker compose exec backend cargo test
-   docker compose down
+   make test                        # REQUIRED: Full test suite with database setup
+   ./scripts/test-runner.sh         # Alternative: Comprehensive test runner
+   cargo clippy --workspace -- -D warnings    # Code quality checks
+   cargo fmt --check               # Format checks
    ```
 
-   **🚨 Critical**: Never commit with failing tests. Always use `make test` or `./scripts/test-runner.sh` to ensure all tests pass with proper database setup.
+**Never commit with failing tests. Always use `make test` or `./scripts/test-runner.sh` to ensure all tests pass with proper database setup.**
 
 #### Test Coverage Maintenance:
 
@@ -320,108 +248,29 @@ make test       # Run tests
 - **Failing Tests**: Fix immediately, never commit with failing tests
 - **Test Documentation**: Update README.md test coverage section when adding new test files
 
-#### Documentation Synchronization:
+### README.md Maintenance Workflow
 
-- **copilot-instructions.md**: Update after architectural changes
-- **README.md**: Contains all project documentation - update after any feature additions, API changes, or architectural modifications
-
-### 📚 CRITICAL: README.md Maintenance Workflow
-
-**The README.md file is the single source of truth for all project documentation. It MUST be updated after every change that affects the project.**
+**The README.md file is the single source of truth for all project documentation and MUST be updated after every change that affects the project.**
 
 #### Mandatory README.md Updates Required For:
 
-1. **Feature Additions**:
-
-   - New API endpoints → Update API documentation section
-   - New components → Update frontend architecture section
-   - New dependencies → Update technology stack section
-   - New scripts/tools → Update development workflow section
-
-2. **Architecture Changes**:
-
-   - Database schema modifications → Update database section
-   - Service configuration changes → Update container architecture section
-   - New testing patterns → Update testing documentation
-   - Performance improvements → Update relevant sections
-
-3. **Project Structure Changes**:
-
-   - New files/directories → Update project structure tree
-   - Moved/renamed files → Update all file path references
-   - New crates/packages → Update workspace structure
-   - Removed components → Remove from documentation
-
-4. **Development Workflow Changes**:
-   - New make targets → Update Makefile commands section
-   - New scripts → Update development scripts section
-   - Environment variable changes → Update configuration section
-   - Docker changes → Update container documentation
-
-#### README.md Quality Standards:
-
-```bash
-# ALWAYS run these checks after updating README.md:
-
-# 1. Markdown linting (fix ALL warnings)
-markdownlint README.md
-
-# 2. Link validation
-markdown-link-check README.md
-
-# 3. Spelling check
-aspell check README.md
-
-# 4. Format consistency check
-prettier --check README.md
-```
-
-#### Critical Sections That Require Regular Updates:
-
-- **Project Structure Tree**: Must reflect current directory structure exactly
-- **Test Coverage Numbers**: Update when test counts change (currently 123+ tests)
-- **API Endpoints**: Keep synchronized with actual backend routes
-- **Technology Stack**: Update when dependencies change
-- **Development Commands**: Verify all commands work as documented
+1. **Feature Additions**: New API endpoints, components, dependencies, scripts/tools
+2. **Architecture Changes**: Database schema modifications, service configuration changes, new testing patterns
+3. **Project Structure Changes**: New files/directories, moved/renamed files, new crates/packages
+4. **Development Workflow Changes**: New make targets, scripts, environment variables, Docker changes
 
 #### README.md Update Checklist:
 
 Before any commit, verify:
 
-- ✅ All new features documented
-- ✅ File paths and references updated
-- ✅ Test coverage numbers current
-- ✅ API documentation matches implementation
-- ✅ All markdown warnings resolved
-- ✅ Links work correctly
-- ✅ Code examples are valid
-- ✅ Version numbers updated where relevant
-
-#### Automated Checks Integration:
-
-```bash
-# Add to pre-commit workflow:
-#!/bin/bash
-# Pre-commit README.md validation
-
-echo "🔍 Validating README.md..."
-
-# Check for markdown issues
-if ! markdownlint README.md; then
-    echo "❌ README.md has markdown linting errors - fix before committing"
-    exit 1
-fi
-
-# Verify project structure section matches reality
-if ! ./scripts/verify-readme-structure.sh; then
-    echo "❌ README.md project structure is outdated"
-    exit 1
-fi
-
-echo "✅ README.md validation passed"
-```
-
-**Remember**: A well-maintained README.md is critical for project success. Outdated documentation leads to developer confusion and onboarding difficulties.
+- ✓ All new features documented
+- ✓ File paths and references updated
+- ✓ Test coverage numbers current
+- ✓ API documentation matches implementation
+- ✓ All markdown warnings resolved
+- ✓ Links work correctly
+- ✓ Code examples are valid
+- ✓ Version numbers updated where relevant
 
 ## Testing and Debugging
 
@@ -450,7 +299,6 @@ RustTracker includes a robust test suite with 123+ tests across all layers:
 
 - **Docker Testing Environment**: `docker/Dockerfile.test` for isolated test execution
 - **Test Runner Script**: `scripts/test-runner.sh` for comprehensive test execution
-- **GitHub Actions CI/CD**: Automated testing on push/PR
 - **Database Isolation**: Uses `serial_test` for safe concurrent testing
 - **WASM Testing**: `wasm-bindgen-test` for frontend component testing
 
@@ -473,14 +321,11 @@ cargo test benchmarks --release
 cargo tarpaulin --workspace --exclude-files "*/tests/*"
 ```
 
-### Logging
+### Logging and Debugging
 
 - Use `RUST_LOG` environment variable for log levels
 - Backend logs available via Docker logs
 - Frontend logs available in browser console
-
-### Development Tips
-
 - Use `cargo check` and `cargo clippy` for code quality
 - Leverage Rust's compiler for catching errors early
 - Use Docker logs for debugging container issues
@@ -488,7 +333,7 @@ cargo tarpaulin --workspace --exclude-files "*/tests/*"
 
 ## Common Tasks
 
-When working on this project, consider these common patterns and **ALWAYS follow the test-first workflow**:
+When working on this project, **ALWAYS follow the test-first workflow**:
 
 1. **Adding new API endpoints**:
 
@@ -527,7 +372,7 @@ When working on this project, consider these common patterns and **ALWAYS follow
    - Integration tests for end-to-end workflows
    - Performance benchmarks for critical operations
 
-### 🔧 Test Execution Guidelines
+### Test Execution Guidelines
 
 **ALWAYS use Makefile or Docker for comprehensive testing to ensure proper database setup:**
 
@@ -566,10 +411,10 @@ When working on this project, consider these common patterns and **ALWAYS follow
 
    # Backend tests REQUIRE database - use make test instead
    # ❌ DON'T: cargo test -p backend  (will fail without database)
-   # ✅ DO: make test
+   # ✓ DO: make test
    ```
 
-#### ⚠️ Critical Testing Requirements:
+#### Critical Testing Requirements:
 
 - **Database Tests**: Backend tests require PostgreSQL test database
 - **Serial Execution**: Database tests use `#[serial]` to prevent conflicts
