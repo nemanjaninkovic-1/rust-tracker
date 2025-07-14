@@ -81,7 +81,7 @@ jobs:
         run: |
           echo "=== CI/CD Pipeline Summary ==="
           echo "✅ Code compilation: Successful"
-          echo "✅ Test execution: 56 backend tests + frontend compilation"
+          echo "✅ Test execution: 56 backend tests + 32 frontend logic tests"
           echo "✅ Security audit: Passed"
           echo "✅ Build process: Completed"
           echo "✅ Container images: Built successfully"

@@ -192,7 +192,6 @@ run_frontend_tests() {
         return 1
     fi
 }
-}
 
 # Run cargo clippy for code quality
 run_clippy() {
