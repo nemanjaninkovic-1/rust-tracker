@@ -53,26 +53,26 @@ jobs:
 
       - name: Install Rust security tools
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.83 sh -c '
+          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.80 sh -c '
             cargo install cargo-audit cargo-deny cargo-outdated
           '
 
       - name: Run dependency security audit
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.83 sh -c '
+          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.80 sh -c '
             cargo audit --version
             cargo audit
           '
 
       - name: Check for known security vulnerabilities
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.83 sh -c '
+          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.80 sh -c '
             cargo deny check advisories
           ' || echo "Advisory check completed with warnings"
 
       - name: Check for outdated dependencies
         run: |
-          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.83 sh -c '
+          docker run --rm -v $(pwd):/workspace -w /workspace rust:1.80 sh -c '
             cargo outdated --root-deps-only
           ' || echo "Outdated dependency check completed"
 
