@@ -2,7 +2,7 @@
 #[allow(dead_code)]
 mod component_tests {
     use chrono::Utc;
-    use common::{Task, TaskCategory, TaskStatus};
+    use common::{Task, TaskPriority, TaskStatus};
     use uuid::Uuid;
     use wasm_bindgen_test::*;
 
@@ -14,7 +14,7 @@ mod component_tests {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
             status: TaskStatus::Todo,
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
             created_at: Utc::now(),
             updated_at: Utc::now(),
@@ -29,12 +29,11 @@ mod component_tests {
     }
 
     #[wasm_bindgen_test]
-    fn test_task_category_display() {
-        assert_eq!(format!("{:?}", TaskCategory::Work), "Work");
-        assert_eq!(format!("{:?}", TaskCategory::Personal), "Personal");
-        assert_eq!(format!("{:?}", TaskCategory::Shopping), "Shopping");
-        assert_eq!(format!("{:?}", TaskCategory::Health), "Health");
-        assert_eq!(format!("{:?}", TaskCategory::Other), "Other");
+    fn test_task_priority_display() {
+        assert_eq!(format!("{:?}", TaskPriority::Low), "Low");
+        assert_eq!(format!("{:?}", TaskPriority::Medium), "Medium");
+        assert_eq!(format!("{:?}", TaskPriority::High), "High");
+        assert_eq!(format!("{:?}", TaskPriority::Urgent), "Urgent");
     }
 
     #[wasm_bindgen_test]
@@ -44,7 +43,7 @@ mod component_tests {
         assert_eq!(task.title, "Test Task");
         assert_eq!(task.description, Some("Test Description".to_string()));
         assert_eq!(task.status, TaskStatus::Todo);
-        assert_eq!(task.category, TaskCategory::Work);
+        assert_eq!(task.priority, TaskPriority::High);
         assert!(task.due_date.is_none());
         assert!(task.id != Uuid::nil());
     }
@@ -76,19 +75,18 @@ mod component_tests {
     }
 
     #[wasm_bindgen_test]
-    fn test_task_categories() {
-        let categories = vec![
-            TaskCategory::Work,
-            TaskCategory::Personal,
-            TaskCategory::Shopping,
-            TaskCategory::Health,
-            TaskCategory::Other,
+    fn test_task_priorities() {
+        let priorities = vec![
+            TaskPriority::Low,
+            TaskPriority::Medium,
+            TaskPriority::High,
+            TaskPriority::Urgent,
         ];
 
-        assert_eq!(categories.len(), 5);
+        assert_eq!(priorities.len(), 4);
 
         // Test default
-        assert_eq!(TaskCategory::default(), TaskCategory::Other);
+        assert_eq!(TaskPriority::default(), TaskPriority::Medium);
     }
 
     #[wasm_bindgen_test]
@@ -139,13 +137,13 @@ mod component_tests {
     fn test_task_filtering_logic() {
         let work_task = {
             let mut task = create_test_task();
-            task.category = TaskCategory::Work;
+            task.priority = TaskPriority::High;
             task
         };
 
         let personal_task = {
             let mut task = create_test_task();
-            task.category = TaskCategory::Personal;
+            task.priority = TaskPriority::Low;
             task
         };
 
@@ -160,7 +158,7 @@ mod component_tests {
         // Filter by category
         let work_tasks: Vec<_> = tasks
             .iter()
-            .filter(|task| task.category == TaskCategory::Work)
+            .filter(|task| task.priority == TaskPriority::High)
             .collect();
         assert_eq!(work_tasks.len(), 1);
 
@@ -174,7 +172,7 @@ mod component_tests {
         // Filter by multiple criteria
         let todo_work_tasks: Vec<_> = tasks
             .iter()
-            .filter(|task| task.status == TaskStatus::Todo && task.category == TaskCategory::Work)
+            .filter(|task| task.status == TaskStatus::Todo && task.priority == TaskPriority::High)
             .collect();
         assert_eq!(todo_work_tasks.len(), 1);
     }

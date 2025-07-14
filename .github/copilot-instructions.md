@@ -67,7 +67,7 @@ rust-tracker/
 ├── common/                         # Shared types
 │   └── src/
 │       ├── lib.rs                  # Data models and enums
-│       └── tests/                  # Data structure tests (22 tests)
+│       └── tests/                  # Data structure tests (19 tests)
 │           ├── data_structures.rs
 │           └── mod.rs
 └── scripts/                        # Development tools
@@ -84,7 +84,7 @@ rust-tracker/
 - **Containerization**: Docker + Docker Compose
 - **Build System**: Cargo workspaces
 - **Web Server**: Nginx (for frontend static files)
-- **Testing**: Comprehensive test suite with 123+ tests
+- **Testing**: Comprehensive test suite with 120+ tests
 - **Development Tools**: Custom scripts and Makefile
 
 ## Development Guidelines
@@ -128,7 +128,7 @@ Task model with enhanced fields:
 
 - UUID-based primary keys
 - TaskStatus enum (Todo, InProgress, Completed)
-- TaskCategory enum (Work, Personal, Shopping, Health, Other)
+- TaskPriority enum (Low, Medium, High, Urgent) - supports Kanban board workflow
 - Due dates with chrono DateTime support
 - Created/updated timestamps
 
@@ -142,7 +142,7 @@ Task model with enhanced fields:
 
 REST API for task management:
 
-- `GET /api/tasks` - List all tasks
+- `GET /api/tasks` - List all tasks (supports priority filtering)
 - `POST /api/tasks` - Create new task
 - `PUT /api/tasks/:id` - Update existing task
 - `DELETE /api/tasks/:id` - Delete task
@@ -274,7 +274,7 @@ Key environment variables in `.env`:
 
 #### Test Coverage Maintenance:
 
-- **Target**: Maintain 123+ tests across all layers
+- **Target**: Maintain 120+ tests across all layers
 - **New Code**: Must include tests before being considered complete
 - **Failing Tests**: Fix immediately, never commit with failing tests
 - **Test Documentation**: Update README.md test coverage section when adding new test files
@@ -307,7 +307,7 @@ Before any commit, verify:
 
 ### Comprehensive Test Coverage
 
-RustTracker includes a robust test suite with 123+ tests across all layers:
+RustTracker includes a robust test suite with 120+ tests across all layers:
 
 #### Backend Tests (65 tests)
 
@@ -322,7 +322,7 @@ RustTracker includes a robust test suite with 123+ tests across all layers:
 - **API Client Tests (12 tests)**: HTTP requests, error handling, response parsing
 - **Component Tests (15 tests)**: UI logic, state management, data validation
 
-#### Common Crate Tests (22 tests)
+#### Common Crate Tests (19 tests)
 
 - **Data Structure Tests**: Serialization, validation, enum conversions, type safety
 

@@ -1,0 +1,15 @@
+{
+  "name": "rusttracker-frontend",
+  "version": "0.1.0",
+  "description": "RustTracker Frontend - Tailwind CSS build setup",
+  "private": true,
+  "scripts": {
+    "build-css": "tailwindcss -i ./styles/input.css -o ./styles/output.css --watch",
+    "build-css-prod": "tailwindcss -i ./styles/input.css -o ./styles/output.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.0",
+    "@tailwindcss/typography": "^0.5.0",
+    "tailwindcss": "^3.4.0"
+  }
+}

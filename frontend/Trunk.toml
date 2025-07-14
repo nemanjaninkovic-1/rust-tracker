@@ -1,0 +1,36 @@
+[build]
+target = "index.html"
+dist = "dist"
+public_url = "/"
+
+[watch]
+watch = ["src", "index.html", "styles"]
+
+[serve]
+address = "0.0.0.0"
+port = 3000
+
+# Build hooks for Tailwind CSS
+[[hooks]]
+stage = "pre_build"
+command = "npx"
+command_arguments = [
+    "tailwindcss",
+    "-i",
+    "./styles/input.css",
+    "-o",
+    "./styles/output.css",
+    "--watch=false",
+]
+
+[[hooks]]
+stage = "build"
+command = "npx"
+command_arguments = [
+    "tailwindcss",
+    "-i",
+    "./styles/input.css",
+    "-o",
+    "./styles/output.css",
+    "--minify",
+]

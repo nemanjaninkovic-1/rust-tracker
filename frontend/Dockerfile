@@ -1,5 +1,25 @@
 # Frontend Dockerfile
-FROM rust:latest AS builder
+FROM node:20-alpine AS css-builder
+
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY frontend/package.json ./
+RUN npm install
+
+# Copy Tailwind config and CSS files
+COPY frontend/tailwind.config.js ./
+COPY frontend/styles/ ./styles/
+
+# Copy source files that Tailwind scans for classes
+COPY frontend/src/ ./src/
+COPY frontend/index.html ./
+
+# Build the optimized CSS
+RUN npm run build-css-prod
+
+# Rust builder stage
+FROM rust:latest AS rust-builder
 
 # Install wasm-pack for building WASM applications
 RUN cargo install wasm-pack
@@ -32,7 +52,10 @@ RUN cd frontend && wasm-pack build --target web --out-dir pkg --release
 FROM nginx:alpine
 
 # Copy the built WASM files
-COPY --from=builder /app/frontend/pkg /usr/share/nginx/html/pkg
+COPY --from=rust-builder /app/frontend/pkg /usr/share/nginx/html/pkg
+
+# Copy the built CSS
+COPY --from=css-builder /app/styles/output.css /usr/share/nginx/html/styles/
 
 # Copy static files
 COPY frontend/index.html /usr/share/nginx/html/

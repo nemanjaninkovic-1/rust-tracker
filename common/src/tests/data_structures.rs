@@ -50,60 +50,6 @@ mod tests {
     }
 
     #[test]
-    fn test_task_category_default() {
-        let category = TaskCategory::default();
-        assert_eq!(category, TaskCategory::Other);
-    }
-
-    #[test]
-    fn test_task_category_serialization() {
-        assert_eq!(
-            serde_json::to_string(&TaskCategory::Work).unwrap(),
-            "\"Work\""
-        );
-        assert_eq!(
-            serde_json::to_string(&TaskCategory::Personal).unwrap(),
-            "\"Personal\""
-        );
-        assert_eq!(
-            serde_json::to_string(&TaskCategory::Shopping).unwrap(),
-            "\"Shopping\""
-        );
-        assert_eq!(
-            serde_json::to_string(&TaskCategory::Health).unwrap(),
-            "\"Health\""
-        );
-        assert_eq!(
-            serde_json::to_string(&TaskCategory::Other).unwrap(),
-            "\"Other\""
-        );
-    }
-
-    #[test]
-    fn test_task_category_deserialization() {
-        assert_eq!(
-            serde_json::from_str::<TaskCategory>("\"Work\"").unwrap(),
-            TaskCategory::Work
-        );
-        assert_eq!(
-            serde_json::from_str::<TaskCategory>("\"Personal\"").unwrap(),
-            TaskCategory::Personal
-        );
-        assert_eq!(
-            serde_json::from_str::<TaskCategory>("\"Shopping\"").unwrap(),
-            TaskCategory::Shopping
-        );
-        assert_eq!(
-            serde_json::from_str::<TaskCategory>("\"Health\"").unwrap(),
-            TaskCategory::Health
-        );
-        assert_eq!(
-            serde_json::from_str::<TaskCategory>("\"Other\"").unwrap(),
-            TaskCategory::Other
-        );
-    }
-
-    #[test]
     fn test_task_serialization() {
         let task_id = Uuid::new_v4();
         let created_at = Utc.with_ymd_and_hms(2024, 1, 1, 12, 0, 0).unwrap();
@@ -115,7 +61,7 @@ mod tests {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
             status: TaskStatus::InProgress,
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: Some(due_date),
             created_at,
             updated_at,
@@ -128,7 +74,7 @@ mod tests {
         assert_eq!(deserialized.title, task.title);
         assert_eq!(deserialized.description, task.description);
         assert_eq!(deserialized.status, task.status);
-        assert_eq!(deserialized.category, task.category);
+        assert_eq!(deserialized.priority, task.priority);
         assert_eq!(deserialized.due_date, task.due_date);
         assert_eq!(deserialized.created_at, task.created_at);
         assert_eq!(deserialized.updated_at, task.updated_at);
@@ -145,7 +91,7 @@ mod tests {
             title: "Minimal Task".to_string(),
             description: None,
             status: TaskStatus::Todo,
-            category: TaskCategory::Other,
+            priority: TaskPriority::Low,
             due_date: None,
             created_at,
             updated_at,
@@ -163,7 +109,7 @@ mod tests {
         let request = CreateTaskRequest {
             title: "New Task".to_string(),
             description: Some("Task description".to_string()),
-            category: TaskCategory::Personal,
+            priority: TaskPriority::High,
             due_date: Some(Utc::now() + chrono::Duration::days(7)),
         };
 
@@ -172,7 +118,7 @@ mod tests {
 
         assert_eq!(deserialized.title, request.title);
         assert_eq!(deserialized.description, request.description);
-        assert_eq!(deserialized.category, request.category);
+        assert_eq!(deserialized.priority, request.priority);
         assert_eq!(deserialized.due_date, request.due_date);
     }
 
@@ -181,7 +127,7 @@ mod tests {
         let request = CreateTaskRequest {
             title: "Minimal Task".to_string(),
             description: None,
-            category: TaskCategory::Other,
+            priority: TaskPriority::Medium,
             due_date: None,
         };
 
@@ -190,6 +136,7 @@ mod tests {
 
         assert_eq!(deserialized.title, "Minimal Task");
         assert_eq!(deserialized.description, None);
+        assert_eq!(deserialized.priority, TaskPriority::Medium);
         assert_eq!(deserialized.due_date, None);
     }
 
@@ -199,7 +146,7 @@ mod tests {
             title: Some("Updated Title".to_string()),
             description: Some("Updated Description".to_string()),
             status: Some(TaskStatus::Completed),
-            category: Some(TaskCategory::Health),
+            priority: Some(TaskPriority::Urgent),
             due_date: Some(Utc::now() + chrono::Duration::days(3)),
         };
 
@@ -209,7 +156,7 @@ mod tests {
         assert_eq!(deserialized.title, request.title);
         assert_eq!(deserialized.description, request.description);
         assert_eq!(deserialized.status, request.status);
-        assert_eq!(deserialized.category, request.category);
+        assert_eq!(deserialized.priority, request.priority);
         assert_eq!(deserialized.due_date, request.due_date);
     }
 
@@ -219,7 +166,7 @@ mod tests {
             title: None,
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -229,7 +176,7 @@ mod tests {
         assert_eq!(deserialized.title, None);
         assert_eq!(deserialized.description, None);
         assert_eq!(deserialized.status, None);
-        assert_eq!(deserialized.category, None);
+        assert_eq!(deserialized.priority, None);
         assert_eq!(deserialized.due_date, None);
     }
 
@@ -237,7 +184,7 @@ mod tests {
     fn test_task_filter() {
         let filter = TaskFilter {
             status: Some(TaskStatus::InProgress),
-            category: Some(TaskCategory::Work),
+            priority: Some(TaskPriority::High),
             due_before: Some(Utc::now() + chrono::Duration::days(7)),
             due_after: Some(Utc::now() - chrono::Duration::days(1)),
         };
@@ -246,7 +193,7 @@ mod tests {
         let deserialized: TaskFilter = serde_json::from_str(&json).unwrap();
 
         assert_eq!(deserialized.status, filter.status);
-        assert_eq!(deserialized.category, filter.category);
+        assert_eq!(deserialized.priority, filter.priority);
         assert_eq!(deserialized.due_before, filter.due_before);
         assert_eq!(deserialized.due_after, filter.due_after);
     }
@@ -255,7 +202,7 @@ mod tests {
     fn test_task_filter_empty() {
         let filter = TaskFilter {
             status: None,
-            category: None,
+            priority: None,
             due_before: None,
             due_after: None,
         };
@@ -264,7 +211,7 @@ mod tests {
         let deserialized: TaskFilter = serde_json::from_str(&json).unwrap();
 
         assert_eq!(deserialized.status, None);
-        assert_eq!(deserialized.category, None);
+        assert_eq!(deserialized.priority, None);
         assert_eq!(deserialized.due_before, None);
         assert_eq!(deserialized.due_after, None);
     }
@@ -280,7 +227,7 @@ mod tests {
             title: "Task".to_string(),
             description: Some("Description".to_string()),
             status: TaskStatus::Todo,
-            category: TaskCategory::Work,
+            priority: TaskPriority::Medium,
             due_date: None,
             created_at,
             updated_at,
@@ -291,7 +238,7 @@ mod tests {
             title: "Task".to_string(),
             description: Some("Description".to_string()),
             status: TaskStatus::Todo,
-            category: TaskCategory::Work,
+            priority: TaskPriority::Medium,
             due_date: None,
             created_at,
             updated_at,
@@ -312,7 +259,7 @@ mod tests {
             title: "Task".to_string(),
             description: Some("Description".to_string()),
             status: TaskStatus::Todo,
-            category: TaskCategory::Work,
+            priority: TaskPriority::Medium,
             due_date: None,
             created_at,
             updated_at,
@@ -323,7 +270,7 @@ mod tests {
             title: "Task".to_string(),
             description: Some("Description".to_string()),
             status: TaskStatus::Todo,
-            category: TaskCategory::Work,
+            priority: TaskPriority::Medium,
             due_date: None,
             created_at,
             updated_at,
@@ -339,23 +286,23 @@ mod tests {
         let status_clone = status.clone();
         assert_eq!(status, status_clone);
 
-        let category = TaskCategory::Work;
-        let category_clone = category.clone();
-        assert_eq!(category, category_clone);
+        let priority = TaskPriority::High;
+        let priority_clone = priority.clone();
+        assert_eq!(priority, priority_clone);
 
         // Test Copy
         let status_copy = status;
         assert_eq!(status, status_copy);
 
-        let category_copy = category;
-        assert_eq!(category, category_copy);
+        let priority_copy = priority;
+        assert_eq!(priority, priority_copy);
 
         // Test Debug
         let debug_str = format!("{:?}", TaskStatus::Completed);
         assert_eq!(debug_str, "Completed");
 
-        let debug_str = format!("{:?}", TaskCategory::Health);
-        assert_eq!(debug_str, "Health");
+        let debug_str = format!("{:?}", TaskPriority::Urgent);
+        assert_eq!(debug_str, "Urgent");
     }
 
     #[test]
@@ -369,7 +316,7 @@ mod tests {
             title: "Debug Test".to_string(),
             description: None,
             status: TaskStatus::Todo,
-            category: TaskCategory::Other,
+            priority: TaskPriority::Low,
             due_date: None,
             created_at,
             updated_at,
@@ -379,7 +326,7 @@ mod tests {
         let debug_str = format!("{:?}", task);
         assert!(debug_str.contains("Debug Test"));
         assert!(debug_str.contains("Todo"));
-        assert!(debug_str.contains("Other"));
+        assert!(debug_str.contains("Low"));
 
         // Test Clone
         let task_clone = task.clone();
@@ -390,7 +337,7 @@ mod tests {
     fn test_invalid_json_handling() {
         // Test invalid JSON for enums
         assert!(serde_json::from_str::<TaskStatus>("\"InvalidStatus\"").is_err());
-        assert!(serde_json::from_str::<TaskCategory>("\"InvalidCategory\"").is_err());
+        assert!(serde_json::from_str::<TaskPriority>("\"InvalidPriority\"").is_err());
 
         // Test malformed JSON
         assert!(serde_json::from_str::<Task>("{invalid json}").is_err());

@@ -3,7 +3,7 @@ mod handler_tests {
     use axum::{http::StatusCode, Router};
     use axum_test::TestServer;
     use chrono::Utc;
-    use common::{CreateTaskRequest, TaskCategory, TaskStatus, UpdateTaskRequest};
+    use common::{CreateTaskRequest, TaskPriority, TaskStatus, UpdateTaskRequest};
     use serial_test::serial;
     use sqlx::PgPool;
     use std::{env, sync::Arc};
@@ -93,7 +93,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -104,7 +104,7 @@ mod handler_tests {
         let task: common::Task = response.json();
         assert_eq!(task.title, create_request.title);
         assert_eq!(task.description, create_request.description);
-        assert_eq!(task.category, create_request.category);
+        assert_eq!(task.priority, create_request.priority);
         assert_eq!(task.status, TaskStatus::Todo);
     }
 
@@ -116,7 +116,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "".to_string(),
             description: Some("Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -139,7 +139,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "   ".to_string(),
             description: Some("Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -171,14 +171,14 @@ mod handler_tests {
         let task1 = CreateTaskRequest {
             title: "Task 1".to_string(),
             description: Some("Description 1".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
         let task2 = CreateTaskRequest {
             title: "Task 2".to_string(),
             description: None,
-            category: TaskCategory::Personal,
+            priority: TaskPriority::Low,
             due_date: Some(Utc::now() + chrono::Duration::days(3)),
         };
 
@@ -201,14 +201,14 @@ mod handler_tests {
         let work_task = CreateTaskRequest {
             title: "Work Task".to_string(),
             description: None,
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
         let personal_task = CreateTaskRequest {
             title: "Personal Task".to_string(),
             description: None,
-            category: TaskCategory::Personal,
+            priority: TaskPriority::Low,
             due_date: None,
         };
 
@@ -221,7 +221,7 @@ mod handler_tests {
 
         let tasks: Vec<common::Task> = response.json();
         assert_eq!(tasks.len(), 1);
-        assert_eq!(tasks[0].category, TaskCategory::Work);
+        assert_eq!(tasks[0].priority, TaskPriority::High);
     }
 
     #[tokio::test]
@@ -233,7 +233,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "Original Task".to_string(),
             description: Some("Original Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -246,7 +246,7 @@ mod handler_tests {
             title: Some("Updated Task".to_string()),
             description: Some("Updated Description".to_string()),
             status: Some(TaskStatus::InProgress),
-            category: Some(TaskCategory::Personal),
+            priority: Some(TaskPriority::Low),
             due_date: Some(Utc::now() + chrono::Duration::days(7)),
         };
 
@@ -264,7 +264,7 @@ mod handler_tests {
             Some("Updated Description".to_string())
         );
         assert_eq!(updated_task.status, TaskStatus::InProgress);
-        assert_eq!(updated_task.category, TaskCategory::Personal);
+        assert_eq!(updated_task.priority, TaskPriority::Low);
         assert!(updated_task.due_date.is_some());
     }
 
@@ -278,7 +278,7 @@ mod handler_tests {
             title: Some("This won't work".to_string()),
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -299,7 +299,7 @@ mod handler_tests {
             title: Some("This won't work".to_string()),
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -320,7 +320,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "Delete Me".to_string(),
             description: None,
-            category: TaskCategory::Other,
+            priority: TaskPriority::Medium,
             due_date: None,
         };
 
@@ -399,7 +399,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: large_title.clone(),
             description: Some("Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -421,7 +421,7 @@ mod handler_tests {
         let create_request = CreateTaskRequest {
             title: "Complete Workflow Test".to_string(),
             description: Some("Testing complete workflow".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: Some(Utc::now() + chrono::Duration::days(7)),
         };
 
@@ -442,7 +442,7 @@ mod handler_tests {
             title: None,
             description: None,
             status: Some(TaskStatus::InProgress),
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -460,7 +460,7 @@ mod handler_tests {
             title: None,
             description: None,
             status: Some(TaskStatus::Completed),
-            category: None,
+            priority: None,
             due_date: None,
         };
 

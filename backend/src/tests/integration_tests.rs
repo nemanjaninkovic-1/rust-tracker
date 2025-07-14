@@ -76,7 +76,7 @@ mod integration_tests {
 
         // Step 2: Create multiple tasks
         let tasks_to_create = vec![
-            CreatePriorityRequest {
+            CreateTaskRequest {
                 title: "Work Task 1".to_string(),
                 description: Some("Low important task".to_string()),
                 priority: TaskPriority::Low,
@@ -85,13 +85,13 @@ mod integration_tests {
             CreateTaskRequest {
                 title: "Personal Task 1".to_string(),
                 description: None,
-                category: TaskCategory::Personal,
+                priority: TaskPriority::Low,
                 due_date: Some(Utc::now() + chrono::Duration::days(3)),
             },
             CreateTaskRequest {
                 title: "Shopping List".to_string(),
                 description: Some("Buy groceries".to_string()),
-                category: TaskCategory::Shopping,
+                priority: TaskPriority::Medium,
                 due_date: Some(Utc::now() + chrono::Duration::days(1)),
             },
         ];
@@ -115,7 +115,7 @@ mod integration_tests {
         assert_eq!(response.status_code(), axum::http::StatusCode::OK);
         let work_tasks: Vec<common::Task> = response.json();
         assert_eq!(work_tasks.len(), 1);
-        assert_eq!(work_tasks[0].category, TaskCategory::Work);
+        assert_eq!(work_tasks[0].priority, TaskPriority::High);
 
         // Step 5: Update task status workflow
         let work_task = &created_tasks[0];
@@ -125,7 +125,7 @@ mod integration_tests {
             title: None,
             description: None,
             status: Some(TaskStatus::InProgress),
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -142,7 +142,7 @@ mod integration_tests {
             title: None,
             description: None,
             status: Some(TaskStatus::Completed),
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -194,19 +194,19 @@ mod integration_tests {
             CreateTaskRequest {
                 title: "Sequential Task 1".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             },
             CreateTaskRequest {
                 title: "Sequential Task 2".to_string(),
                 description: None,
-                category: TaskCategory::Personal,
+                priority: TaskPriority::Low,
                 due_date: None,
             },
             CreateTaskRequest {
                 title: "Sequential Task 3".to_string(),
                 description: None,
-                category: TaskCategory::Other,
+                priority: TaskPriority::Medium,
                 due_date: None,
             },
         ];
@@ -231,7 +231,7 @@ mod integration_tests {
                 title: None,
                 description: Some("Updated sequentially".to_string()),
                 status: Some(TaskStatus::InProgress),
-                category: None,
+                priority: None,
                 due_date: None,
             };
 
@@ -262,7 +262,7 @@ mod integration_tests {
             title: Some("This won't work".to_string()),
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -282,7 +282,7 @@ mod integration_tests {
         let invalid_task = CreateTaskRequest {
             title: "".to_string(), // Empty title should fail
             description: None,
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -315,25 +315,25 @@ mod integration_tests {
             CreateTaskRequest {
                 title: "Overdue Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(yesterday),
             },
             CreateTaskRequest {
                 title: "Due Tomorrow".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(tomorrow),
             },
             CreateTaskRequest {
                 title: "Due Next Week".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(next_week),
             },
             CreateTaskRequest {
                 title: "No Due Date".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             },
         ];

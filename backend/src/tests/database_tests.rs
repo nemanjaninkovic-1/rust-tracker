@@ -2,7 +2,7 @@
 mod database_tests {
     use crate::{database::Database, error::AppError};
     use chrono::Utc;
-    use common::{CreateTaskRequest, TaskCategory, TaskFilter, TaskStatus, UpdateTaskRequest};
+    use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};
     use serial_test::serial;
     use sqlx::PgPool;
     use std::env;
@@ -41,7 +41,7 @@ mod database_tests {
         let request = CreateTaskRequest {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
-            category: TaskCategory::Work,
+            priority: common::TaskPriority::Low,
             due_date: None,
         };
 
@@ -51,7 +51,7 @@ mod database_tests {
         let task = result.unwrap();
         assert_eq!(task.title, request.title);
         assert_eq!(task.description, request.description);
-        assert_eq!(task.category, request.category);
+        assert_eq!(task.priority, request.priority);
         assert_eq!(task.status, TaskStatus::Todo);
         assert!(task.id != Uuid::nil());
         assert!(task.created_at <= Utc::now());
@@ -68,7 +68,7 @@ mod database_tests {
         let request = CreateTaskRequest {
             title: "Task with due date".to_string(),
             description: None,
-            category: TaskCategory::Personal,
+            priority: TaskPriority::Low,
             due_date: Some(due_date),
         };
 
@@ -104,14 +104,14 @@ mod database_tests {
         let task1 = CreateTaskRequest {
             title: "Task 1".to_string(),
             description: Some("Description 1".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
         let task2 = CreateTaskRequest {
             title: "Task 2".to_string(),
             description: None,
-            category: TaskCategory::Personal,
+            priority: TaskPriority::Low,
             due_date: Some(Utc::now() + chrono::Duration::days(3)),
         };
 
@@ -136,7 +136,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Todo Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             })
             .await
@@ -150,7 +150,7 @@ mod database_tests {
                     title: None,
                     description: None,
                     status: Some(TaskStatus::InProgress),
-                    category: None,
+                    priority: None,
                     due_date: None,
                 },
             )
@@ -162,7 +162,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Another Todo".to_string(),
                 description: None,
-                category: TaskCategory::Personal,
+                priority: TaskPriority::Low,
                 due_date: None,
             })
             .await
@@ -171,7 +171,7 @@ mod database_tests {
         // Test filter for Todo status
         let filter = TaskFilter {
             status: Some(TaskStatus::Todo),
-            category: None,
+            priority: None,
             due_before: None,
             due_after: None,
         };
@@ -186,7 +186,7 @@ mod database_tests {
 
     #[tokio::test]
     #[serial]
-    async fn test_get_tasks_with_category_filter() {
+    async fn test_get_tasks_with_priority_filter() {
         let pool = setup_test_db().await;
         let database = Database::new(pool);
 
@@ -194,7 +194,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Work Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             })
             .await
@@ -204,7 +204,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Personal Task".to_string(),
                 description: None,
-                category: TaskCategory::Personal,
+                priority: TaskPriority::Low,
                 due_date: None,
             })
             .await
@@ -212,7 +212,7 @@ mod database_tests {
 
         let filter = TaskFilter {
             status: None,
-            category: Some(TaskCategory::Work),
+            priority: Some(TaskPriority::High),
             due_before: None,
             due_after: None,
         };
@@ -222,7 +222,7 @@ mod database_tests {
 
         let tasks = result.unwrap();
         assert_eq!(tasks.len(), 1);
-        assert_eq!(tasks[0].category, TaskCategory::Work);
+        assert_eq!(tasks[0].priority, TaskPriority::High);
     }
 
     #[tokio::test]
@@ -235,7 +235,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Find Me".to_string(),
                 description: Some("Found!".to_string()),
-                category: TaskCategory::Other,
+                priority: TaskPriority::Medium,
                 due_date: None,
             })
             .await
@@ -272,7 +272,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Original Title".to_string(),
                 description: Some("Original Description".to_string()),
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             })
             .await
@@ -282,7 +282,7 @@ mod database_tests {
             title: Some("Updated Title".to_string()),
             description: Some("Updated Description".to_string()),
             status: Some(TaskStatus::InProgress),
-            category: Some(TaskCategory::Personal),
+            priority: Some(TaskPriority::Low),
             due_date: Some(Utc::now() + chrono::Duration::days(5)),
         };
 
@@ -298,7 +298,7 @@ mod database_tests {
             Some("Updated Description".to_string())
         );
         assert_eq!(updated_task.status, TaskStatus::InProgress);
-        assert_eq!(updated_task.category, TaskCategory::Personal);
+        assert_eq!(updated_task.priority, TaskPriority::Low);
         assert!(updated_task.due_date.is_some());
         assert!(updated_task.updated_at > created_task.updated_at);
     }
@@ -313,7 +313,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Original Title".to_string(),
                 description: Some("Original Description".to_string()),
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             })
             .await
@@ -324,7 +324,7 @@ mod database_tests {
             title: Some("Only Title Updated".to_string()),
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -335,7 +335,7 @@ mod database_tests {
         assert_eq!(updated_task.title, "Only Title Updated");
         assert_eq!(updated_task.description, created_task.description);
         assert_eq!(updated_task.status, created_task.status);
-        assert_eq!(updated_task.category, created_task.category);
+        assert_eq!(updated_task.priority, created_task.priority);
         assert_eq!(updated_task.due_date, created_task.due_date);
     }
 
@@ -350,7 +350,7 @@ mod database_tests {
             title: Some("This won't work".to_string()),
             description: None,
             status: None,
-            category: None,
+            priority: None,
             due_date: None,
         };
 
@@ -369,7 +369,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Delete Me".to_string(),
                 description: None,
-                category: TaskCategory::Other,
+                priority: TaskPriority::Medium,
                 due_date: None,
             })
             .await
@@ -413,7 +413,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Past Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(yesterday),
             })
             .await
@@ -423,7 +423,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Future Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(tomorrow),
             })
             .await
@@ -433,7 +433,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "Far Future Task".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(next_week),
             })
             .await
@@ -443,7 +443,7 @@ mod database_tests {
             .create_task(CreateTaskRequest {
                 title: "No Due Date".to_string(),
                 description: None,
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             })
             .await
@@ -452,7 +452,7 @@ mod database_tests {
         // Test due_before filter
         let filter = TaskFilter {
             status: None,
-            category: None,
+            priority: None,
             due_before: Some(now + chrono::Duration::days(2)),
             due_after: None,
         };
@@ -466,7 +466,7 @@ mod database_tests {
         // Test due_after filter
         let filter = TaskFilter {
             status: None,
-            category: None,
+            priority: None,
             due_before: None,
             due_after: Some(now),
         };

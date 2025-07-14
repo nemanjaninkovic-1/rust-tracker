@@ -9,13 +9,13 @@ COMPOSE_CMD := docker compose -f docker/docker-compose.yml --env-file .env
 # - test (needs implementation)
 # - backend-shell (container lacks shell tools)
 
-.PHONY: help setup build start stop restart rebuild logs clean status db test quick-test backend-shell
+.PHONY: help setup build start stop restart rebuild logs clean status db test quick-test backend-shell dev-frontend build-css
 
 # Default target
 help:
 	@echo "RustTracker - Task Management App"
 	@echo ""
-	@echo "✅ Working Commands:"
+	@echo "Working Commands:"
 	@echo "  make setup         - Initial setup and start all services"
 	@echo "  make build         - Build all Docker images"
 	@echo "  make start         - Start all services"
@@ -28,17 +28,21 @@ help:
 	@echo "  make db            - Connect to database shell"
 	@echo "  make quick-test    - Run quick test suite (common crate tests work)"
 	@echo ""
-	@echo "❌ TODO/Development Needed:"
+	@echo "Frontend Development:"
+	@echo "  make dev-frontend  - Start frontend development server"
+	@echo "  make build-css     - Build Tailwind CSS"
+	@echo ""
+	@echo "TODO/Development Needed:"
 	@echo "  make test          - Run comprehensive test suite (needs implementation)"
 	@echo "  make backend-shell - Backend container shell (lacks tools)"
 	@echo ""
-	@echo "🚀 Quick Start:"
+	@echo "Quick Start:"
 	@echo "  make setup         # Start everything"
 	@echo "  make status        # Verify services are running"
 	@echo "  Frontend: http://localhost:3000 | Backend: http://localhost:8080"
 
 # =============================================================================
-# ✅ WORKING - Setup Commands
+# Working - Setup Commands
 # =============================================================================
 
 setup:
@@ -52,7 +56,7 @@ build:
 	@echo "All images built successfully!"
 
 # =============================================================================
-# ✅ WORKING - Service Management
+# Working - Service Management
 # =============================================================================
 
 start:
@@ -92,7 +96,21 @@ clean:
 	@echo "Cleanup complete!"
 
 # =============================================================================
-# ✅ WORKING - Database Access
+# Frontend Development
+# =============================================================================
+
+dev-frontend:
+	@echo "Starting frontend development server..."
+	@cd frontend && ./dev-server.sh
+
+build-css:
+	@echo "Building Tailwind CSS..."
+	@cd frontend && npm install
+	@cd frontend && npm run build-css-prod
+	@echo "CSS build complete!"
+
+# =============================================================================
+# Working - Database Access
 # =============================================================================
 
 db:
@@ -105,7 +123,7 @@ quick-test:
 	@./scripts/quick-test.sh
 
 # =============================================================================
-# ❌ TODO - Development Needed
+# TODO - Development Needed
 # =============================================================================
 
 test:

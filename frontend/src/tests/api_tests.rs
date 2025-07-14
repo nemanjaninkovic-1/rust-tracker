@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod api_tests {
     use chrono::Utc;
-    use common::{CreateTaskRequest, TaskCategory, TaskFilter, TaskStatus, UpdateTaskRequest};
+    use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};
     use uuid::Uuid;
     use wasm_bindgen_test::*;
 
@@ -25,7 +25,7 @@ mod api_tests {
     fn test_task_filter_status_url() {
         let filter = TaskFilter {
             status: Some(TaskStatus::InProgress),
-            category: None,
+            priority: None,
             due_before: None,
             due_after: None,
         };
@@ -49,7 +49,7 @@ mod api_tests {
     fn test_task_filter_category_url() {
         let filter = TaskFilter {
             status: None,
-            category: Some(TaskCategory::Work),
+            priority: Some(TaskPriority::High),
             due_before: None,
             due_after: None,
         };
@@ -57,8 +57,8 @@ mod api_tests {
         let mut url = format!("{}/tasks", API_BASE);
         let mut params = Vec::new();
 
-        if let Some(category) = filter.category {
-            params.push(format!("category={:?}", category));
+        if let Some(priority) = filter.priority {
+            params.push(format!("category={:?}", priority));
         }
 
         if !params.is_empty() {
@@ -76,7 +76,7 @@ mod api_tests {
 
         let filter = TaskFilter {
             status: Some(TaskStatus::Todo),
-            category: Some(TaskCategory::Personal),
+            priority: Some(TaskPriority::Low),
             due_before: Some(due_before),
             due_after: Some(due_after),
         };
@@ -88,7 +88,7 @@ mod api_tests {
             params.push(format!("status={:?}", status));
         }
 
-        if let Some(category) = filter.category {
+        if let Some(category) = filter.priority {
             params.push(format!("category={:?}", category));
         }
 
@@ -137,13 +137,13 @@ mod api_tests {
         let request = CreateTaskRequest {
             title: "Test Task".to_string(),
             description: Some("Test Description".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
         assert_eq!(request.title, "Test Task");
         assert_eq!(request.description, Some("Test Description".to_string()));
-        assert_eq!(request.category, TaskCategory::Work);
+        assert_eq!(request.priority, TaskPriority::High);
         assert_eq!(request.due_date, None);
     }
 
@@ -153,14 +153,14 @@ mod api_tests {
             title: Some("Updated Title".to_string()),
             description: None,
             status: Some(TaskStatus::Completed),
-            category: Some(TaskCategory::Personal),
+            priority: Some(TaskPriority::Low),
             due_date: None,
         };
 
         assert_eq!(request.title, Some("Updated Title".to_string()));
         assert_eq!(request.description, None);
         assert_eq!(request.status, Some(TaskStatus::Completed));
-        assert_eq!(request.category, Some(TaskCategory::Personal));
+        assert_eq!(request.priority, Some(TaskPriority::Low));
         assert_eq!(request.due_date, None);
     }
 

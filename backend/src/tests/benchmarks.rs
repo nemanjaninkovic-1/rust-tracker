@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod benchmarks {
     use chrono::Utc;
-    use common::{CreateTaskRequest, TaskCategory, TaskFilter, TaskStatus, UpdateTaskRequest};
+    use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};
     use serial_test::serial;
     use sqlx::PgPool;
     use std::{env, time::Instant};
@@ -39,7 +39,7 @@ mod benchmarks {
         let request = CreateTaskRequest {
             title: "Benchmark Task".to_string(),
             description: Some("Testing performance".to_string()),
-            category: TaskCategory::Work,
+            priority: TaskPriority::High,
             due_date: None,
         };
 
@@ -67,7 +67,7 @@ mod benchmarks {
             let request = CreateTaskRequest {
                 title: format!("Benchmark Task {}", i),
                 description: Some(format!("Testing performance {}", i)),
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(Utc::now() + chrono::Duration::days(i % 30)),
             };
 
@@ -101,12 +101,12 @@ mod benchmarks {
                 } else {
                     None
                 },
-                category: match i % 5 {
-                    0 => TaskCategory::Work,
-                    1 => TaskCategory::Personal,
-                    2 => TaskCategory::Shopping,
-                    3 => TaskCategory::Health,
-                    _ => TaskCategory::Other,
+                priority: match i % 5 {
+                    0 => TaskPriority::High,
+                    1 => TaskPriority::Low,
+                    2 => TaskPriority::Medium,
+                    3 => TaskPriority::Urgent,
+                    _ => TaskPriority::Medium,
                 },
                 due_date: if i % 3 == 0 {
                     Some(Utc::now() + chrono::Duration::days(i % 30))
@@ -145,12 +145,12 @@ mod benchmarks {
             let request = CreateTaskRequest {
                 title: format!("Filter Test Task {}", i),
                 description: Some(format!("Description {}", i)),
-                category: match i % 5 {
-                    0 => TaskCategory::Work,
-                    1 => TaskCategory::Personal,
-                    2 => TaskCategory::Shopping,
-                    3 => TaskCategory::Health,
-                    _ => TaskCategory::Other,
+                priority: match i % 5 {
+                    0 => TaskPriority::High,
+                    1 => TaskPriority::Low,
+                    2 => TaskPriority::Medium,
+                    3 => TaskPriority::Urgent,
+                    _ => TaskPriority::Medium,
                 },
                 due_date: if i % 3 == 0 {
                     Some(Utc::now() + chrono::Duration::days((i % 30) as i64))
@@ -170,7 +170,7 @@ mod benchmarks {
                             title: None,
                             description: None,
                             status: Some(TaskStatus::InProgress),
-                            category: None,
+                            priority: None,
                             due_date: None,
                         },
                     )
@@ -184,7 +184,7 @@ mod benchmarks {
                             title: None,
                             description: None,
                             status: Some(TaskStatus::Completed),
-                            category: None,
+                            priority: None,
                             due_date: None,
                         },
                     )
@@ -197,25 +197,25 @@ mod benchmarks {
         let filters = vec![
             TaskFilter {
                 status: Some(TaskStatus::Todo),
-                category: None,
+                priority: None,
                 due_before: None,
                 due_after: None,
             },
             TaskFilter {
                 status: None,
-                category: Some(TaskCategory::Work),
+                priority: Some(TaskPriority::High),
                 due_before: None,
                 due_after: None,
             },
             TaskFilter {
                 status: Some(TaskStatus::InProgress),
-                category: Some(TaskCategory::Personal),
+                priority: Some(TaskPriority::Low),
                 due_before: None,
                 due_after: None,
             },
             TaskFilter {
                 status: None,
-                category: None,
+                priority: None,
                 due_before: Some(Utc::now() + chrono::Duration::days(15)),
                 due_after: Some(Utc::now()),
             },
@@ -255,7 +255,7 @@ mod benchmarks {
             let request = CreateTaskRequest {
                 title: format!("Update Test Task {}", i),
                 description: Some("Original description".to_string()),
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: None,
             };
 
@@ -271,7 +271,7 @@ mod benchmarks {
                 title: Some(format!("Updated Task {}", i)),
                 description: Some("Updated description".to_string()),
                 status: Some(TaskStatus::InProgress),
-                category: Some(TaskCategory::Personal),
+                priority: Some(TaskPriority::Low),
                 due_date: Some(Utc::now() + chrono::Duration::days(7)),
             };
 
@@ -303,7 +303,7 @@ mod benchmarks {
             let request = CreateTaskRequest {
                 title: format!("Delete Test Task {}", i),
                 description: Some("To be deleted".to_string()),
-                category: TaskCategory::Other,
+                priority: TaskPriority::Medium,
                 due_date: None,
             };
 
@@ -347,7 +347,7 @@ mod benchmarks {
                 let request = CreateTaskRequest {
                     title: format!("Concurrent Task {}", i),
                     description: Some(format!("Concurrent description {}", i)),
-                    category: TaskCategory::Work,
+                    priority: TaskPriority::High,
                     due_date: None,
                 };
 
@@ -390,7 +390,7 @@ mod benchmarks {
             let request = CreateTaskRequest {
                 title: format!("Memory Test Task {}", i),
                 description: Some("A".repeat(100)), // Larger description to use more memory
-                category: TaskCategory::Work,
+                priority: TaskPriority::High,
                 due_date: Some(Utc::now() + chrono::Duration::days(i % 365)),
             };
 

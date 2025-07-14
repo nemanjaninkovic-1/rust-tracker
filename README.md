@@ -27,7 +27,7 @@ RustTracker is a full-stack task management web application built entirely in Ru
 - **Type Safety** - Shared models between frontend and backend
 - **Containerized** - Complete [Docker](https://www.docker.com/) setup
 - **Production Ready** - Health checks, logging, error handling
-- **Comprehensive Testing** - 123+ tests with 94%+ coverage
+- **Comprehensive Testing** - 120+ tests with 94%+ coverage
 - **Performance Benchmarks** - Sub-100ms average response times
 - **Security Audited** - Vulnerability scanning and dependency checks
 
@@ -91,7 +91,7 @@ make quick-test  # Run quick test suite (common crate tests work)
 - **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
 - **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
 - **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
-- **Testing**: Comprehensive test suite with 123+ tests
+- **Testing**: Comprehensive test suite with 120+ tests
   - Unit tests, integration tests, performance benchmarks
   - WASM testing for frontend components
   - Database isolation with [serial_test](https://crates.io/crates/serial_test)
@@ -153,7 +153,7 @@ rust-tracker/
 │       ├── lib.rs                  # Data models and enums
 │       └── tests/                  # Common crate test suite
 │           ├── mod.rs              # Test module exports
-│           └── data_structures.rs  # Data structure tests (22 tests)
+│           └── data_structures.rs  # Data structure tests (19 tests)
 └── scripts/                    # Development tools
     ├── quick-test.sh              # Quick test runner
     └── test-suite.sh              # Comprehensive test runner
@@ -227,7 +227,7 @@ Standard REST API for task management:
 
 - `GET /api/tasks` - List all tasks (supports filtering)
   - `?status=Todo|InProgress|Completed`
-  - `?category=Work|Personal|Shopping|Health|Other`
+  - `?priority=Low|Medium|High|Urgent`
   - `?due_before=2024-12-31T23:59:59Z`
   - `?due_after=2024-01-01T00:00:00Z`
 - `POST /api/tasks` - Create new task
