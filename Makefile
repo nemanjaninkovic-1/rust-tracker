@@ -1,5 +1,5 @@
 # Use modern docker compose syntax
-COMPOSE_CMD := docker compose -f docker/docker-compose.yml
+COMPOSE_CMD := docker compose -f docker/docker-compose.yml --env-file .env
 
 # ✅ VERIFIED WORKING COMMANDS:
 # - setup, build, start, stop, restart, rebuild, status, logs, clean

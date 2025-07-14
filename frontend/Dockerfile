@@ -6,17 +6,24 @@ RUN cargo install wasm-pack
 
 WORKDIR /app
 
-# Copy workspace files
-COPY Cargo.toml Cargo.lock ./
+# Copy workspace configuration first
+COPY Cargo.toml ./
 
-# Create backend directory with minimal Cargo.toml to satisfy workspace
+# Copy all crate manifests to establish dependencies
+COPY common/Cargo.toml ./common/
+COPY frontend/Cargo.toml ./frontend/
+
+# Create minimal backend structure for workspace satisfaction
 RUN mkdir -p backend/src
 RUN echo '[package]\nname = "backend"\nversion = "0.1.0"\nedition = "2021"' > backend/Cargo.toml
 RUN echo 'fn main() {}' > backend/src/main.rs
 
-# Copy actual source code
-COPY common/ ./common/
-COPY frontend/ ./frontend/
+# Copy the lockfile after workspace is set up
+COPY Cargo.lock ./
+
+# Copy source code
+COPY common/src/ ./common/src/
+COPY frontend/src/ ./frontend/src/
 
 # Build the frontend WASM package
 RUN cd frontend && wasm-pack build --target web --out-dir pkg --release

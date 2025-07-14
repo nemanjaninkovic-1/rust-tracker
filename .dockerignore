@@ -1,0 +1,22 @@
+# Docker ignore file to reduce build context size
+target/
+.git
+.github
+*.md
+.env*
+.dockerignore
+docker-compose*.yml
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test artifacts
+coverage/

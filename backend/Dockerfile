@@ -3,17 +3,25 @@ FROM rust:latest AS builder
 
 WORKDIR /app
 
-# Copy workspace files
-COPY Cargo.toml Cargo.lock ./
+# Copy workspace configuration first
+COPY Cargo.toml ./
 
-# Create frontend directory with minimal Cargo.toml to satisfy workspace
+# Copy all crate manifests to establish dependencies
+COPY common/Cargo.toml ./common/
+COPY backend/Cargo.toml ./backend/
+
+# Create minimal frontend structure for workspace satisfaction
 RUN mkdir -p frontend/src
 RUN echo '[package]\nname = "frontend"\nversion = "0.1.0"\nedition = "2021"\n\n[lib]\ncrate-type = ["cdylib"]' > frontend/Cargo.toml
 RUN echo 'fn main() {}' > frontend/src/lib.rs
 
-# Copy actual source code
-COPY common/ ./common/
-COPY backend/ ./backend/
+# Copy the lockfile after workspace is set up
+COPY Cargo.lock ./
+
+# Copy source code
+COPY common/src/ ./common/src/
+COPY backend/src/ ./backend/src/
+COPY backend/migrations/ ./backend/migrations/
 
 # Build the backend specifically
 RUN cargo build --release --package backend
