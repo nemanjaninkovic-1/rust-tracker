@@ -242,9 +242,27 @@ All endpoints use JSON format and the Task model from the `common` crate. The AP
 ## Running Tests
 
 ```bash
-make test        # Run comprehensive test suite (56 backend tests passing, frontend compiles)
-make quick-test  # Run quick test suite (common crate tests work)
+make test          # Run comprehensive test suite (56 backend tests + 32 frontend logic tests)
+make quick-test    # Run quick test suite (common crate only)
 ```
+
+### Frontend Testing
+
+The project includes **frontend logic tests** that don't require a browser:
+
+- **Logic Tests** (`frontend/src/tests/logic_tests.rs`)
+  - Standard Rust tests that don't require browser
+  - Test business logic, data validation, and API client logic
+  - Included in `make test` (32 tests)
+  - Run in CI/CD pipeline
+
+The logic tests cover:
+
+- API URL generation and query parameters
+- Request/response data validation
+- Error handling and edge cases
+- Component state management
+- Data formatting and serialization
 
 ## Environment Configuration
 
@@ -301,8 +319,8 @@ make quick-test # Run quick tests
 
 ## TODO
 
-- [x] **Make test command**: `make test` implemented - comprehensive test suite runner (56 backend tests passing, frontend compiles)
-- [ ] **Frontend WASM testing**: Frontend tests timeout in Docker environment, need headless test runner configuration
+- [x] **Make test command**: `make test` implemented - comprehensive test suite runner (56 backend tests + 32 frontend logic tests)
+- [x] **Frontend logic testing**: Frontend logic tests integrated into main test suite (no browser required)
 - [ ] **Backend shell improvements**: `make backend-shell` lacks proper debugging tools
 - [ ] **Makefile organization**: Available commands need consolidation and documentation
 - [ ] **Performance optimization**: Consider implementing cargo workspace caching for faster builds

@@ -174,40 +174,24 @@ run_common_tests() {
 run_frontend_tests() {
     print_status "Running frontend tests..."
     
-    cd frontend
-    
-    # Check if wasm-pack is installed
-    if ! command -v wasm-pack &> /dev/null; then
-        print_warning "wasm-pack not found. Installing..."
-        curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-        export PATH="$HOME/.cargo/bin:$PATH"
-    fi
-    
-    # Check if wasm32-unknown-unknown target is installed
-    if ! rustup target list --installed | grep -q wasm32-unknown-unknown; then
-        print_status "Adding wasm32-unknown-unknown target..."
-        rustup target add wasm32-unknown-unknown
-    fi
-    
-    # Run WASM tests in Node.js mode (more reliable in Docker) with timeout
-    print_status "Running frontend WASM tests..."
-    if timeout 60 wasm-pack test --node --release 2>&1; then
-        print_success "Frontend tests passed"
+    # Run frontend logic tests (no browser required)
+    print_status "Running frontend logic tests..."
+    if cargo test -p frontend logic_tests --color=always 2>&1; then
+        print_success "Frontend logic tests passed"
     else
-        print_warning "Frontend tests failed or timed out, trying alternative approach..."
-        
-        # Fallback: try building frontend to check for compilation errors
-        print_status "Checking frontend compilation..."
-        if timeout 30 cargo check --target wasm32-unknown-unknown 2>&1; then
-            print_success "Frontend compiles successfully (tests skipped due to timeout)"
-        else
-            print_error "Frontend compilation failed"
-            cd ..
-            return 1
-        fi
+        print_error "Frontend logic tests failed"
+        return 1
     fi
     
-    cd ..
+    # Optional: Check frontend compilation
+    print_status "Checking frontend compilation..."
+    if cargo check -p frontend --color=always 2>&1; then
+        print_success "Frontend compiles successfully"
+    else
+        print_error "Frontend compilation failed"
+        return 1
+    fi
+}
 }
 
 # Run cargo clippy for code quality

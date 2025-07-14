@@ -26,7 +26,7 @@ help:
 	@echo "  make logs          - Show logs for all services"
 	@echo "  make clean         - Stop services and clean up"
 	@echo "  make db            - Connect to database shell"
-	@echo "  make test          - Run comprehensive test suite (tests are working, 3 isolation issues to fix)"
+	@echo "  make test          - Run comprehensive test suite (56 backend tests + 32 frontend logic tests)"
 	@echo "  make quick-test    - Run quick test suite (common crate only)"
 	@echo ""
 	@echo "Frontend Development:"

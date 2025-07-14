@@ -40,4 +40,4 @@ tracing-wasm = "0.2"
 version = "0.4"
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3"
+urlencoding = "2.1"
