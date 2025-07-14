@@ -27,8 +27,8 @@ RustTracker is a full-stack task management web application built entirely in Ru
 - **Type Safety** - Shared models between frontend and backend
 - **Containerized** - Complete [Docker](https://www.docker.com/) setup
 - **Production Ready** - Health checks, logging, error handling
-- **Comprehensive Testing** - 120+ tests with 94%+ coverage
-- **Performance Benchmarks** - Sub-100ms average response times
+- **Comprehensive Testing** - 88 tests with comprehensive coverage
+- **Performance Benchmarks** - Performance testing and optimization
 - **Security Audited** - Vulnerability scanning and dependency checks
 
 ## Requirements
@@ -40,14 +40,14 @@ No need to install [Rust](https://rustup.rs/), [PostgreSQL](https://www.postgres
 
 ## Getting Started
 
-RustTracker uses a Makefile as the primary build system for development. All development commands should go through the Makefile targets for consistency and proper orchestration of Docker services.
+RustTracker uses a Makefile for development. All commands should use the Makefile targets for consistency.
 
 ### Quick Setup
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
+git clone <repository-url>
 cd rust-tracker
 ```
 
@@ -57,7 +57,7 @@ cd rust-tracker
 make setup
 ```
 
-This will automatically build and start all services with health checks using the Makefile.
+This will build and start all services with health checks.
 
 1. Use stop to stop services or clean to clean up after:
 
@@ -79,23 +79,23 @@ make status      # Show service status
 make logs        # View logs for all services
 make clean       # Stop services and clean up
 make db          # Connect to database shell
-make test        # Run comprehensive test suite (56 backend tests passing, frontend compiles)
-make quick-test  # Run quick test suite (common crate tests work)
+make test        # Run comprehensive test suite (56 backend tests + 32 frontend logic tests)
+make quick-test  # Run quick test suite (common crate only)
 ```
 
 ## Tech Stack
 
 - **Language**: [Rust](https://www.rust-lang.org/) (Full-stack single language)
 - **Backend**: [Axum framework](https://github.com/tokio-rs/axum) + [SQLx](https://github.com/launchbadge/sqlx) + [PostgreSQL](https://www.postgresql.org/)
-- **Frontend**: [Leptos framework](https://leptos.dev/) + [WebAssembly (WASM)](https://webassembly.org/) + [Tailwind CSS](https://tailwindcss.com/)
+- **Frontend**: [Leptos framework](https://leptos.dev/) + [Tailwind CSS](https://tailwindcss.com/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) with custom enum types
 - **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
 - **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
 - **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
-- **Testing**: Comprehensive test suite with 120+ tests
+- **Testing**: Comprehensive test suite with 88 tests
   - Unit tests, integration tests, performance benchmarks
   - Backend tests: 56 tests passing with database isolation
-  - Frontend tests: WASM tests compile successfully (Docker timeout issues)
+  - Frontend tests: 32 logic tests covering API and validation
   - Database isolation with [serial_test](https://crates.io/crates/serial_test)
 - **Development Tools**: Custom scripts and Makefile
 
@@ -129,14 +129,13 @@ rust-tracker/
 │   ├── migrations/             # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
 │   └── Dockerfile               # Backend container
-├── frontend/                    # Leptos WASM app
+├── frontend/                    # Leptos reactive app
 │   ├── src/
 │   │   ├── lib.rs                  # App entry point
 │   │   ├── api.rs                  # HTTP client
 │   │   ├── tests/                  # Frontend test suite
 │   │   │   ├── mod.rs              # Test module exports
-│   │   │   ├── api_tests.rs        # API client tests (12 tests)
-│   │   │   └── component_tests.rs  # Component logic tests (15 tests)
+│   │   │   └── logic_tests.rs      # Logic tests (32 tests)
 │   │   ├── components/             # UI components
 │   │   │   ├── header.rs           # Application header
 │   │   │   ├── task_form.rs        # Task creation/editing form
@@ -171,7 +170,7 @@ graph TB
     
     subgraph "Frontend Container (Port 3000)"
         NGINX[Nginx Web Server]
-        LEPTOS[Leptos WASM App]
+        LEPTOS[Leptos Reactive App]
         COMP[UI Components]
         API_CLIENT[API Client]
     end
@@ -294,7 +293,7 @@ ENVIRONMENT=development
 - `RUST_LOG`: Logging level (debug, info, warn, error)
 - `ENVIRONMENT`: Environment mode (development, staging, production)
 
-For production deployment and CI/CD security practices, see the [TODO](#todo) section.
+For production deployment and CI/CD security practices, see the [TODO](#todo) section for planned enhancements.
 
 ## Volumes and Persistence
 
@@ -355,7 +354,7 @@ make quick-test # Run quick tests
 - Add tests for all new features
 - Update documentation for API changes
 - Ensure Docker builds succeed
-- Maintain test coverage above 90%
+- Maintain good test coverage
 
 See [Getting Started](#getting-started) for detailed setup instructions.
 
