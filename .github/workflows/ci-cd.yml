@@ -55,25 +55,25 @@ jobs:
       - name: Build application images
         run: |
           echo "Building Docker images..."
-          docker compose build --no-cache
+          docker compose -f docker/docker-compose.yml build --no-cache
 
       - name: Verify application startup
         run: |
           echo "Starting application for verification..."
-          docker compose up -d
+          docker compose -f docker/docker-compose.yml up -d
 
           # Wait for services to be ready
           sleep 30
 
           # Check service health
           echo "Checking service health..."
-          docker compose ps
+          docker compose -f docker/docker-compose.yml ps
 
           # Test backend health endpoint
-          docker compose exec -T backend curl -f http://localhost:8080/health || echo "Backend health check failed"
+          docker compose -f docker/docker-compose.yml exec -T backend curl -f http://localhost:8080/health || echo "Backend health check failed"
 
           # Stop services
-          docker compose down
+          docker compose -f docker/docker-compose.yml down
 
   code-quality:
     runs-on: ubuntu-latest
@@ -146,7 +146,7 @@ jobs:
       - name: Run end-to-end tests
         run: |
           echo "Starting services for E2E testing..."
-          docker compose up -d
+          docker compose -f docker/docker-compose.yml up -d
 
           # Wait for services
           sleep 45
@@ -166,7 +166,7 @@ jobs:
           echo "E2E tests completed successfully"
 
           # Cleanup
-          docker compose down
+          docker compose -f docker/docker-compose.yml down
 
   deploy-staging:
     runs-on: ubuntu-latest

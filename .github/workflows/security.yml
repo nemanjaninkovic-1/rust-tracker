@@ -92,8 +92,8 @@ jobs:
 
           # Check for exposed ports
           echo "Checking exposed ports in docker-compose.yml..."
-          if [ -f docker-compose.yml ]; then
-            grep -n "ports:" docker-compose.yml || echo "No port mappings found"
+          if [ -f docker/docker-compose.yml ]; then
+            grep -n "ports:" docker/docker-compose.yml || echo "No port mappings found"
           fi
 
       - name: Environment security check
