@@ -59,6 +59,7 @@ jobs:
         run: |
           cargo install sqlx-cli --version 0.7.4 --no-default-features --features postgres
           curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+          rustup target add wasm32-unknown-unknown
 
       - name: Wait for PostgreSQL
         run: |
@@ -74,24 +75,31 @@ jobs:
           PGPASSWORD: password
 
       - name: Run database migrations
-        run: sqlx migrate run
+        run: sqlx migrate run --source backend/migrations
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/rusttracker_test
 
       - name: Run backend tests
-        run: cargo test -p backend
+        run: |
+          echo "Starting backend tests..."
+          cargo test -p backend --verbose
+          echo "Backend tests completed"
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/rusttracker_test
           RUST_LOG: info
           ENVIRONMENT: test
 
       - name: Run common tests
-        run: cargo test -p common
+        run: |
+          echo "Starting common tests..."
+          cargo test -p common --verbose
+          echo "Common tests completed"
 
       - name: Run frontend tests
         run: |
-          cd frontend
-          wasm-pack test --node
+          echo "Starting frontend tests..."
+          cargo test -p frontend --verbose
+          echo "Frontend tests completed"
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
