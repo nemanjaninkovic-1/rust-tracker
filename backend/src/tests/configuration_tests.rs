@@ -109,7 +109,7 @@ async fn test_cors_configuration() {
 
     // The CorsLayer should be created successfully
     // This tests that the CORS configuration is properly set up
-    assert!(format!("{:?}", cors_layer).contains("CorsLayer"));
+    assert!(format!("{cors_layer:?}").contains("CorsLayer"));
 }
 
 #[tokio::test]
@@ -147,7 +147,7 @@ async fn test_application_router_structure() {
         .with_state(app_state);
 
     // Verify router was created successfully
-    assert!(format!("{:?}", router).contains("Router"));
+    assert!(format!("{router:?}").contains("Router"));
 }
 
 #[tokio::test]

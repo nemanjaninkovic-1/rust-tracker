@@ -193,7 +193,7 @@ where
                         if total_count == 1 {
                             "1 task".to_string()
                         } else {
-                            format!("{} tasks", total_count)
+                            format!("{total_count} tasks")
                         }
                     }}
                 </div>

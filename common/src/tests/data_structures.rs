@@ -323,7 +323,7 @@ mod tests {
         };
 
         // Test Debug
-        let debug_str = format!("{:?}", task);
+        let debug_str = format!("{task:?}");
         assert!(debug_str.contains("Debug Test"));
         assert!(debug_str.contains("Todo"));
         assert!(debug_str.contains("Low"));

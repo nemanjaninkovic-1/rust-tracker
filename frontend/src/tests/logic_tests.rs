@@ -23,28 +23,28 @@ mod frontend_logic_tests {
 
         #[test]
         fn test_task_list_url() {
-            let url = format!("{}/tasks", API_BASE);
+            let url = format!("{API_BASE}/tasks");
             assert_eq!(url, "http://localhost:8080/api/tasks");
         }
 
         #[test]
         fn test_task_create_url() {
-            let url = format!("{}/tasks", API_BASE);
+            let url = format!("{API_BASE}/tasks");
             assert_eq!(url, "http://localhost:8080/api/tasks");
         }
 
         #[test]
         fn test_task_update_url() {
             let task_id = Uuid::new_v4();
-            let url = format!("{}/tasks/{}", API_BASE, task_id);
-            assert_eq!(url, format!("http://localhost:8080/api/tasks/{}", task_id));
+            let url = format!("{API_BASE}/tasks/{task_id}");
+            assert_eq!(url, format!("http://localhost:8080/api/tasks/{task_id}"));
         }
 
         #[test]
         fn test_task_delete_url() {
             let task_id = Uuid::new_v4();
-            let url = format!("{}/tasks/{}", API_BASE, task_id);
-            assert_eq!(url, format!("http://localhost:8080/api/tasks/{}", task_id));
+            let url = format!("{API_BASE}/tasks/{task_id}");
+            assert_eq!(url, format!("http://localhost:8080/api/tasks/{task_id}"));
         }
 
         #[test]
@@ -155,11 +155,11 @@ mod frontend_logic_tests {
             let mut params = Vec::new();
 
             if let Some(status) = &filter.status {
-                params.push(format!("status={:?}", status));
+                params.push(format!("status={status:?}"));
             }
 
             if let Some(priority) = &filter.priority {
-                params.push(format!("priority={:?}", priority));
+                params.push(format!("priority={priority:?}"));
             }
 
             if let Some(due_before) = &filter.due_before {
@@ -173,7 +173,8 @@ mod frontend_logic_tests {
             if params.is_empty() {
                 String::new()
             } else {
-                format!("?{}", params.join("&"))
+                let joined_params = params.join("&");
+                format!("?{joined_params}")
             }
         }
     }
@@ -382,13 +383,16 @@ mod frontend_logic_tests {
 
         #[test]
         fn test_error_message_formatting() {
-            let error_msg = format!("Request failed: {}", "Network error");
+            let network_error = "Network error";
+            let error_msg = format!("Request failed: {network_error}");
             assert_eq!(error_msg, "Request failed: Network error");
 
-            let error_msg = format!("HTTP error: {}", 404);
+            let status_code = 404;
+            let error_msg = format!("HTTP error: {status_code}");
             assert_eq!(error_msg, "HTTP error: 404");
 
-            let error_msg = format!("Failed to parse response: {}", "Invalid JSON");
+            let parse_error = "Invalid JSON";
+            let error_msg = format!("Failed to parse response: {parse_error}");
             assert_eq!(error_msg, "Failed to parse response: Invalid JSON");
         }
 

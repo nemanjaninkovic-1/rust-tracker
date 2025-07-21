@@ -58,19 +58,19 @@ mod error_test_suite {
     #[test]
     fn test_error_display() {
         let error = AppError::TaskNotFound;
-        assert_eq!(format!("{}", error), "Task not found");
+        assert_eq!(format!("{error}"), "Task not found");
 
         let error = AppError::InvalidInput("Custom message".to_string());
-        assert_eq!(format!("{}", error), "Invalid input: Custom message");
+        assert_eq!(format!("{error}"), "Invalid input: Custom message");
 
         let error = AppError::InternalError;
-        assert_eq!(format!("{}", error), "Internal server error");
+        assert_eq!(format!("{error}"), "Internal server error");
     }
 
     #[test]
     fn test_error_debug() {
         let error = AppError::TaskNotFound;
-        let debug_str = format!("{:?}", error);
+        let debug_str = format!("{error:?}");
         assert!(debug_str.contains("TaskNotFound"));
     }
 

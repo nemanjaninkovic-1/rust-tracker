@@ -53,7 +53,7 @@ async fn test_edge_case_empty_task_operations() {
 
     match result.unwrap_err() {
         AppError::TaskNotFound => { /* Expected */ }
-        other => panic!("Expected TaskNotFound error, got {:?}", other),
+        other => panic!("Expected TaskNotFound error, got {other:?}"),
     }
 }
 
@@ -204,8 +204,8 @@ async fn test_edge_case_priority_enum_coverage() {
 
     for (i, priority) in priorities.iter().enumerate() {
         let request = CreateTaskRequest {
-            title: format!("Priority Test Task {}", i),
-            description: Some(format!("Testing priority: {:?}", priority)),
+            title: format!("Priority Test Task {i}"),
+            description: Some(format!("Testing priority: {priority:?}")),
             priority: *priority,
             due_date: None,
         };
@@ -241,8 +241,7 @@ async fn test_edge_case_priority_enum_coverage() {
         if priority_tasks > 0 {
             assert!(
                 filtered_tasks.iter().any(|t| t.priority == *priority),
-                "Should find tasks with priority {:?}",
-                priority
+                "Should find tasks with priority {priority:?}"
             );
         }
     }
@@ -356,8 +355,7 @@ async fn test_edge_case_status_enum_coverage() {
         for filtered_task in &filtered_tasks {
             assert_eq!(
                 filtered_task.status, *status,
-                "Filtered task should have status {:?}",
-                status
+                "Filtered task should have status {status:?}"
             );
         }
     }
@@ -552,8 +550,8 @@ async fn test_edge_case_large_batch_operations() {
     // Create batch
     for i in 0..batch_size {
         let request = CreateTaskRequest {
-            title: format!("Batch Task {}", i),
-            description: Some(format!("Batch description {}", i)),
+            title: format!("Batch Task {i}"),
+            description: Some(format!("Batch description {i}")),
             priority: match i % 4 {
                 0 => TaskPriority::Low,
                 1 => TaskPriority::Medium,
@@ -586,9 +584,7 @@ async fn test_edge_case_large_batch_operations() {
     // if other tests interfere. Just ensure we created at least some tasks
     assert!(
         our_task_count > 0 && our_task_count <= batch_size,
-        "Should retrieve some of our batch tasks (found {} out of {} created)",
-        our_task_count,
-        batch_size
+        "Should retrieve some of our batch tasks (found {our_task_count} out of {batch_size} created)"
     );
 
     // Test filtering with large dataset
@@ -606,10 +602,7 @@ async fn test_edge_case_large_batch_operations() {
     // Debug: count expected high priority tasks from our batch
     let expected_high_priority_count = (0..batch_size).filter(|i| i % 4 == 2).count();
 
-    println!(
-        "Expected high priority tasks from batch: {}",
-        expected_high_priority_count
-    );
+    println!("Expected high priority tasks from batch: {expected_high_priority_count}");
     println!(
         "Found high priority tasks in filter: {}",
         high_priority_tasks.len()
@@ -617,15 +610,13 @@ async fn test_edge_case_large_batch_operations() {
 
     assert!(
         !high_priority_tasks.is_empty(),
-        "Should find high priority tasks (expected at least {} from our batch of {})",
-        expected_high_priority_count,
-        batch_size
+        "Should find high priority tasks (expected at least {expected_high_priority_count} from our batch of {batch_size})"
     );
 
     // Batch update some tasks
     for (i, &task_id) in task_ids.iter().enumerate().take(10) {
         let update = UpdateTaskRequest {
-            title: Some(format!("Updated Batch Task {}", i)),
+            title: Some(format!("Updated Batch Task {i}")),
             description: None,
             status: Some(TaskStatus::Completed),
             priority: None,
@@ -706,22 +697,22 @@ fn test_error_types_coverage() {
 
     // Test Database error
     let db_error = AppError::Database(sqlx::Error::RowNotFound);
-    assert!(format!("{:?}", db_error).contains("Database"));
+    assert!(format!("{db_error:?}").contains("Database"));
 
     // Test InternalError
     let internal_error = AppError::InternalError;
-    assert!(format!("{}", internal_error).contains("Internal server error"));
-    assert!(format!("{:?}", internal_error).contains("InternalError"));
+    assert!(format!("{internal_error}").contains("Internal server error"));
+    assert!(format!("{internal_error:?}").contains("InternalError"));
 
     // Test TaskNotFound
     let not_found_error = AppError::TaskNotFound;
-    assert!(format!("{}", not_found_error).contains("Task not found"));
-    assert!(format!("{:?}", not_found_error).contains("TaskNotFound"));
+    assert!(format!("{not_found_error}").contains("Task not found"));
+    assert!(format!("{not_found_error:?}").contains("TaskNotFound"));
 
     // Test InvalidInput
     let invalid_input_error = AppError::InvalidInput("Invalid task data".to_string());
-    assert!(format!("{}", invalid_input_error).contains("Invalid task data"));
-    assert!(format!("{:?}", invalid_input_error).contains("InvalidInput"));
+    assert!(format!("{invalid_input_error}").contains("Invalid task data"));
+    assert!(format!("{invalid_input_error:?}").contains("InvalidInput"));
 
     // Test error conversion from sqlx
     let sqlx_error = sqlx::Error::RowNotFound;

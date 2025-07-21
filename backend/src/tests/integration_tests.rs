@@ -263,14 +263,14 @@ mod integration_test_suite {
         };
 
         let response = server
-            .put(&format!("/api/tasks/{}", non_existent_id))
+            .put(&format!("/api/tasks/{non_existent_id}"))
             .json(&update_request)
             .await;
         assert_eq!(response.status_code(), axum::http::StatusCode::NOT_FOUND);
 
         // Delete non-existent task
         let response = server
-            .delete(&format!("/api/tasks/{}", non_existent_id))
+            .delete(&format!("/api/tasks/{non_existent_id}"))
             .await;
         assert_eq!(response.status_code(), axum::http::StatusCode::NOT_FOUND);
 

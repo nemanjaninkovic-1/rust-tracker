@@ -277,7 +277,7 @@ mod handler_test_suite {
         };
 
         let response = server
-            .put(&format!("/api/tasks/{}", non_existent_id))
+            .put(&format!("/api/tasks/{non_existent_id}"))
             .json(&update_request)
             .await;
 
@@ -342,7 +342,7 @@ mod handler_test_suite {
 
         let non_existent_id = Uuid::new_v4();
         let response = server
-            .delete(&format!("/api/tasks/{}", non_existent_id))
+            .delete(&format!("/api/tasks/{non_existent_id}"))
             .await;
 
         assert_eq!(response.status_code(), StatusCode::NOT_FOUND);
