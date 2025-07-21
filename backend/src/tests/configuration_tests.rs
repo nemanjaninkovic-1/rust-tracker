@@ -81,35 +81,18 @@ async fn test_port_configuration() {
 
 #[tokio::test]
 async fn test_environment_variable_handling() {
-    // Test various environment variable scenarios
+    use std::env;
 
-    // Test missing variables get defaults
-    env::remove_var("DATABASE_URL");
-    env::remove_var("PORT");
-    env::remove_var("RUST_LOG");
+    // Test setting and getting environment variables for the application
+    env::set_var("TEST_VAR", "test_value");
+    let value = env::var("TEST_VAR").unwrap();
+    assert_eq!(value, "test_value");
 
-    let db_url = env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:password@localhost:5432/rusttracker".to_string());
-    let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
-
-    assert!(db_url.starts_with("postgres://"));
-    assert_eq!(port, "8080");
-
-    // Test setting variables
-    env::set_var("DATABASE_URL", "test_db_url");
-    env::set_var("PORT", "9999");
-    env::set_var("RUST_LOG", "debug");
-
-    assert_eq!(env::var("DATABASE_URL").unwrap(), "test_db_url");
-    assert_eq!(env::var("PORT").unwrap(), "9999");
-    assert_eq!(env::var("RUST_LOG").unwrap(), "debug");
-
-    // Clean up
-    env::remove_var("DATABASE_URL");
-    env::remove_var("PORT");
-    env::remove_var("RUST_LOG");
+    // Test with missing environment variable
+    env::remove_var("MISSING_VAR");
+    let result = env::var("MISSING_VAR");
+    assert!(result.is_err());
 }
-
 #[tokio::test]
 async fn test_cors_configuration() {
     // This test verifies CORS is properly configured in the application

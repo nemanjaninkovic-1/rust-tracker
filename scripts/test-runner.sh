@@ -40,9 +40,9 @@ if [ "$TEST_MODE" = "tests-only" ] || [ "$TEST_MODE" = "full" ]; then
     echo "[INFO] === RUNNING TESTS ==="
     echo "   Test Overview:"
     echo "   • Common crate: 37 data structure & validation tests"
-    echo "   • Backend: 55 tests (database operations, API handlers, integration)"
+    echo "   • Backend: 73 tests (database, handlers, integration, configuration, edge cases)"
     echo "   • Frontend: 32 tests (component logic, API client, validation)"
-    echo "   • Total: ~124 comprehensive tests"
+    echo "   • Total: ~142 comprehensive tests"
     echo ""
     echo "Executing Tests:"
     echo ""
@@ -59,16 +59,16 @@ if [ "$TEST_MODE" = "tests-only" ] || [ "$TEST_MODE" = "full" ]; then
 
     # Backend tests
     echo "[2/3] Starting Backend Tests..."
-    echo "   • Backend: 55 tests (database operations, API handlers, integration)"
+    echo "   • Backend: 73 tests (database, handlers, integration, configuration, edge cases)"
     echo ""
     echo "[INFO] Running backend tests..."
     echo "[INFO] Using database URL: postgres://postgres:password@test-db:5432/rusttracker_test"
     echo "[INFO] Running database migrations..."
     cd /app/backend
     sqlx migrate run --database-url postgres://postgres:password@test-db:5432/rusttracker_test --source migrations
-    echo "[●●○] Running: Backend tests (55 tests)"
+    echo "[●●○] Running: Backend tests (73 tests)"
     cargo test -- --nocapture
-    echo "[●●○] ✓ Completed: Backend tests (55 tests)"
+    echo "[●●○] ✓ Completed: Backend tests (73 tests)"
     echo ""
 
     # Frontend tests
@@ -90,7 +90,7 @@ if [ "$TEST_MODE" = "tests-only" ] || [ "$TEST_MODE" = "full" ]; then
         echo "[INFO] Completion Summary:"
         echo "  ✓ Test Suites:"
         echo "     → Common crate tests (37 data structure tests)"
-        echo "     → Backend tests (55 database + API + integration tests)"  
+        echo "     → Backend tests (73 database + API + integration tests)"  
         echo "     → Frontend tests (32 logic + component tests)"
         echo ""
         echo "[SUCCESS] Your RustTracker application is well-tested!"
@@ -183,7 +183,7 @@ if [ "$TEST_MODE" = "coverage-only" ] || [ "$TEST_MODE" = "full" ]; then
         echo "[INFO] Completion Summary:"
         echo "  ✓ Test Suites:"
         echo "     → Common crate tests (37 data structure tests)"
-        echo "     → Backend tests (55 database + API + integration tests)"
+        echo "     → Backend tests (73 database + API + integration tests)"
         echo "     → Frontend tests (32 logic + component tests)"
         echo "  ✓ Coverage Analysis:"
         echo "     → 70% minimum coverage requirement enforced"
