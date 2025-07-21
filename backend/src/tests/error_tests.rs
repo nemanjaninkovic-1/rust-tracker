@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod error_tests {
+mod error_test_suite {
     use crate::error::AppError;
     use axum::{http::StatusCode, response::IntoResponse};
     use serde_json::Value;

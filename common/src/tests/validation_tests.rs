@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod validation_tests {
+mod task_validation_tests {
     use crate::*;
     use chrono::{TimeZone, Utc};
     use serde_json;

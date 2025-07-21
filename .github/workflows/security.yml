@@ -28,10 +28,10 @@ jobs:
         run: |
           cat > .env << EOF
           # Database configuration
-          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          DATABASE_URL=postgresql://postgres:password@db:5432/rusttracker
+          POSTGRES_DB=rusttracker
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=password
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5432
 
@@ -243,10 +243,10 @@ jobs:
         run: |
           cat > .env << EOF
           # Database configuration
-          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'rusttracker' }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          DATABASE_URL=postgresql://postgres:password@db:5432/rusttracker
+          POSTGRES_DB=rusttracker
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=password
           POSTGRES_HOST=localhost
           POSTGRES_PORT=5432
 

@@ -281,13 +281,13 @@ mod tests {
 
     #[test]
     fn test_enum_derive_traits() {
-        // Test Clone
+        // Test Clone/Copy
         let status = TaskStatus::InProgress;
-        let status_clone = status.clone();
+        let status_clone = status; // Use copy instead of clone for Copy types
         assert_eq!(status, status_clone);
 
         let priority = TaskPriority::High;
-        let priority_clone = priority.clone();
+        let priority_clone = priority; // Use copy instead of clone for Copy types
         assert_eq!(priority, priority_clone);
 
         // Test Copy

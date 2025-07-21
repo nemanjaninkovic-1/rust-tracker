@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod database_tests {
+mod database_test_suite {
     use crate::{database::Database, error::AppError};
     use chrono::Utc;
     use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};

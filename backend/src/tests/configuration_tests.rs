@@ -202,7 +202,7 @@ async fn test_logging_configuration() {
     error!("Test error message");
 
     // If we get here without panicking, logging is working
-    assert!(true, "Logging configuration should work");
+    // Test passes if we reach this point
 }
 
 #[tokio::test]

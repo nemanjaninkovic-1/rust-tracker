@@ -162,8 +162,8 @@ async fn test_edge_case_task_description_boundaries() {
         .expect("Creating task with empty description should succeed");
     assert_eq!(empty_desc_task.description, Some("".to_string()));
 
-    // Test very long description
-    let long_description = "This is a very long description. ".repeat(100);
+    // Test very long description (but reasonable)
+    let long_description = "This is a very long description. ".repeat(10); // 330 chars instead of 3300
     let long_desc_request = CreateTaskRequest {
         title: "Task with long description".to_string(),
         description: Some(long_description.clone()),

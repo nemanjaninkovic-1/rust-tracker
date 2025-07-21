@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod integration_tests {
+mod integration_test_suite {
     use axum_test::TestServer;
     use chrono::Utc;
     use common::{CreateTaskRequest, TaskPriority, TaskStatus, UpdateTaskRequest};

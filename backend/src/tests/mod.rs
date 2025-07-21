@@ -12,7 +12,7 @@ pub mod handler_tests;
 pub mod integration_tests;
 
 #[cfg(test)]
-mod tests {
+mod additional_tests {
     use common::{CreateTaskRequest, TaskPriority, TaskStatus};
 
     #[test]

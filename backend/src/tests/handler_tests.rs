@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod handler_tests {
+mod handler_test_suite {
     use axum::{http::StatusCode, Router};
     use axum_test::TestServer;
     use chrono::Utc;

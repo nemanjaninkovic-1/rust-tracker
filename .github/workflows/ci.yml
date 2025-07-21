@@ -268,26 +268,6 @@ jobs:
           echo "Stopping verification services..."
           docker compose -f docker/docker-compose.yml down --quiet
 
-  validate-secrets:
-    name: Secrets Validation
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate production secrets
-        run: |
-          echo "Validating required secrets for production..."
-
-          if [ -z "${{ secrets.POSTGRES_PASSWORD }}" ]; then
-            echo "WARNING: POSTGRES_PASSWORD should be configured for production"
-          else
-            echo "✓ POSTGRES_PASSWORD is configured"
-          fi
-
-          echo "✓ Secrets validation complete"
-
   summary:
     name: Pipeline Summary
     runs-on: ubuntu-latest

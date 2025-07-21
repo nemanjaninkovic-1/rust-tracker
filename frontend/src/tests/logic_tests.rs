@@ -470,11 +470,12 @@ mod frontend_logic_tests {
 
         #[test]
         fn test_task_form_state_update() {
-            let mut state = TaskFormState::default();
-
-            state.title = "New Task".to_string();
-            state.priority = TaskPriority::High;
-            state.is_loading = true;
+            let state = TaskFormState {
+                title: "New Task".to_string(),
+                priority: TaskPriority::High,
+                is_loading: true,
+                ..Default::default()
+            };
 
             assert_eq!(state.title, "New Task");
             assert_eq!(state.priority, TaskPriority::High);
