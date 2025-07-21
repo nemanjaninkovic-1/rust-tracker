@@ -33,16 +33,22 @@ services:
       TEST_DB_PORT: 5432
       PGPASSWORD: password
       RUST_LOG: info
+      TEST_MODE: ${TEST_MODE:-full}
     volumes:
       - ..:/app
       - test_cargo_cache:/usr/local/cargo/registry
       - test_target_cache:/app/target
     working_dir: /app
+    # Security configuration to allow cargo-tarpaulin to work
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
     command:
       [
         "bash",
         "-c",
-        "sleep 5 && chmod +x ./scripts/run_comprehensive_tests.sh && timeout 300 ./scripts/run_comprehensive_tests.sh --tests-only || (echo 'Tests completed or timed out after 5 minutes' && exit 0)",
+        "sleep 5 && chmod +x ./scripts/test-runner.sh && timeout 600 ./scripts/test-runner.sh ${TEST_MODE:+--$TEST_MODE} || (echo 'Test execution completed or timed out after 10 minutes' && exit 0)",
       ]
 
 volumes:

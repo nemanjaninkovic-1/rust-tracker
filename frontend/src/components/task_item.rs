@@ -3,6 +3,7 @@ use common::{Task, TaskStatus, UpdateTaskRequest};
 use leptos::*;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn TaskItem<F>(
     task: Task,
     on_update: F,

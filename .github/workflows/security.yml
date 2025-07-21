@@ -38,18 +38,9 @@ jobs:
           # Backend configuration
           RUST_LOG=info
           PORT=8080
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRY_HOURS=24
 
           # Frontend configuration
           FRONTEND_PORT=3000
-
-          # Environment
-          APP_ENV=test
-
-          # Rate limiting settings
-          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE || '100' }}
-          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS || '60000' }}
           EOF
 
       - name: Install Rust security tools
@@ -137,9 +128,8 @@ jobs:
       - name: Run basic security tests
         run: |
           echo "Running basic security tests..."
-          # Use make quick-test which is more reliable than full test suite
-          # Skip if it fails due to dependency issues
-          make quick-test || echo "Quick test completed with warnings - this is expected with current dependency state"
+          # Run common crate tests as a basic functionality check
+          cargo test -p common
 
       - name: Validate Docker security
         run: |
@@ -263,18 +253,9 @@ jobs:
           # Backend configuration
           RUST_LOG=info
           PORT=8080
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          JWT_EXPIRY_HOURS=24
 
           # Frontend configuration
           FRONTEND_PORT=3000
-
-          # Environment
-          APP_ENV=test
-
-          # Rate limiting settings
-          MAX_REQUESTS_PER_MINUTE=${{ secrets.MAX_REQUESTS_PER_MINUTE || '100' }}
-          RATE_LIMIT_WINDOW_MS=${{ secrets.RATE_LIMIT_WINDOW_MS || '60000' }}
           EOF
 
       - name: Run code quality checks

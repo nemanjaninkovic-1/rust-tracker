@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 
+#[derive(Clone)]
 pub struct Database {
     pool: PgPool,
 }

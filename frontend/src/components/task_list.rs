@@ -5,6 +5,7 @@ use leptos::*;
 use std::collections::HashMap;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn TaskList<F>(tasks: ReadSignal<Vec<Task>>, on_task_change: F) -> impl IntoView
 where
     F: Fn() + 'static + Copy,
@@ -45,10 +46,7 @@ where
         // Group tasks by status
         let mut grouped: HashMap<TaskStatus, Vec<Task>> = HashMap::new();
         for task in filtered {
-            grouped
-                .entry(task.status)
-                .or_insert_with(Vec::new)
-                .push(task);
+            grouped.entry(task.status).or_default().push(task);
         }
 
         // Sort tasks within each status by priority (Urgent -> High -> Medium -> Low)
@@ -62,7 +60,7 @@ where
             TaskStatus::InProgress,
             TaskStatus::Completed,
         ] {
-            grouped.entry(status).or_insert_with(Vec::new);
+            grouped.entry(status).or_default();
         }
 
         grouped

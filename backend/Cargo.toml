@@ -9,7 +9,6 @@ repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
 [dependencies]
 # Web framework
 axum = { version = "0.7", features = ["macros"] }
-tower = "0.4"
 tower-http = { version = "0.5", features = ["cors"] }
 
 # Database
@@ -28,10 +27,6 @@ tokio = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
-# Authentication and authorization
-jsonwebtoken = "9.3"
-axum-extra = { version = "0.9", features = ["typed-header"] }
-
 # Common types
 uuid = { workspace = true }
 chrono = { workspace = true }
@@ -43,12 +38,11 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 
 # Error handling
-anyhow = "1.0"
 thiserror = "2.0"
 
 [dev-dependencies]
 # Testing framework
-tokio-test = "0.4"
 axum-test = "15.7"
-mockall = "0.13"
 serial_test = "3.2"
+tokio-test = "0.4"
+futures = "0.3"

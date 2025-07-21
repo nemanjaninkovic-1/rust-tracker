@@ -24,10 +24,6 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       RUST_LOG: ${RUST_LOG:-info}
       PORT: 8080
-      JWT_SECRET: ${JWT_SECRET}
-      APP_ENV: ${APP_ENV:-development}
-      MAX_REQUESTS_PER_MINUTE: ${MAX_REQUESTS_PER_MINUTE:-100}
-      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-60000}
 
   frontend:
     build:

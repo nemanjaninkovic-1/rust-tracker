@@ -31,14 +31,8 @@ mod handler_tests {
             .unwrap();
 
         let database = crate::database::Database::new(pool);
-        let rate_limiter = crate::rate_limit::RateLimiter::new();
-        let app_env = "test".to_string();
 
-        let app_state = Arc::new(crate::AppStateData {
-            database,
-            rate_limiter,
-            app_env,
-        });
+        let app_state = Arc::new(crate::AppStateData { database });
 
         let app = Router::new()
             .route(

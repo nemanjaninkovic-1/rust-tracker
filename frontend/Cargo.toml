@@ -6,6 +6,16 @@ license = "MIT"
 description = "RustTracker Frontend - Task Management Web Application"
 repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
 
+[package.metadata.cargo-machete]
+ignored = [
+    "js-sys",
+    "serde",
+    "serde-wasm-bindgen",
+    "tracing",
+    "wasm-bindgen-futures",
+    "web-sys",
+]
+
 [lib]
 crate-type = ["cdylib"]
 

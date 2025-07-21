@@ -3,6 +3,7 @@ use common::{CreateTaskRequest, TaskPriority};
 use leptos::*;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn TaskForm<F, G>(on_submit: F, on_close: Option<G>) -> impl IntoView
 where
     F: Fn() + 'static + Copy,

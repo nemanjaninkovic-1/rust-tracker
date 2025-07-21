@@ -4,19 +4,19 @@
 
 ## HARD RULES **Critical**:
 
-- Only use those specific ✓ (Check mark, U+2713) and ✗ (X mark, U+2717) and no other emojies in a codbase.
+- Only use those specific ✓ (Check mark, U+2713) and ✗ (X mark, U+2717) (you can change their color) and no other emojies in a codbase.
 - Always use `make` commands for project operations unless there is no make command available for the specific action you want to perform.
 
 ## Project Overview
 
 RustTracker is a full-stack task management web application built entirely in Rust with:
 
-- Backend: Axum
-- Front # Backend tests REQUIRE database - use make test instead
-  # ✗ DON'T: cargo test -p backend (will fail without database)
-  # ✓ DO: make test: Leptos reactive web application
-- Database: PostgreSQL
+- Backend: Axum framework with authentication and rate limiting
+- Frontend: Leptos reactive web application with Tailwind CSS
+- Database: PostgreSQL with custom enum types
 - Containerization: Docker and Docker Compose
+- Testing: Comprehensive test suite with coverage integration
+- CI/CD: GitHub Actions with automated testing and coverage reporting
 - Shared models between frontend and backend
 
 ## Architecture
@@ -41,13 +41,15 @@ rust-tracker/
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
 │   │   ├── error.rs                # Error handling
+│   │   ├── auth.rs                 # Authentication middleware
+│   │   ├── rate_limit.rs           # Rate limiting middleware
 │   │   └── tests/                  # Comprehensive test suite
 │   │       ├── mod.rs              # Test module exports
-│   │       ├── database_tests.rs   # Database layer tests (23 tests)
-│   │       ├── handler_tests.rs    # HTTP handler tests (20 tests)
-│   │       ├── error_tests.rs      # Error handling tests (8 tests)
-│   │       ├── integration_tests.rs # Integration tests (6 tests)
-│   │       └── benchmarks.rs       # Performance benchmarks (8 tests)
+│   │       ├── database_tests.rs   # Database layer tests
+│   │       ├── handler_tests.rs    # HTTP handler tests
+│   │       ├── error_tests.rs      # Error handling tests
+│   │       ├── integration_tests.rs # Integration tests
+│   │       └── benchmarks.rs       # Performance benchmarks
 │   ├── migrations/                 # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
 ├── frontend/                       # Leptos WASM app
@@ -59,27 +61,30 @@ rust-tracker/
 │   │   │   ├── task_form.rs        # Task creation/editing form
 │   │   │   ├── task_item.rs        # Individual task display
 │   │   │   ├── task_list.rs        # Task list container
+│   │   │   ├── modal.rs            # Modal dialog components
 │   │   │   └── mod.rs              # Component exports
 │   │   ├── pages/                  # App pages
 │   │   │   ├── home.rs             # Main task management page
 │   │   │   └── mod.rs              # Page exports
 │   │   └── tests/                  # Test modules
-│   │       ├── api_tests.rs        # API client tests (12 tests)
-│   │       ├── component_tests.rs  # Component logic tests (15 tests)
+│   │       ├── logic_tests.rs      # Logic tests (32 tests)
 │   │       └── mod.rs              # Test exports
 │   ├── index.html                  # HTML entry point
 │   ├── nginx.conf                  # Web server config
+│   ├── package.json                # Node.js dependencies for Tailwind
+│   ├── tailwind.config.js          # Tailwind CSS configuration
+│   ├── Trunk.toml                  # Trunk build configuration
+│   └── styles/                     # CSS source files
+│       └── input.css               # Tailwind CSS input file
 ├── common/                         # Shared types
 │   └── src/
 │       ├── lib.rs                  # Data models and enums
-│       └── tests/                  # Data structure tests (19 tests)
+│       └── tests/                  # Data structure tests (37 tests)
 │           ├── data_structures.rs
 │           └── mod.rs
 └── scripts/                        # Development tools
-    ├── frontend_build_production.sh  # Frontend production build script
-    ├── frontend_dev_server.sh        # Frontend development server
-    ├── run_quick_tests.sh            # Quick test script
-    └── run_comprehensive_tests.sh    # Comprehensive test runner
+    ├── frontend_dev_server.sh      # Frontend development server
+    └── test-runner.sh              # Unified test runner with coverage support
 ```
 
 ### Technology Stack
@@ -91,7 +96,8 @@ rust-tracker/
 - **Containerization**: Docker + Docker Compose
 - **Build System**: Cargo workspaces
 - **Web Server**: Nginx (for frontend static files)
-- **Testing**: Comprehensive test suite with 120+ tests
+- **Testing**: Comprehensive test suite with 124+ tests
+- **Coverage Integration**: cargo-tarpaulin with 70% minimum coverage requirement
 - **Development Tools**: Custom scripts and Makefile
 
 ## Development Guidelines
@@ -107,15 +113,15 @@ Available make commands (use these instead of manual docker/cargo commands):
 - `make stop` - Stop all services
 - `make restart` - Restart all services
 - `make rebuild` - Rebuild and start all services
-- `make test` - Run comprehensive test suite
+- `make test` - Run comprehensive test suite with coverage analysis
+- `make test-only` - Run comprehensive test suite only (no coverage analysis)
+- `make coverage` - Generate test coverage report only (70% minimum)
 - `make logs` - Show logs for all services
 - `make clean` - Stop services and clean up
 - `make db` - Connect to database
 
 **Examples**:
 
-- ✓ Use: `make restart`
-- ✗ Don't use: `docker compose restart`
 - ✓ Use: `make test`
 - ✗ Don't use: `cargo test` or manual docker commands
 - ✓ Use: `make rebuild`
@@ -253,7 +259,7 @@ Key environment variables in `.env`:
 - **Frontend Tests**: Use `#[wasm_bindgen_test]` for WASM component tests
 - **Database Tests**: Always use `serial_test::serial` to prevent concurrent access issues
 - **Integration Tests**: Test complete workflows, not just individual components
-- **Performance Tests**: Include benchmarks for critical operations
+- **Functional Tests**: Test database operations and API integration thoroughly
 - **Error Testing**: Verify all error paths and edge cases
 - **Mock Data**: Use consistent test data factories for repeatability
 
@@ -267,8 +273,8 @@ Key environment variables in `.env`:
 
    ```bash
    cargo check --workspace          # Check compilation
-   make test                        # PREFERRED: Run tests with database setup
-   ./scripts/run_comprehensive_tests.sh         # Alternative: Use test runner script
+   make test                        # PREFERRED: Run tests with coverage analysis
+   ./scripts/test-runner.sh         # Alternative: Use unified test runner
    ```
 
 2. **Test Updates Required When**:
@@ -277,7 +283,7 @@ Key environment variables in `.env`:
    - Modifying API endpoints → Update handler and integration tests
    - Changing data models → Update serialization and validation tests
    - Adding error cases → Add error handling tests
-   - Performance improvements → Add/update benchmark tests
+   - Database operations → Add/update functional tests
 
 3. **Documentation Updates Required When**:
 
@@ -288,18 +294,21 @@ Key environment variables in `.env`:
 
 4. **Before Committing**:
    ```bash
-   make test                        # REQUIRED: Full test suite with database setup
-   ./scripts/run_comprehensive_tests.sh         # Alternative: Comprehensive test runner
+   make test                        # REQUIRED: Full test suite with coverage analysis
+   ./scripts/test-runner.sh         # Alternative: Unified test runner
    cargo clippy --workspace -- -D warnings    # Code quality checks
    cargo fmt --check               # Format checks
    ```
 
-**Never commit with failing tests. Always use `make test` or `./scripts/run_comprehensive_tests.sh` to ensure all tests pass with proper database setup.**
+**Never commit with failing tests. Always use `make test` or `./scripts/test-runner.sh` to ensure all tests pass with proper database setup.**
 
 #### Test Coverage Maintenance:
 
-- **Target**: Maintain 120+ tests across all layers
+- **Target**: Maintain 124+ tests across all layers
+- **Coverage Requirement**: 70% minimum using cargo-tarpaulin
 - **New Code**: Must include tests before being considered complete
+- **Failing Tests**: Fix immediately, never commit with failing tests
+- **Test Documentation**: Update README.md test coverage section when adding new test files
 - **Failing Tests**: Fix immediately, never commit with failing tests
 - **Test Documentation**: Update README.md test coverage section when adding new test files
 
@@ -339,7 +348,7 @@ RustTracker includes a robust test suite with 120+ tests across all layers:
 - **Handler Tests (20 tests)**: HTTP endpoints, request validation, response formatting, error cases
 - **Error Tests (8 tests)**: Custom error types, HTTP status mapping, error serialization
 - **Integration Tests (6 tests)**: End-to-end API workflows, complex scenarios
-- **Performance Benchmarks (8 tests)**: Database operations, API response times, load testing
+- **Functional Database Tests (8 tests)**: Database operations, complex scenarios, bulk operations
 
 #### Frontend Tests (27 tests)
 
@@ -353,7 +362,7 @@ RustTracker includes a robust test suite with 120+ tests across all layers:
 #### Testing Infrastructure
 
 - **Docker Testing Environment**: `docker/Dockerfile.test` for isolated test execution
-- **Test Runner Script**: `scripts/test-runner.sh` for comprehensive test execution
+- **Simplified Test Runner**: `scripts/test-runner.sh` for test execution with coverage support
 - **Database Isolation**: Uses `serial_test` for safe concurrent testing
 - **WASM Testing**: `wasm-bindgen-test` for frontend component testing
 
@@ -369,8 +378,8 @@ cargo test -p backend
 # Run frontend tests (WASM)
 cd frontend && wasm-pack test --node
 
-# Run performance benchmarks
-cargo test benchmarks --release
+# Run functional database tests
+cargo test functional_tests --release
 
 # Run with coverage (requires cargo-tarpaulin)
 cargo tarpaulin --workspace --exclude-files "*/tests/*"
@@ -425,7 +434,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
    - Handler tests with `axum-test` for HTTP testing
    - Component tests with `wasm-bindgen-test` for frontend logic
    - Integration tests for end-to-end workflows
-   - Performance benchmarks for critical operations
+   - Functional database tests for data operations
 
 ### Test Execution Guidelines
 
@@ -443,7 +452,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
 2. **Alternative - Test Runner Script**:
 
    ```bash
-   ./scripts/run_comprehensive_tests.sh  # Comprehensive test execution with database
+   ./scripts/test-runner.sh  # Unified test execution with coverage support
    ```
 
 3. **Docker-based Testing**:

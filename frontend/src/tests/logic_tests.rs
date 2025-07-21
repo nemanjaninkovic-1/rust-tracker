@@ -282,6 +282,8 @@ mod frontend_logic_tests {
 
     // Test data validation and formatting
     mod data_validation_tests {
+        use core::option::Option::None;
+
         use super::*;
 
         #[test]

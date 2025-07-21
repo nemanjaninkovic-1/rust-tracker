@@ -1,3 +1,16 @@
+//! Test modules for the backend application
+//!
+//! This module organizes all test suites for comprehensive coverage
+//! of backend functionality, performance, and edge cases.
+
+// All test modules
+pub mod configuration_tests;
+pub mod database_tests;
+pub mod edge_case_tests;
+pub mod error_tests;
+pub mod handler_tests;
+pub mod integration_tests;
+
 #[cfg(test)]
 mod tests {
     use common::{CreateTaskRequest, TaskPriority, TaskStatus};
@@ -28,10 +41,3 @@ mod tests {
         assert_eq!(category, TaskPriority::Medium);
     }
 }
-
-// Include all test modules
-mod benchmarks;
-mod database_tests;
-mod error_tests;
-mod handler_tests;
-mod integration_tests;

@@ -1,6 +1,7 @@
 use leptos::*;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn Modal<F>(
     show: ReadSignal<bool>,
     on_close: F,

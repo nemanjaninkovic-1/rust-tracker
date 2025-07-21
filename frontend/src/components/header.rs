@@ -1,6 +1,7 @@
 use leptos::*;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn Header() -> impl IntoView {
     view! {
         <header class="bg-white shadow-sm border-b">

@@ -27,9 +27,9 @@ RustTracker is a full-stack task management web application built entirely in Ru
 - **Type Safety** - Shared models between frontend and backend
 - **Containerized** - Complete [Docker](https://www.docker.com/) setup
 - **Production Ready** - Health checks, logging, error handling
-- **Comprehensive Testing** - 88 tests with comprehensive coverage
-- **Performance Benchmarks** - Performance testing and optimization
-- **Security Audited** - Vulnerability scanning and dependency checks
+- **Comprehensive Testing** - 124 tests across all layers (simplified test architecture)
+- **Coverage Integration** - cargo-tarpaulin integration with 70% minimum coverage requirement
+- **CI/CD Ready** - GitHub Actions workflow with automated testing and coverage reporting
 
 ## Requirements
 
@@ -47,7 +47,7 @@ RustTracker uses a Makefile for development. All commands should use the Makefil
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
 cd rust-tracker
 ```
 
@@ -79,8 +79,9 @@ make status      # Show service status
 make logs        # View logs for all services
 make clean       # Stop services and clean up
 make db          # Connect to database shell
-make test        # Run comprehensive test suite (56 backend tests + 32 frontend logic tests)
-make quick-test  # Run quick test suite (common crate only)
+make test        # Run comprehensive test suite with coverage analysis (124 tests, 70% minimum coverage)
+make test-only   # Run comprehensive test suite only (no coverage analysis)
+make coverage    # Generate test coverage report only (70% minimum)
 ```
 
 ## Tech Stack
@@ -92,10 +93,11 @@ make quick-test  # Run quick test suite (common crate only)
 - **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
 - **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
 - **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
-- **Testing**: Comprehensive test suite with 88 tests
-  - Unit tests, integration tests, performance benchmarks
-  - Backend tests: 56 tests passing with database isolation
-  - Frontend tests: 32 logic tests covering API and validation
+- **Testing**: Comprehensive test suite with 124 tests across all layers
+  - Coverage integration with [cargo-tarpaulin](https://github.com/xd009642/tarpaulin) (70% minimum)
+  - Backend tests: 55 tests (database, handlers, integration, functional)
+  - Frontend tests: 32 tests (logic, API client, validation)
+  - Common tests: 37 tests (data structure and validation tests)
   - Database isolation with [serial_test](https://crates.io/crates/serial_test)
 - **Development Tools**: Custom scripts and Makefile
 
@@ -119,15 +121,15 @@ rust-tracker/
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
 │   │   ├── error.rs                # Error handling
-│   │   ├── auth.rs                 # Authentication logic
+│   │   ├── auth.rs                 # Authentication middleware
 │   │   ├── rate_limit.rs           # Rate limiting middleware
 │   │   └── tests/                  # Comprehensive test suite
 │   │       ├── mod.rs              # Test module exports
-│   │       ├── database_tests.rs   # Database layer tests (23 tests)
-│   │       ├── handler_tests.rs    # HTTP handler tests (20 tests)
-│   │       ├── error_tests.rs      # Error handling tests (8 tests)
-│   │       ├── integration_tests.rs # Integration tests (6 tests)
-│   │       └── benchmarks.rs       # Performance benchmarks (8 tests)
+│   │       ├── database_tests.rs   # Database layer tests
+│   │       ├── handler_tests.rs    # HTTP handler tests
+│   │       ├── error_tests.rs      # Error handling tests
+│   │       ├── integration_tests.rs # Integration tests
+│   │       └── benchmarks.rs       # Performance benchmarks
 │   ├── migrations/             # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
 ├── frontend/                    # Leptos reactive app
@@ -149,17 +151,20 @@ rust-tracker/
 │   │       └── mod.rs              # Page exports
 │   ├── index.html               # HTML entry point
 │   ├── nginx.conf               # Web server config
+│   ├── package.json             # Node.js dependencies for Tailwind
+│   ├── tailwind.config.js       # Tailwind CSS configuration
+│   ├── Trunk.toml               # Trunk build configuration
+│   └── styles/                  # CSS source files
+│       └── input.css               # Tailwind CSS input file
 ├── common/                      # Shared types
 │   └── src/
 │       ├── lib.rs                  # Data models and enums
 │       └── tests/                  # Common crate test suite
 │           ├── mod.rs              # Test module exports
-│           └── data_structures.rs  # Data structure tests (19 tests)
+│           └── data_structures.rs  # Data structure tests (37 tests)
 └── scripts/                       # Development tools
-    ├── frontend_build_production.sh  # Frontend production build script
     ├── frontend_dev_server.sh        # Frontend development server
-    ├── run_quick_tests.sh            # Quick test runner
-    └── run_comprehensive_tests.sh    # Comprehensive test runner
+    └── test-runner.sh                 # Unified test runner with coverage support
 ```
 
 ## Architecture Overview
@@ -243,9 +248,29 @@ All endpoints use JSON format and the Task model from the `common` crate. The AP
 ## Running Tests
 
 ```bash
-make test          # Run comprehensive test suite (56 backend tests + 32 frontend logic tests)
-make quick-test    # Run quick test suite (common crate only)
+make test          # Run comprehensive test suite with coverage analysis (124 tests, 70% minimum coverage)
+make test-only     # Run comprehensive test suite only (no coverage analysis)
+make coverage      # Generate test coverage report only (70% minimum)
 ```
+
+### Test Coverage
+
+RustTracker maintains comprehensive test coverage with **124 tests across all layers**:
+
+- **Total Tests**: 124 comprehensive tests
+- **Coverage Integration**: cargo-tarpaulin with 70% minimum requirement
+- **Test Distribution**:
+  - Backend: 55 tests (database, handlers, integration, benchmarks)
+  - Frontend: 32 tests (logic, API client, validation)  
+  - Common: 37 tests (data structures, serialization, validation)
+
+### Testing Architecture
+
+- **Unified Test Runner**: Single `test-runner.sh` script supporting multiple modes
+- **Docker Integration**: Full containerized testing with PostgreSQL setup
+- **Database Isolation**: Uses `serial_test` for safe concurrent testing
+- **Coverage Enforcement**: Fails builds below 70% coverage threshold
+- **CI/CD Integration**: Automated testing in GitHub Actions workflow
 
 ### Frontend Testing
 
@@ -255,7 +280,6 @@ The project includes **frontend logic tests** that don't require a browser:
   - Standard Rust tests that don't require browser
   - Test business logic, data validation, and API client logic
   - Included in `make test` (32 tests)
-  - Run in CI/CD pipeline
 
 The logic tests cover:
 
@@ -315,18 +339,20 @@ The project is designed to run with Docker using Makefile commands:
 make setup      # Initial setup
 make start      # Start services
 make logs       # View logs
-make quick-test # Run quick tests
+make test       # Run comprehensive tests
 ```
 
 ## TODO
 
-- [x] **Make test command**: `make test` implemented - comprehensive test suite runner (56 backend tests + 32 frontend logic tests)
+- [x] **Make test command**: `make test` implemented - comprehensive test suite with coverage analysis (124 tests, 70% minimum)
+- [x] **Coverage integration**: cargo-tarpaulin integrated with 70% minimum coverage requirement
+- [x] **Simplified test architecture**: Unified test-runner.sh replacing complex test scripts
 - [x] **Frontend logic testing**: Frontend logic tests integrated into main test suite (no browser required)
+- [x] **CI/CD integration**: GitHub Actions workflow with automated testing and coverage reporting
+- [x] **Script cleanup**: Reduced script complexity and eliminated redundant test infrastructure
 - [ ] **Backend shell improvements**: `make backend-shell` lacks proper debugging tools
 - [ ] **Makefile organization**: Available commands need consolidation and documentation
 - [ ] **Performance optimization**: Consider implementing cargo workspace caching for faster builds
-- [ ] **Rate limiting**: Document and enhance rate limiting configuration (basic implementation exists)
-- [ ] **Authentication system**: Enhance JWT-based user authentication and authorization (basic implementation exists)
 - [ ] **Real-time updates**: WebSocket support for live task synchronization
 - [ ] **Advanced filtering**: Full-text search and custom filter combinations
 - [ ] **Bulk operations**: Multi-task selection and batch processing
@@ -337,7 +363,6 @@ make quick-test # Run quick tests
 - [ ] **Accessibility testing**: Frontend component accessibility validation
 - [ ] **API documentation**: Generate OpenAPI/Swagger documentation
 - [ ] **Architecture diagrams**: Update mermaid diagrams for new features
-- [ ] **Performance benchmarks**: Document detailed performance metrics
 - [ ] **Deployment guide**: Production deployment and scaling documentation
 
 ## Contributing
@@ -346,7 +371,7 @@ make quick-test # Run quick tests
 2. Create a feature branch
 3. Make your changes
 4. Add tests for new functionality
-5. Ensure all tests pass: `make quick-test`
+5. Ensure all tests pass: `make test`
 6. Run quality checks: `cargo clippy && cargo fmt`
 7. Submit a pull request
 

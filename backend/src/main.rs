@@ -7,24 +7,18 @@ use std::sync::Arc;
 use tower_http::cors::CorsLayer;
 use tracing::info;
 
-mod auth;
 mod database;
 mod error;
 mod handlers;
-mod rate_limit;
 
 #[cfg(test)]
 mod tests;
 
 use database::Database;
-use rate_limit::RateLimiter;
 
-// Extended AppState with more configuration from environment
-#[allow(dead_code)]
+// Application state
 pub struct AppStateData {
     database: Database,
-    rate_limiter: RateLimiter,
-    app_env: String,
 }
 
 pub type AppState = Arc<AppStateData>;
@@ -51,14 +45,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create application state
     let database = Database::new(pool);
-    let rate_limiter = RateLimiter::new();
-    let app_env = std::env::var("APP_ENV").unwrap_or_else(|_| "development".to_string());
 
-    let app_state = Arc::new(AppStateData {
-        database,
-        rate_limiter,
-        app_env,
-    });
+    let app_state = Arc::new(AppStateData { database });
 
     // Build our application with routes
     let app = Router::new()
@@ -72,8 +60,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Run the server
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
-    info!("Server running on http://0.0.0.0:{}", port);
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await?;
+    info!("Server running on http://0.0.0.0:{port}");
 
     axum::serve(listener, app).await?;
 
@@ -81,6 +69,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Health check endpoint handler
-async fn health_check() -> &'static str {
+pub async fn health_check() -> &'static str {
     "OK"
 }

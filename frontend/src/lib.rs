@@ -13,6 +13,7 @@ use components::*;
 use pages::*;
 
 #[component]
+#[allow(non_snake_case)]
 fn App() -> impl IntoView {
     provide_meta_context();
 
@@ -35,6 +36,7 @@ fn App() -> impl IntoView {
 }
 
 #[component]
+#[allow(non_snake_case)]
 fn NotFound() -> impl IntoView {
     view! {
         <div class="text-center py-16">

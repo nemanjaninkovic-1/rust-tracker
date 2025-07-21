@@ -19,8 +19,9 @@ RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 RUN rustup component add rustfmt clippy
 RUN rustup target add wasm32-unknown-unknown
 
-# Install sqlx-cli for migrations (use older version to avoid edition2024 issues)
+# Install sqlx-cli for migrations and coverage tools
 RUN cargo install sqlx-cli --version 0.7.4 --no-default-features --features postgres
+RUN cargo install cargo-llvm-cov
 
 # Set working directory
 WORKDIR /app
@@ -37,4 +38,4 @@ ENV RUST_LOG=info
 ENV CARGO_TERM_COLOR=always
 
 # Default command runs the test suite
-CMD ["./scripts/run_comprehensive_tests.sh", "--tests-only"]
+CMD ["./scripts/test-runner.sh"]

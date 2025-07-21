@@ -6,6 +6,7 @@ use common::Task;
 use leptos::*;
 
 #[component]
+#[allow(non_snake_case)]
 pub fn HomePage() -> impl IntoView {
     let (tasks, set_tasks) = create_signal(Vec::<Task>::new());
     let (is_loading, set_is_loading) = create_signal(true);
