@@ -602,19 +602,23 @@ async fn test_edge_case_large_batch_operations() {
         .get_tasks(Some(filter))
         .await
         .expect("Filtering large dataset should succeed");
-    
+
     // Debug: count expected high priority tasks from our batch
-    let expected_high_priority_count = (0..batch_size)
-        .filter(|i| i % 4 == 2)
-        .count();
-    
-    println!("Expected high priority tasks from batch: {}", expected_high_priority_count);
-    println!("Found high priority tasks in filter: {}", high_priority_tasks.len());
-    
+    let expected_high_priority_count = (0..batch_size).filter(|i| i % 4 == 2).count();
+
+    println!(
+        "Expected high priority tasks from batch: {}",
+        expected_high_priority_count
+    );
+    println!(
+        "Found high priority tasks in filter: {}",
+        high_priority_tasks.len()
+    );
+
     assert!(
         !high_priority_tasks.is_empty(),
-        "Should find high priority tasks (expected at least {} from our batch of {})", 
-        expected_high_priority_count, 
+        "Should find high priority tasks (expected at least {} from our batch of {})",
+        expected_high_priority_count,
         batch_size
     );
 
