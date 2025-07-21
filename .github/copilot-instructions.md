@@ -2,6 +2,11 @@
 
 **No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (✗) when indicating status, validation, or pass/fail conditionsST API server
 
+## HARD RULES **Critical**:
+
+- Only use those specific ✓ (Check mark, U+2713) and ✗ (X mark, U+2717) and no other emojies in a codbase.
+- Always use `make` commands for project operations unless there is no make command available for the specific action you want to perform.
+
 ## Project Overview
 
 RustTracker is a full-stack task management web application built entirely in Rust with:

@@ -4,7 +4,7 @@
 
 set -e
 
-echo "🧪 RustTracker Comprehensive Test Suite"
+echo "RustTracker Comprehensive Test Suite"
 echo "======================================"
 
 # Colors for output
@@ -385,20 +385,20 @@ main() {
     fi
     
     echo
-    print_success "🎉 All checks completed successfully!"
+    print_success "All checks completed successfully!"
     echo
     print_status "Test Summary:"
-    echo "  ✅ Common crate tests"
-    echo "  ✅ Backend unit tests"
-    echo "  ✅ Backend integration tests"
-    echo "  ✅ Frontend tests"
-    echo "  ✅ Code formatting"
-    echo "  ✅ Code quality (Clippy)"
-    echo "  ✅ Test coverage analysis"
-    echo "  ✅ Security audit"
-    echo "  ✅ Dependency check"
+    echo "  ✓ Common crate tests"
+    echo "  ✓ Backend unit tests"
+    echo "  ✓ Backend integration tests"
+    echo "  ✓ Frontend tests"
+    echo "  ✓ Code formatting"
+    echo "  ✓ Code quality (Clippy)"
+    echo "  ✓ Test coverage analysis"
+    echo "  ✓ Security audit"
+    echo "  ✓ Dependency check"
     echo
-    print_success "Your RustTracker application is well-tested and secure! 🚀"
+    print_success "Your RustTracker application is well-tested and secure!"
 }
 
 # Handle script interruption

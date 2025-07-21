@@ -55,7 +55,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ All required secrets are configured"
+          echo "✓ All required secrets are configured"
 
       - name: Run comprehensive test suite
         run: |
@@ -70,21 +70,21 @@ jobs:
       - name: Run security audit
         run: |
           echo "Running security audit..."
-          echo "✅ Environment variables configured securely"
-          echo "✅ Database credentials managed via secrets"
-          echo "✅ JWT secret configured for authentication"
-          echo "✅ Rate limiting enabled"
-          echo "✅ Security audit complete"
+          echo "✓ Environment variables configured securely"
+          echo "✓ Database credentials managed via secrets"
+          echo "✓ JWT secret configured for authentication"
+          echo "✓ Rate limiting enabled"
+          echo "✓ Security audit complete"
 
       - name: Build and test summary
         if: always()
         run: |
           echo "=== CI/CD Pipeline Summary ==="
-          echo "✅ Code compilation: Successful"
-          echo "✅ Test execution: 56 backend tests + 32 frontend logic tests"
-          echo "✅ Security audit: Passed"
-          echo "✅ Build process: Completed"
-          echo "✅ Container images: Built successfully"
+          echo "✓ Code compilation: Successful"
+          echo "✓ Test execution: 56 backend tests + 32 frontend logic tests"
+          echo "✓ Security audit: Passed"
+          echo "✓ Build process: Completed"
+          echo "✓ Container images: Built successfully"
 
       - name: Run quick test suite
         run: make quick-test

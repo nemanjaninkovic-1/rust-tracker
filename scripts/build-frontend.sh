@@ -3,12 +3,12 @@
 
 set -e
 
-echo "🎨 Building Tailwind CSS..."
+echo "Building Tailwind CSS..."
 cd frontend
 npm run build-css-prod
 
-echo "🦀 Building Rust WASM..."
+echo "Building Rust WASM..."
 trunk build --release
 
-echo "✅ Frontend build complete!"
-echo "📁 Files ready in frontend/dist/"
+echo "✓ Frontend build complete!"
+echo "Files ready in frontend/dist/"

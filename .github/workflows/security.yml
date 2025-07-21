@@ -57,7 +57,7 @@ jobs:
           echo "Installing Rust security tools..."
           # Skip tool installation as it's causing dependency conflicts
           # Focus on manual security checks instead
-          echo "✅ Skipping tool installation - using manual security checks"
+          echo "✓ Skipping tool installation - using manual security checks"
 
       - name: Run dependency security audit
         run: |
@@ -68,15 +68,15 @@ jobs:
 
           # Look for known problematic dependencies
           echo "=== Known Vulnerability Patterns ==="
-          grep -r "openssl.*0\." . || echo "✅ No obviously vulnerable OpenSSL versions found"
-          grep -r "serde.*1\.0\.[0-9][0-9]*" . || echo "✅ Serde version check completed"
+          grep -r "openssl.*0\." . || echo "✓ No obviously vulnerable OpenSSL versions found"
+          grep -r "serde.*1\.0\.[0-9][0-9]*" . || echo "✓ Serde version check completed"
 
           # Check for yanked crates (basic patterns)
           echo "=== Basic Crate Health Check ==="
-          find . -name "Cargo.toml" -exec grep -l "0\.0\.0" {} \; || echo "✅ No obvious placeholder versions found"
-
-          echo "✅ Basic security audit completed"
-
+          find . -name "Cargo.toml" -exec grep -l "0\.0\.0" {} \; || echo "✓ No obvious placeholder versions found"
+          
+          echo "✓ Basic security audit completed"
+          
       - name: Check for known security vulnerabilities
         run: |
           echo "Checking for security vulnerabilities manually..."
@@ -86,36 +86,36 @@ jobs:
           # Check for hardcoded secrets
           echo "Checking for hardcoded secrets..."
           if grep -r -i "password.*=" --include="*.rs" --include="*.toml" . >/dev/null 2>&1; then
-            echo "⚠️ WARNING: Potential hardcoded passwords found"
+            echo "✗ WARNING: Potential hardcoded passwords found"
             grep -r -i "password.*=" --include="*.rs" --include="*.toml" . | head -3
           else
-            echo "✅ No hardcoded passwords found"
+            echo "✓ No hardcoded passwords found"
           fi
 
           if grep -r -i "secret.*=" --include="*.rs" --include="*.toml" . >/dev/null 2>&1; then
-            echo "⚠️ WARNING: Potential hardcoded secrets found"
+            echo "✗ WARNING: Potential hardcoded secrets found"
             grep -r -i "secret.*=" --include="*.rs" --include="*.toml" . | head -3
           else
-            echo "✅ No hardcoded secrets found"
+            echo "✓ No hardcoded secrets found"
           fi
 
           if grep -r -i "key.*=" --include="*.rs" --include="*.toml" . >/dev/null 2>&1; then
-            echo "⚠️ WARNING: Potential hardcoded keys found"
+            echo "✗ WARNING: Potential hardcoded keys found"
             grep -r -i "key.*=" --include="*.rs" --include="*.toml" . | head -3
           else
-            echo "✅ No hardcoded keys found"
+            echo "✓ No hardcoded keys found"
           fi
 
           # Check for unsafe Rust code
           echo "Checking for unsafe Rust code..."
           if grep -r "unsafe" --include="*.rs" . >/dev/null 2>&1; then
-            echo "⚠️ WARNING: Unsafe code found"
+            echo "✗ WARNING: Unsafe code found"
             grep -r "unsafe" --include="*.rs" . | head -3
           else
-            echo "✅ No unsafe code found"
+            echo "✓ No unsafe code found"
           fi
 
-          echo "✅ Manual security check completed"
+          echo "✓ Manual security check completed"
 
       - name: Check for outdated dependencies
         run: |
@@ -147,30 +147,30 @@ jobs:
 
           # Check for secrets in Dockerfiles
           if find . -name "Dockerfile*" -exec grep -l "password\|secret\|key" {} \; 2>/dev/null; then
-            echo "⚠️ WARNING: Potential secrets found in Docker files:"
+            echo "✗ WARNING: Potential secrets found in Docker files:"
             find . -name "Dockerfile*" -exec grep -H "password\|secret\|key" {} \; 2>/dev/null | head -5
           else
-            echo "✅ No obvious secrets found in Docker files"
+            echo "✓ No obvious secrets found in Docker files"
           fi
 
           # Check for exposed ports
           echo "Checking exposed ports in docker-compose.yml..."
           if [ -f docker/docker-compose.yml ]; then
             if grep -n "ports:" docker/docker-compose.yml; then
-              echo "ℹ️ Port mappings found - ensure these are intentional"
+              echo "INFO: Port mappings found - ensure these are intentional"
             else
-              echo "✅ No port mappings found"
+              echo "✓ No port mappings found"
             fi
           else
-            echo "ℹ️ No docker-compose.yml found in docker/ directory"
+            echo "INFO: No docker-compose.yml found in docker/ directory"
           fi
 
           # Check for privileged containers
           echo "Checking for privileged containers..."
           if find . -name "docker-compose*.yml" -exec grep -l "privileged.*true" {} \; 2>/dev/null; then
-            echo "⚠️ WARNING: Privileged containers found"
+            echo "✗ WARNING: Privileged containers found"
           else
-            echo "✅ No privileged containers found"
+            echo "✓ No privileged containers found"
           fi
 
       - name: Environment security check
@@ -179,30 +179,30 @@ jobs:
 
           # Check for .env files in git
           if git ls-files | grep -E "\.env$" >/dev/null 2>&1; then
-            echo "⚠️ WARNING: .env files found in git repository"
+            echo "✗ WARNING: .env files found in git repository"
             echo "These files may contain sensitive information:"
             git ls-files | grep -E "\.env$"
-            echo "❌ Failing due to security risk"
+            echo "✗ Failing due to security risk"
             exit 1
           else
-            echo "✅ No .env files found in git repository"
+            echo "✓ No .env files found in git repository"
           fi
 
           # Validate .env.example exists
           if [ -f .env.example ]; then
-            echo "✅ .env.example template found"
+            echo "✓ .env.example template found"
           else
-            echo "⚠️ Consider adding .env.example template for setup guidance"
+            echo "✗ Consider adding .env.example template for setup guidance"
           fi
 
           # Check for other sensitive files
           echo "Checking for other sensitive files..."
           SENSITIVE_FILES=$(git ls-files | grep -E "\.(pem|key|p12|pfx|crt|csr)$" || true)
           if [ -n "$SENSITIVE_FILES" ]; then
-            echo "⚠️ WARNING: Potentially sensitive files found in git:"
+            echo "✗ WARNING: Potentially sensitive files found in git:"
             echo "$SENSITIVE_FILES"
           else
-            echo "✅ No obvious sensitive files found in git"
+            echo "✓ No obvious sensitive files found in git"
           fi
 
   license-check:
@@ -294,29 +294,29 @@ jobs:
           echo "Found $PANIC_COUNT panic! calls"
 
           if [ $UNWRAP_COUNT -gt 0 ] || [ $EXPECT_COUNT -gt 0 ] || [ $PANIC_COUNT -gt 0 ]; then
-            echo "⚠️ Found potential error handling issues - review for security implications"
+            echo "✗ Found potential error handling issues - review for security implications"
           else
-            echo "✅ No obvious error handling issues found"
+            echo "✓ No obvious error handling issues found"
           fi
 
           # Check for TODO/FIXME in security-critical areas
           echo "Checking for TODO/FIXME in security areas..."
           if grep -r "TODO.*auth\|FIXME.*auth\|TODO.*password\|FIXME.*password" --include="*.rs" . 2>/dev/null; then
-            echo "⚠️ Found security-related TODOs - review these carefully"
+            echo "✗ Found security-related TODOs - review these carefully"
           else
-            echo "✅ No security-related TODOs found"
+            echo "✓ No security-related TODOs found"
           fi
 
-          echo "✅ Code quality security check completed"
+          echo "✓ Code quality security check completed"
 
       - name: Check for TODO and FIXME comments
         run: |
           echo "Checking for TODO and FIXME comments..."
           if find . -name "*.rs" -exec grep -l "TODO\|FIXME\|XXX\|HACK" {} \; 2>/dev/null | head -10; then
-            echo "⚠️ Found TODO/FIXME comments in code"
+            echo "✗ Found TODO/FIXME comments in code"
             echo "This is informational - review these for security implications"
           else
-            echo "✅ No TODO/FIXME comments found"
+            echo "✓ No TODO/FIXME comments found"
           fi
 
       - name: Check for compilation issues
@@ -337,18 +337,18 @@ jobs:
           echo "Checking for error handling patterns..."
           grep -r "Result<\|Option<" --include="*.rs" . | wc -l | xargs echo "Error handling patterns found:"
 
-          echo "✅ Security-focused code analysis completed"
+          echo "✓ Security-focused code analysis completed"
 
       - name: Security audit summary
         if: always()
         run: |
           echo "=== Security Audit Summary ==="
-          echo "✅ Dependency security check: Completed"
-          echo "✅ Manual vulnerability scan: Completed"
-          echo "✅ Docker security validation: Completed"
-          echo "✅ Environment security check: Completed"
-          echo "✅ Code quality security check: Completed"
+          echo "✓ Dependency security check: Completed"
+          echo "✓ Manual vulnerability scan: Completed"
+          echo "✓ Docker security validation: Completed"
+          echo "✓ Environment security check: Completed"
+          echo "✓ Code quality security check: Completed"
           echo ""
-          echo "🔒 Security audit completed successfully!"
+          echo "Security audit completed successfully!"
           echo "   Review any warnings above for security implications"
           echo "   This workflow focuses on identifying potential security issues"

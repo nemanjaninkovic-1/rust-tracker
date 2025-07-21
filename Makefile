@@ -1,12 +1,12 @@
 # Use modern docker compose syntax
 COMPOSE_CMD := docker compose -f docker/docker-compose.yml --env-file .env
 
-# ✅ VERIFIED WORKING COMMANDS:
+# ✓ VERIFIED WORKING COMMANDS:
 # - setup, build, start, stop, restart, rebuild, status, logs, clean
 # - db (database shell access)
 # - test (comprehensive test suite with database setup)
 # - quick-test (quick test suite for common crate)
-# ❌ TODO/DEVELOPMENT NEEDED:
+# ✗ TODO/DEVELOPMENT NEEDED:
 # - backend-shell (container lacks shell tools)
 
 .PHONY: help setup build start stop restart rebuild logs clean status db test quick-test backend-shell dev-frontend build-css

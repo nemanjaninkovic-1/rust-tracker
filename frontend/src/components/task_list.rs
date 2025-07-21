@@ -134,7 +134,7 @@ where
                             if status_tasks.is_empty() {
                                 view! {
                                     <div class="text-center py-8 text-gray-400">
-                                        <div class="text-2xl mb-2">"📝"</div>
+                                        <div class="text-2xl mb-2">"+"</div>
                                         <p class="text-sm">"Drop tasks here"</p>
                                     </div>
                                 }.into_view()
@@ -152,7 +152,7 @@ where
                         } else {
                             view! {
                                 <div class="text-center py-8 text-gray-400">
-                                    <div class="text-2xl mb-2">"📝"</div>
+                                    <div class="text-2xl mb-2">"+"</div>
                                     <p class="text-sm">"Drop tasks here"</p>
                                 </div>
                             }.into_view()

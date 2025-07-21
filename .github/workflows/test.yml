@@ -158,11 +158,11 @@ jobs:
     steps:
       - name: Deployment notification
         run: |
-          echo "✅ All tests passed!"
-          echo "✅ Security audit completed!"
-          echo "✅ Code quality checks passed!"
-          echo "✅ Build successful!"
-          echo "🚀 Ready for deployment!"
+          echo "✓ All tests passed!"
+          echo "✓ Security audit completed!"
+          echo "✓ Code quality checks passed!"
+          echo "✓ Build successful!"
+          echo "✓ Ready for deployment!"
           echo ""
           echo "Test Results:"
           echo "- Backend: 56 tests passing"

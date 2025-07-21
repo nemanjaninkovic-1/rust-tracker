@@ -72,7 +72,7 @@ pub fn HomePage() -> impl IntoView {
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                             <div class="flex items-center">
                                 <div class="text-red-400 mr-3">
-                                    "⚠️"
+                                    "✗"
                                 </div>
                                 <div>
                                     <h3 class="text-sm font-medium text-red-800">"Error loading tasks"</h3>
