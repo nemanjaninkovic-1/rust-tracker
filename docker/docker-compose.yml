@@ -14,7 +14,7 @@ services:
   backend:
     build:
       context: ..
-      dockerfile: backend/Dockerfile
+      dockerfile: docker/Dockerfile.backend
     container_name: rusttracker-backend
     depends_on:
       - db
@@ -32,7 +32,7 @@ services:
   frontend:
     build:
       context: ..
-      dockerfile: frontend/Dockerfile
+      dockerfile: docker/Dockerfile.frontend
     container_name: rusttracker-frontend
     depends_on:
       - backend

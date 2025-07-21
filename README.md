@@ -110,7 +110,9 @@ rust-tracker/
 ├── docker/                      # Docker configuration
 │   ├── docker-compose.yml         # Container orchestration  
 │   ├── docker-compose.test.yml    # Test environment
-│   └── Dockerfile.test            # Testing container
+│   ├── Dockerfile.test            # Testing container
+│   ├── Dockerfile.backend         # Backend container definition
+│   └── Dockerfile.frontend        # Frontend container definition
 ├── backend/                     # Axum REST API
 │   ├── src/
 │   │   ├── main.rs                 # Server entry point
@@ -128,7 +130,6 @@ rust-tracker/
 │   │       └── benchmarks.rs       # Performance benchmarks (8 tests)
 │   ├── migrations/             # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
-│   └── Dockerfile               # Backend container
 ├── frontend/                    # Leptos reactive app
 │   ├── src/
 │   │   ├── lib.rs                  # App entry point
@@ -148,7 +149,6 @@ rust-tracker/
 │   │       └── mod.rs              # Page exports
 │   ├── index.html               # HTML entry point
 │   ├── nginx.conf               # Web server config
-│   └── Dockerfile               # Frontend container
 ├── common/                      # Shared types
 │   └── src/
 │       ├── lib.rs                  # Data models and enums

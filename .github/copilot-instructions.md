@@ -26,7 +26,9 @@ rust-tracker/
 ├── docker/                         # Docker configuration
 │   ├── docker-compose.yml          # Container orchestration
 │   ├── docker-compose.test.yml     # Test environment
-│   └── Dockerfile.test             # Testing container
+│   ├── Dockerfile.test             # Testing container
+│   ├── Dockerfile.backend          # Backend container definition
+│   └── Dockerfile.frontend         # Frontend container definition
 ├── .env                            # Environment variables
 ├── backend/                        # Axum REST API
 │   ├── src/
@@ -43,7 +45,6 @@ rust-tracker/
 │   │       └── benchmarks.rs       # Performance benchmarks (8 tests)
 │   ├── migrations/                 # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
-│   └── Dockerfile                  # Backend container
 ├── frontend/                       # Leptos WASM app
 │   ├── src/
 │   │   ├── lib.rs                  # App entry point
@@ -63,7 +64,6 @@ rust-tracker/
 │   │       └── mod.rs              # Test exports
 │   ├── index.html                  # HTML entry point
 │   ├── nginx.conf                  # Web server config
-│   └── Dockerfile                  # Frontend container
 ├── common/                         # Shared types
 │   └── src/
 │       ├── lib.rs                  # Data models and enums
@@ -182,9 +182,26 @@ Key environment variables in `.env`:
 
 ### Container Architecture
 
-- **Backend**: Builds from `backend/Dockerfile`, exposes port 8080
-- **Frontend**: Builds from `frontend/Dockerfile`, exposes port 3000
+- **Backend**: Builds from `docker/Dockerfile.backend`, exposes port 8080
+- **Frontend**: Builds from `docker/Dockerfile.frontend`, exposes port 3000
 - **Database**: PostgreSQL container with persistent volume
+
+### Docker Organization
+
+**All Docker-related files are centralized in the `/docker/` folder for consistency and maintainability:**
+
+- `docker/Dockerfile.backend` - Backend container definition
+- `docker/Dockerfile.frontend` - Frontend container definition
+- `docker/Dockerfile.test` - Test environment container
+- `docker/docker-compose.yml` - Main orchestration
+- `docker/docker-compose.test.yml` - Test orchestration
+
+**Benefits of this organization:**
+
+- **Consistency**: All Docker configs in one location
+- **Maintainability**: Easy to find and manage containerization files
+- **Best Practices**: Separates application code from infrastructure code
+- **Team Collaboration**: Clear structure for DevOps and development workflows
 
 ## Code Style and Patterns
 
@@ -426,7 +443,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
 
    ```bash
    # Full containerized testing (recommended for CI)
-   docker compose -f docker/docker-compose.yml -f docker/Dockerfile.test up --build
+   docker compose -f docker/docker-compose.test.yml up --build
 
    # Test in running environment
    docker compose up -d
