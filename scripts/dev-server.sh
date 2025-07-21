@@ -6,11 +6,14 @@ set -e
 echo "Starting RustTracker Frontend Development Server"
 echo "================================================"
 
-# Check if we're in the right directory
-if [ ! -f "Cargo.toml" ]; then
-    echo "ERROR: Please run this script from the frontend directory"
+# Check if we're in the workspace root directory
+if [ ! -f "Cargo.toml" ] || [ ! -d "frontend" ]; then
+    echo "ERROR: Please run this script from the workspace root directory"
     exit 1
 fi
+
+# Change to frontend directory
+cd frontend
 
 # Install npm dependencies if needed
 if [ ! -d "node_modules" ]; then

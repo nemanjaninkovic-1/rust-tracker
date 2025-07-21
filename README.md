@@ -156,6 +156,8 @@ rust-tracker/
 │           ├── mod.rs              # Test module exports
 │           └── data_structures.rs  # Data structure tests (19 tests)
 └── scripts/                    # Development tools
+    ├── build-frontend.sh          # Frontend build script
+    ├── dev-server.sh              # Frontend development server
     ├── quick-test.sh              # Quick test runner
     └── test-suite.sh              # Comprehensive test runner
 ```

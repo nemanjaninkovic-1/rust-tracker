@@ -74,9 +74,9 @@ jobs:
           # Check for yanked crates (basic patterns)
           echo "=== Basic Crate Health Check ==="
           find . -name "Cargo.toml" -exec grep -l "0\.0\.0" {} \; || echo "✓ No obvious placeholder versions found"
-          
+
           echo "✓ Basic security audit completed"
-          
+
       - name: Check for known security vulnerabilities
         run: |
           echo "Checking for security vulnerabilities manually..."

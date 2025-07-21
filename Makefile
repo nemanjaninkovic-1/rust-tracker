@@ -101,7 +101,7 @@ clean:
 
 dev-frontend:
 	@echo "Starting frontend development server..."
-	@cd frontend && ./dev-server.sh
+	@./scripts/dev-server.sh
 
 build-css:
 	@echo "Building Tailwind CSS..."

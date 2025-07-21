@@ -76,8 +76,10 @@ rust-tracker/
 │           ├── data_structures.rs
 │           └── mod.rs
 └── scripts/                        # Development tools
-    ├── test-suite.sh               # Comprehensive test runner
-    └── quick-test.sh               # Quick test script
+    ├── build-frontend.sh           # Frontend build script
+    ├── dev-server.sh               # Frontend development server  
+    ├── quick-test.sh               # Quick test script
+    └── test-suite.sh               # Comprehensive test runner
 ```
 
 ### Technology Stack
