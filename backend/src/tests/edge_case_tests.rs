@@ -226,7 +226,10 @@ async fn test_edge_case_priority_enum_coverage() {
             .expect("Filtering by priority should succeed");
 
         // Should have at least one task with this priority (or none if concurrent tests interfered)
-        let priority_tasks = filtered_tasks.iter().filter(|t| t.priority == *priority).count();
+        let priority_tasks = filtered_tasks
+            .iter()
+            .filter(|t| t.priority == *priority)
+            .count();
         // In concurrent environment, tasks might be deleted by other tests
         // Just verify that filtering works without strict assertions
         if priority_tasks > 0 {
@@ -271,10 +274,8 @@ async fn test_edge_case_status_enum_coverage() {
         due_date: None,
     };
 
-    let update_result = database
-        .update_task(task.id, in_progress_update)
-        .await;
-    
+    let update_result = database.update_task(task.id, in_progress_update).await;
+
     // Handle concurrent test interference gracefully
     task = match update_result {
         Ok(updated_task) => {
@@ -579,7 +580,8 @@ async fn test_edge_case_large_batch_operations() {
     assert!(
         our_task_count > 0 && our_task_count <= batch_size,
         "Should retrieve some of our batch tasks (found {} out of {} created)",
-        our_task_count, batch_size
+        our_task_count,
+        batch_size
     );
 
     // Test filtering with large dataset
