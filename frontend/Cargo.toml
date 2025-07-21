@@ -41,3 +41,4 @@ version = "0.4"
 
 [dev-dependencies]
 urlencoding = "2.1"
+wasm-bindgen-test = "0.3"

@@ -101,7 +101,7 @@ clean:
 
 dev-frontend:
 	@echo "Starting frontend development server..."
-	@./scripts/dev-server.sh
+	@./scripts/frontend_dev_server.sh
 
 build-css:
 	@echo "Building Tailwind CSS..."
@@ -130,7 +130,7 @@ test:
 
 quick-test:
 	@echo "Running Docker-based quick test suite..."
-	@./scripts/quick-test.sh
+	@./scripts/run_quick_tests.sh
 
 # =============================================================================
 # TODO - Development Needed

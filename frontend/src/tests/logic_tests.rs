@@ -4,6 +4,12 @@ mod frontend_logic_tests {
     use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};
     use uuid::Uuid;
 
+    // Configure tests to run silently
+    #[allow(unused_imports)]
+    use wasm_bindgen_test::*;
+
+    wasm_bindgen_test_configure!(run_in_browser);
+
     // Test API URL generation logic
     mod api_url_tests {
         use super::*;

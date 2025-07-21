@@ -76,10 +76,10 @@ rust-tracker/
 │           ├── data_structures.rs
 │           └── mod.rs
 └── scripts/                        # Development tools
-    ├── build-frontend.sh           # Frontend build script
-    ├── dev-server.sh               # Frontend development server  
-    ├── quick-test.sh               # Quick test script
-    └── test-suite.sh               # Comprehensive test runner
+    ├── frontend_build_production.sh  # Frontend production build script
+    ├── frontend_dev_server.sh        # Frontend development server
+    ├── run_quick_tests.sh            # Quick test script
+    └── run_comprehensive_tests.sh    # Comprehensive test runner
 ```
 
 ### Technology Stack
@@ -268,7 +268,7 @@ Key environment variables in `.env`:
    ```bash
    cargo check --workspace          # Check compilation
    make test                        # PREFERRED: Run tests with database setup
-   ./scripts/test-runner.sh         # Alternative: Use test runner script
+   ./scripts/run_comprehensive_tests.sh         # Alternative: Use test runner script
    ```
 
 2. **Test Updates Required When**:
@@ -289,12 +289,12 @@ Key environment variables in `.env`:
 4. **Before Committing**:
    ```bash
    make test                        # REQUIRED: Full test suite with database setup
-   ./scripts/test-runner.sh         # Alternative: Comprehensive test runner
+   ./scripts/run_comprehensive_tests.sh         # Alternative: Comprehensive test runner
    cargo clippy --workspace -- -D warnings    # Code quality checks
    cargo fmt --check               # Format checks
    ```
 
-**Never commit with failing tests. Always use `make test` or `./scripts/test-runner.sh` to ensure all tests pass with proper database setup.**
+**Never commit with failing tests. Always use `make test` or `./scripts/run_comprehensive_tests.sh` to ensure all tests pass with proper database setup.**
 
 #### Test Coverage Maintenance:
 
@@ -443,7 +443,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
 2. **Alternative - Test Runner Script**:
 
    ```bash
-   ./scripts/test-runner.sh  # Comprehensive test execution with database
+   ./scripts/run_comprehensive_tests.sh  # Comprehensive test execution with database
    ```
 
 3. **Docker-based Testing**:

@@ -37,4 +37,4 @@ ENV RUST_LOG=info
 ENV CARGO_TERM_COLOR=always
 
 # Default command runs the test suite
-CMD ["./scripts/test-suite.sh", "--tests-only"]
+CMD ["./scripts/run_comprehensive_tests.sh", "--tests-only"]

@@ -1,0 +1,10 @@
+# Configuration for wasm-bindgen-test to reduce verbosity
+# This file configures test output to be moderately verbose
+
+[test.wasm]
+test-runner = "wasm-bindgen-test-runner"
+
+[test.wasm.env]
+# Moderate test output verbosity
+RUST_LOG = "warn"
+WASM_BINDGEN_TEST_TIMEOUT = "20"

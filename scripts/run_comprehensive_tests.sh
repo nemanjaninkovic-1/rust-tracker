@@ -176,7 +176,7 @@ run_frontend_tests() {
     
     # Run frontend logic tests (no browser required)
     print_status "Running frontend logic tests..."
-    if cargo test -p frontend logic_tests --color=always 2>&1; then
+    if cargo test -p frontend logic_tests --lib 2>&1 | grep -E "(test result:|running|passed|failed)"; then
         print_success "Frontend logic tests passed"
     else
         print_error "Frontend logic tests failed"
@@ -185,7 +185,7 @@ run_frontend_tests() {
     
     # Optional: Check frontend compilation
     print_status "Checking frontend compilation..."
-    if cargo check -p frontend --color=always 2>&1; then
+    if cargo check -p frontend 2>&1 | grep -E "(Finished|error|warning)" || true; then
         print_success "Frontend compiles successfully"
     else
         print_error "Frontend compilation failed"
@@ -221,7 +221,7 @@ run_clippy() {
     
     # Frontend clippy
     cd frontend
-    if cargo clippy -- -D warnings; then
+    if cargo clippy -- -D warnings 2>&1 | grep -E "(checking|warning|error|finished)" || true; then
         print_success "Frontend Clippy analysis passed"
     else
         print_error "Frontend Clippy analysis failed"

@@ -155,11 +155,11 @@ rust-tracker/
 │       └── tests/                  # Common crate test suite
 │           ├── mod.rs              # Test module exports
 │           └── data_structures.rs  # Data structure tests (19 tests)
-└── scripts/                    # Development tools
-    ├── build-frontend.sh          # Frontend build script
-    ├── dev-server.sh              # Frontend development server
-    ├── quick-test.sh              # Quick test runner
-    └── test-suite.sh              # Comprehensive test runner
+└── scripts/                       # Development tools
+    ├── frontend_build_production.sh  # Frontend production build script
+    ├── frontend_dev_server.sh        # Frontend development server
+    ├── run_quick_tests.sh            # Quick test runner
+    └── run_comprehensive_tests.sh    # Comprehensive test runner
 ```
 
 ## Architecture Overview
