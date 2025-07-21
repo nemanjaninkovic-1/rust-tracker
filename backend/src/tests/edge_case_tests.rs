@@ -7,13 +7,19 @@ use crate::database::Database;
 use crate::error::AppError;
 use chrono::Utc;
 use common::{CreateTaskRequest, TaskFilter, TaskPriority, TaskStatus, UpdateTaskRequest};
+use serial_test::serial;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 /// Helper to create a test database connection
 async fn create_test_database() -> Database {
     let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if std::env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = PgPool::connect(&database_url)
@@ -535,6 +541,7 @@ async fn test_edge_case_concurrent_modifications() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_edge_case_large_batch_operations() {
     let database = create_test_database().await;
 
@@ -595,9 +602,20 @@ async fn test_edge_case_large_batch_operations() {
         .get_tasks(Some(filter))
         .await
         .expect("Filtering large dataset should succeed");
+    
+    // Debug: count expected high priority tasks from our batch
+    let expected_high_priority_count = (0..batch_size)
+        .filter(|i| i % 4 == 2)
+        .count();
+    
+    println!("Expected high priority tasks from batch: {}", expected_high_priority_count);
+    println!("Found high priority tasks in filter: {}", high_priority_tasks.len());
+    
     assert!(
         !high_priority_tasks.is_empty(),
-        "Should find high priority tasks"
+        "Should find high priority tasks (expected at least {} from our batch of {})", 
+        expected_high_priority_count, 
+        batch_size
     );
 
     // Batch update some tasks
@@ -633,7 +651,12 @@ async fn test_edge_case_large_batch_operations() {
 async fn test_edge_case_database_connection_resilience() {
     // Test that operations handle database connection issues gracefully
     let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if std::env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = PgPool::connect(&database_url)

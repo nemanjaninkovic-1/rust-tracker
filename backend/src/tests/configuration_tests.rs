@@ -19,7 +19,12 @@ async fn test_health_check_endpoint() {
 #[tokio::test]
 async fn test_application_state_creation() {
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = sqlx::PgPool::connect(&database_url)
@@ -117,7 +122,12 @@ async fn test_application_router_structure() {
 
     // Create a test database state
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = sqlx::PgPool::connect(&database_url)
@@ -144,7 +154,12 @@ async fn test_application_router_structure() {
 async fn test_database_migration_readiness() {
     // Test that database migrations are properly configured
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = sqlx::PgPool::connect(&database_url)
@@ -163,7 +178,12 @@ async fn test_database_migration_readiness() {
 async fn test_application_state_thread_safety() {
     // Test that AppState can be safely shared across threads
     let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| {
-        "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        // In GitHub Actions, use localhost. In Docker, use test-db
+        if env::var("GITHUB_ACTIONS").is_ok() {
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
+        } else {
+            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+        }
     });
 
     let pool = sqlx::PgPool::connect(&database_url)

@@ -58,24 +58,42 @@ jobs:
       - name: Install cargo tools
         run: |
           cargo install sqlx-cli --version 0.7.4 --no-default-features --features postgres
-          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
           rustup target add wasm32-unknown-unknown
 
       - name: Wait for PostgreSQL
         run: |
-          until pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Attempt $i: PostgreSQL not ready, waiting 3 seconds..."
+            sleep 3
           done
+          
+          # Verify connection
+          echo "Testing connection..."
+          PGPASSWORD=password psql -h localhost -U postgres -d postgres -c "SELECT version();"
 
       - name: Create database
         run: |
+          echo "Creating database..."
           PGPASSWORD=password createdb -h localhost -U postgres rusttracker_test || echo "Database might already exist"
+          
+          # Verify database exists
+          PGPASSWORD=password psql -h localhost -U postgres -l | grep rusttracker_test
         env:
           PGPASSWORD: password
 
       - name: Run database migrations
-        run: sqlx migrate run --source backend/migrations
+        run: |
+          echo "Running database migrations..."
+          echo "Migration files:"
+          ls -la backend/migrations/
+          echo "Running migrations with sqlx..."
+          sqlx migrate run --source backend/migrations --database-url postgres://postgres:password@localhost:5432/rusttracker_test
+          echo "Migrations completed successfully"
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/rusttracker_test
 
