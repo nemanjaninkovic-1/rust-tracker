@@ -2,7 +2,25 @@
 
 **No Emojis**: HARD RULE - Do not use emojis, emoticons, or decorative symbols in documentation except for checkmarks (✓) and X marks (✗) when indicating status, validation, or pass/fail conditionsST API server
 
-## HARD RULES **Critical**:
+## Key Implementation Notes
+
+### Simplified Architecture
+
+The project has been simplified by removing authentication and rate limiting modules:
+
+- **Removed Modules**: `auth.rs` and `rate_limit.rs` have been removed from the backend
+- **Clean API**: Direct access to all endpoints without authentication overhead
+- **Simplified Middleware**: Only CORS and logging middleware remain
+- **Focus**: Pure task management functionality without user management complexity
+
+### Current Backend Structure
+
+- `main.rs` - Server entry point with basic middleware
+- `handlers.rs` - HTTP request handlers for task operations
+- `database.rs` - Database operations and connection management
+- `error.rs` - Error handling and HTTP status mapping
+
+This simplified approach makes the project easier to understand and maintain while focusing on core task management functionality.
 
 - Only use those specific ✓ (Check mark, U+2713) and ✗ (X mark, U+2717) (you can change their color) and no other emojies in a codbase.
 - Always use `make` commands for project operations unless there is no make command available for the specific action you want to perform.
@@ -11,11 +29,11 @@
 
 RustTracker is a full-stack task management web application built entirely in Rust with:
 
-- Backend: Axum framework with authentication and rate limiting
+- Backend: Axum framework (authentication and rate limiting removed)
 - Frontend: Leptos reactive web application with Tailwind CSS
 - Database: PostgreSQL with custom enum types
 - Containerization: Docker and Docker Compose
-- Testing: Comprehensive test suite with coverage integration
+- Testing: Comprehensive test suite with 142 tests and 82.6% backend coverage
 - CI/CD: GitHub Actions with automated testing and coverage reporting
 - Shared models between frontend and backend
 
@@ -41,15 +59,15 @@ rust-tracker/
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
 │   │   ├── error.rs                # Error handling
-│   │   ├── auth.rs                 # Authentication middleware
-│   │   ├── rate_limit.rs           # Rate limiting middleware
 │   │   └── tests/                  # Comprehensive test suite
 │   │       ├── mod.rs              # Test module exports
-│   │       ├── database_tests.rs   # Database layer tests
-│   │       ├── handler_tests.rs    # HTTP handler tests
-│   │       ├── error_tests.rs      # Error handling tests
-│   │       ├── integration_tests.rs # Integration tests
-│   │       └── benchmarks.rs       # Performance benchmarks
+│   │       ├── configuration_tests.rs # Application setup tests (13 tests)
+│   │       ├── edge_case_tests.rs  # Edge case and boundary tests (11 tests)
+│   │       ├── database_tests.rs   # Database layer tests (14 tests)
+│   │       ├── handler_tests.rs    # HTTP handler tests (18 tests)
+│   │       ├── error_tests.rs      # Error handling tests (8 tests)
+│   │       ├── integration_tests.rs # Integration tests (5 tests)
+│   │       └── *other tests*       # Additional test modules (4 tests)
 │   ├── migrations/                 # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
 ├── frontend/                       # Leptos WASM app
@@ -68,6 +86,7 @@ rust-tracker/
 │   │   │   └── mod.rs              # Page exports
 │   │   └── tests/                  # Test modules
 │   │       ├── logic_tests.rs      # Logic tests (32 tests)
+│   │       ├── component_tests.rs  # Component tests
 │   │       └── mod.rs              # Test exports
 │   ├── index.html                  # HTML entry point
 │   ├── nginx.conf                  # Web server config
@@ -81,9 +100,9 @@ rust-tracker/
 │       ├── lib.rs                  # Data models and enums
 │       └── tests/                  # Data structure tests (37 tests)
 │           ├── data_structures.rs
+│           ├── validation_tests.rs
 │           └── mod.rs
 └── scripts/                        # Development tools
-    ├── frontend_dev_server.sh      # Frontend development server
     └── test-runner.sh              # Unified test runner with coverage support
 ```
 
@@ -96,8 +115,8 @@ rust-tracker/
 - **Containerization**: Docker + Docker Compose
 - **Build System**: Cargo workspaces
 - **Web Server**: Nginx (for frontend static files)
-- **Testing**: Comprehensive test suite with 124+ tests
-- **Coverage Integration**: cargo-tarpaulin with 70% minimum coverage requirement
+- **Testing**: Comprehensive test suite with 142+ tests
+- **Coverage Integration**: cargo-llvm-cov with 70% minimum coverage requirement
 - **Development Tools**: Custom scripts and Makefile
 
 ## Development Guidelines
@@ -304,11 +323,10 @@ Key environment variables in `.env`:
 
 #### Test Coverage Maintenance:
 
-- **Target**: Maintain 124+ tests across all layers
-- **Coverage Requirement**: 70% minimum using cargo-tarpaulin
+- **Target**: Maintain 142+ tests across all layers
+- **Coverage Requirement**: 70% minimum using cargo-llvm-cov and cargo-tarpaulin
+- **Actual Achievement**: 82.6% backend coverage (exceeds target)
 - **New Code**: Must include tests before being considered complete
-- **Failing Tests**: Fix immediately, never commit with failing tests
-- **Test Documentation**: Update README.md test coverage section when adding new test files
 - **Failing Tests**: Fix immediately, never commit with failing tests
 - **Test Documentation**: Update README.md test coverage section when adding new test files
 
@@ -340,24 +358,28 @@ Before any commit, verify:
 
 ### Comprehensive Test Coverage
 
-RustTracker includes a robust test suite with 120+ tests across all layers:
+RustTracker includes a robust test suite with 142+ tests across all layers:
 
-#### Backend Tests (65 tests)
+#### Backend Tests (73 tests)
 
-- **Database Tests (23 tests)**: Connection management, CRUD operations, error handling, concurrent access
-- **Handler Tests (20 tests)**: HTTP endpoints, request validation, response formatting, error cases
+- **Configuration Tests (13 tests)**: Application setup, routing, CORS, environment variables, logging
+- **Edge Case Tests (11 tests)**: Boundary conditions, concurrent operations, error scenarios, large data
+- **Database Tests (14 tests)**: Connection management, CRUD operations, error handling, concurrent access
+- **Handler Tests (18 tests)**: HTTP endpoints, request validation, response formatting, error cases
 - **Error Tests (8 tests)**: Custom error types, HTTP status mapping, error serialization
-- **Integration Tests (6 tests)**: End-to-end API workflows, complex scenarios
-- **Functional Database Tests (8 tests)**: Database operations, complex scenarios, bulk operations
+- **Integration Tests (5 tests)**: End-to-end API workflows, complex scenarios
+- **Additional Tests (4 tests)**: Various edge cases and validation tests
 
-#### Frontend Tests (27 tests)
+#### Frontend Tests (32 tests)
 
-- **API Client Tests (12 tests)**: HTTP requests, error handling, response parsing
-- **Component Tests (15 tests)**: UI logic, state management, data validation
+- **API Client Tests**: HTTP requests, error handling, response parsing
+- **Component Tests**: UI logic, state management, data validation
+- **Logic Tests**: Business logic, data validation, URL generation
 
-#### Common Crate Tests (19 tests)
+#### Common Crate Tests (37 tests)
 
-- **Data Structure Tests**: Serialization, validation, enum conversions, type safety
+- **Data Structure Tests (19 tests)**: Serialization, validation, enum conversions, type safety
+- **Validation Tests (18 tests)**: Request validation, data formatting, edge cases
 
 #### Testing Infrastructure
 
@@ -365,6 +387,8 @@ RustTracker includes a robust test suite with 120+ tests across all layers:
 - **Simplified Test Runner**: `scripts/test-runner.sh` for test execution with coverage support
 - **Database Isolation**: Uses `serial_test` for safe concurrent testing
 - **WASM Testing**: `wasm-bindgen-test` for frontend component testing
+- **Coverage Tools**: cargo-llvm-cov (primary) and cargo-tarpaulin (fallback)
+- **Docker Security**: Enhanced security configurations for coverage analysis
 
 ### Test Execution
 
@@ -381,7 +405,8 @@ cd frontend && wasm-pack test --node
 # Run functional database tests
 cargo test functional_tests --release
 
-# Run with coverage (requires cargo-tarpaulin)
+# Run with coverage (requires cargo-llvm-cov or cargo-tarpaulin)
+cargo llvm-cov --workspace --html --output-dir ./coverage/
 cargo tarpaulin --workspace --exclude-files "*/tests/*"
 ```
 
