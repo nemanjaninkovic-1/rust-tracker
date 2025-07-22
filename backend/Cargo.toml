@@ -44,4 +44,3 @@ thiserror = "2.0"
 # Testing framework
 axum-test = "15.7"
 serial_test = "3.2"
-futures = "0.3"
