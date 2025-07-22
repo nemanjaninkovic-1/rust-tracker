@@ -1,146 +1,130 @@
 # RustTracker
 
-RustTracker is a full-stack task management web application built entirely in Rust. It features a fast backend using Axum, a reactive frontend using Leptos, and a PostgreSQL database. The entire project is containerized using Docker and Docker Compose for easy setup and deployment.
+RustTracker is a full-stack task management web application built entirely in Rust with a simplified, modern architecture. It features a fast backend using Axum, a reactive frontend using Leptos, and a PostgreSQL database. The entire project is containerized using Docker and Docker Compose for easy setup and deployment.
 
 ## Table of Contents
 
 - [Key Features](#key-features)
-- [Requirements](#requirements)
-- [Getting Started](#getting-started)
-  - [Quick Setup](#quick-setup)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+  - [Simplified Design](#simplified-design)
+  - [Project Structure](#project-structure)
+  - [Architecture Overview](#architecture-overview)
+- [Development](#development)
+  - [Requirements](#requirements)
+  - [Getting Started](#getting-started)
+  - [Makefile Commands](#makefile-commands)
+- [Testing](#testing)
+  - [Running Tests](#running-tests)
+  - [Test Coverage](#test-coverage)
+  - [Testing Architecture](#testing-architecture)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Architecture Overview](#architecture-overview)
-- [API Endpoints](#api-endpoints)
-- [Running Tests](#running-tests)
-- [Environment Configuration](#environment-configuration)
-- [Volumes and Persistence](#volumes-and-persistence)
-- [Local Development](#local-development)
+- [API Reference](#api-reference)
+- [Configuration](#configuration)
+  - [Environment Configuration](#environment-configuration)
+  - [Volumes and Persistence](#volumes-and-persistence)
+- [Development Workflow](#development-workflow)
 - [TODO](#todo)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Key Features
 
-- **Full-stack Rust** - Single language across the entire stack
-- **Reactive UI** - Real-time updates with [Leptos signals](https://leptos.dev/)
-- **Type Safety** - Shared models between frontend and backend
-- **Containerized** - Complete [Docker](https://www.docker.com/) setup
-- **Production Ready** - Health checks, logging, error handling
-- **Comprehensive Testing** - 142 tests across all layers with 82.6% backend coverage
+- **Full-stack Rust** - Single language across the entire stack for consistency and performance
+- **Simplified Architecture** - Clean design without authentication complexity for easier maintenance
+- **Reactive UI** - Real-time updates with [Leptos signals](https://leptos.dev/) and WebAssembly
+- **Type Safety** - Shared models between frontend and backend prevent runtime errors
+- **Containerized** - Complete [Docker](https://www.docker.com/) setup with PostgreSQL database
+- **Production Ready** - Health checks, logging, error handling, and CORS support
+- **Comprehensive Testing** - 161 tests across all layers with 82.6% backend coverage
 - **Coverage Integration** - cargo-llvm-cov and cargo-tarpaulin with 70% minimum requirement
 - **CI/CD Ready** - GitHub Actions workflow with automated testing and coverage reporting
+- **Developer Friendly** - Make commands for all operations, unified test runner, hot reload support
 
-## Requirements
-
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-
-No need to install [Rust](https://rustup.rs/), [PostgreSQL](https://www.postgresql.org/), or frontend tooling locally.
-
-## Getting Started
-
-RustTracker uses a Makefile for development. All commands should use the Makefile targets for consistency.
-
-### Quick Setup
-
-1. Clone the repository:
+## Quick Start
 
 ```bash
+# Clone the repository
 git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
 cd rust-tracker
-```
 
-1. Run the setup script:
-
-```bash
+# Start everything with one command
 make setup
+
+# Verify services are running
+make status
+
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8080
+# Database: localhost:5432
 ```
 
-This will build and start all services with health checks.
-
-1. Use stop to stop services or clean to clean up after:
+Stop services when done:
 
 ```bash
-make stop # Stops all services
-make clean # Stop services and clean up
+make stop    # Stop services
+make clean   # Stop and clean up containers/volumes
 ```
 
-### Makefile Commands
+## Architecture
 
-```bash
-make setup       # Initial setup - builds and starts all services
-make build       # Build all Docker images
-make start       # Start all services
-make stop        # Stop all services
-make restart     # Restart all services
-make rebuild     # Rebuild and start all services
-make status      # Show service status
-make logs        # View logs for all services
-make clean       # Stop services and clean up
-make db          # Connect to database shell
-make test        # Run comprehensive test suite with coverage analysis (142 tests, 82.6% backend coverage)
-make test-only   # Run comprehensive test suite only (no coverage analysis)
-make coverage    # Generate test coverage report only (70% minimum)
-```
+### Simplified Design
 
-## Tech Stack
+RustTracker uses a streamlined architecture focused on core task management functionality:
 
-- **Language**: [Rust](https://www.rust-lang.org/) (Full-stack single language)
-- **Backend**: [Axum framework](https://github.com/tokio-rs/axum) + [SQLx](https://github.com/launchbadge/sqlx) + [PostgreSQL](https://www.postgresql.org/)
-- **Frontend**: [Leptos framework](https://leptos.dev/) + [Tailwind CSS](https://tailwindcss.com/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) with custom enum types
-- **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
-- **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
-- **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
-- **Testing**: Comprehensive test suite with 142 tests across all layers
-  - Coverage integration with [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov) and [cargo-tarpaulin](https://github.com/xd009642/tarpaulin)
-  - Backend tests: 73 tests (database, handlers, integration, configuration, edge cases)
-  - Frontend tests: 32 tests (logic, API client, validation)
-  - Common tests: 37 tests (data structure and validation tests)
-  - Actual backend coverage: 82.6% (exceeds 70% minimum requirement)
-  - Database isolation with [serial_test](https://crates.io/crates/serial_test)
-- **Development Tools**: Custom scripts and Makefile
+- **No Authentication Complexity** - Direct access to all endpoints without user management overhead
+- **No Rate Limiting** - Simplified middleware stack with only CORS and logging
+- **Clean API Design** - REST endpoints for task operations with proper error handling
+- **Single Responsibility** - Each component has a clear, focused purpose
+- **Easier Maintenance** - Reduced complexity makes the codebase more approachable
 
-## Project Structure
+This design choice prioritizes:
+
+- ✓ Learning and understanding Rust full-stack development
+- ✓ Clear separation of concerns between frontend and backend
+- ✓ Easy deployment and testing without external dependencies
+- ✓ Focus on core task management features
+
+### Project Structure
 
 ```text
 rust-tracker/
-├── README.md                    # Project documentation
-├── Cargo.toml                  # Workspace configuration
-├── Makefile                     # Development shortcuts
-├── .env                         # Environment variables
-├── docker/                      # Docker configuration
-│   ├── docker-compose.yml         # Container orchestration  
-│   ├── docker-compose.test.yml    # Test environment
-│   ├── Dockerfile.test            # Testing container
-│   ├── Dockerfile.backend         # Backend container definition
-│   └── Dockerfile.frontend        # Frontend container definition
-├── backend/                     # Axum REST API
+├── README.md                       # Project documentation
+├── Cargo.toml                      # Workspace configuration
+├── Makefile                        # Development shortcuts
+├── .env                            # Environment variables
+├── docker/                         # Docker configuration
+│   ├── docker-compose.yml          # Container orchestration  
+│   ├── docker-compose.test.yml     # Test environment
+│   ├── Dockerfile.test             # Testing container
+│   ├── Dockerfile.backend          # Backend container definition
+│   └── Dockerfile.frontend         # Frontend container definition
+├── backend/                        # Axum REST API (73 tests)
 │   ├── src/
 │   │   ├── main.rs                 # Server entry point
 │   │   ├── handlers.rs             # HTTP request handlers
 │   │   ├── database.rs             # Database operations
-│   │   ├── error.rs                # Error handling
-│   │   └── tests/                  # Comprehensive test suite
+│   │   ├── error.rs                # Error handling and HTTP status mapping
+│   │   └── tests/                  # Backend test suite (73 tests)
 │   │       ├── mod.rs              # Test module exports
-│   │       ├── configuration_tests.rs # Application setup tests (13 tests)
-│   │       ├── edge_case_tests.rs  # Edge case and boundary tests (11 tests)
-│   │       ├── database_tests.rs   # Database layer tests (14 tests)
-│   │       ├── handler_tests.rs    # HTTP handler tests (18 tests)
-│   │       ├── error_tests.rs      # Error handling tests (8 tests)
-│   │       ├── integration_tests.rs # Integration tests (5 tests)
-│   │       └── *other tests*       # Additional test modules (4 tests)
-│   ├── migrations/             # Database schema
+│   │       ├── configuration_tests.rs # Application setup tests
+│   │       ├── edge_case_tests.rs  # Edge case and boundary tests
+│   │       ├── database_tests.rs   # Database layer tests
+│   │       ├── handler_tests.rs    # HTTP handler tests
+│   │       ├── error_tests.rs      # Error handling tests
+│   │       ├── integration_tests.rs # Integration tests
+│   │       └── benchmarks.rs       # Performance benchmarks
+│   ├── migrations/                 # Database schema
 │   │   └── 001_initial.sql         # Initial database setup
-├── frontend/                    # Leptos reactive app
+├── frontend/                       # Leptos reactive app (51 tests)
 │   ├── src/
 │   │   ├── lib.rs                  # App entry point
-│   │   ├── api.rs                  # HTTP client
-│   │   ├── tests/                  # Frontend test suite
+│   │   ├── api.rs                  # HTTP client for backend communication
+│   │   ├── tests/                  # Frontend test suite (51 tests)
 │   │   │   ├── mod.rs              # Test module exports
-│   │   │   ├── logic_tests.rs      # Logic tests (32 tests)
-│   │   │   └── component_tests.rs  # Component tests
+│   │   │   ├── logic_tests.rs      # Business logic tests
+│   │   │   └── component_tests.rs  # Component behavior tests
 │   │   ├── components/             # UI components
 │   │   │   ├── header.rs           # Application header
 │   │   │   ├── task_form.rs        # Task creation/editing form
@@ -151,25 +135,25 @@ rust-tracker/
 │   │   └── pages/                  # App pages
 │   │       ├── home.rs             # Main task management page
 │   │       └── mod.rs              # Page exports
-│   ├── index.html               # HTML entry point
-│   ├── nginx.conf               # Web server config
-│   ├── package.json             # Node.js dependencies for Tailwind
-│   ├── tailwind.config.js       # Tailwind CSS configuration
-│   ├── Trunk.toml               # Trunk build configuration
-│   └── styles/                  # CSS source files
+│   ├── index.html                  # HTML entry point
+│   ├── nginx.conf                  # Web server config
+│   ├── package.json                # Node.js dependencies for Tailwind
+│   ├── tailwind.config.js          # Tailwind CSS configuration
+│   ├── Trunk.toml                  # Trunk build configuration
+│   └── styles/                     # CSS source files
 │       └── input.css               # Tailwind CSS input file
-├── common/                      # Shared types
+├── common/                         # Shared types (37 tests)
 │   └── src/
 │       ├── lib.rs                  # Data models and enums
-│       └── tests/                  # Common crate test suite
+│       └── tests/                  # Common crate test suite (37 tests)
 │           ├── mod.rs              # Test module exports
-│           ├── data_structures.rs  # Data structure tests (19 tests)
-│           └── validation_tests.rs # Validation tests (18 tests)
-└── scripts/                       # Development tools
-    └── test-runner.sh             # Unified test runner with coverage support
+│           ├── data_structures.rs  # Data structure tests
+│           └── validation_tests.rs # Validation tests
+└── scripts/                        # Development tools
+    └── test-runner.sh              # Unified test runner with coverage support
 ```
 
-## Architecture Overview
+### Architecture Overview
 
 ```mermaid
 graph TB
@@ -231,40 +215,110 @@ graph TB
     class COMMON,MODELS,TYPES shared
 ```
 
-## API Endpoints
+## Development
 
-Standard REST API for task management:
+### Requirements
 
-- `GET /api/tasks` - List all tasks (supports filtering)
-  - `?status=Todo|InProgress|Completed`
-  - `?priority=Low|Medium|High|Urgent`
-  - `?due_before=2024-12-31T23:59:59Z`
-  - `?due_after=2024-01-01T00:00:00Z`
-- `POST /api/tasks` - Create new task
-- `PUT /api/tasks/:id` - Update existing task
-- `DELETE /api/tasks/:id` - Delete task
-- `GET /health` - Health check endpoint
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-All endpoints use JSON format and the Task model from the `common` crate. The API includes proper error handling, CORS support, and structured logging.
+No need to install [Rust](https://rustup.rs/), [PostgreSQL](https://www.postgresql.org/), or frontend tooling locally.
 
-## Running Tests
+### Getting Started
+
+RustTracker uses a Makefile for development. All commands should use the Makefile targets for consistency.
+
+1. Clone the repository and start everything:
 
 ```bash
-make test          # Run comprehensive test suite with coverage analysis (142 tests, 82.6% backend coverage)
+git clone https://github.com/nemanjaninkovic-1/rust-tracker.git
+cd rust-tracker
+make setup
+```
+
+1. Verify services are running:
+
+```bash
+make status
+```
+
+1. Access the application:
+   - Frontend: <http://localhost:3000>
+   - Backend API: <http://localhost:8080>
+   - Database: localhost:5432
+
+1. Stop when done:
+
+```bash
+make stop    # Stop services
+make clean   # Stop and clean up
+```
+
+### Makefile Commands
+
+```bash
+# Setup & Management
+make setup       # Initial setup - builds and starts all services
+make build       # Build all Docker images
+make start       # Start all services
+make stop        # Stop all services
+make restart     # Restart all services
+make rebuild     # Rebuild and start all services
+make status      # Show service status
+make logs        # View logs for all services
+make clean       # Stop services and clean up
+
+# Database Access
+make db          # Connect to database shell
+
+# Testing & Quality
+make test        # Run comprehensive test suite with coverage analysis (161 tests, 82.6% backend coverage)
+make test-only   # Run comprehensive test suite only (no coverage analysis)
+make coverage    # Generate test coverage report only (70% minimum)
+
+# Frontend Development
+make dev-frontend # Start frontend development server
+make build-css   # Build Tailwind CSS
+```
+
+## Tech Stack
+
+- **Language**: [Rust](https://www.rust-lang.org/) (Full-stack single language)
+- **Backend**: [Axum framework](https://github.com/tokio-rs/axum) + [SQLx](https://github.com/launchbadge/sqlx) + [PostgreSQL](https://www.postgresql.org/)
+- **Frontend**: [Leptos framework](https://leptos.dev/) + [Tailwind CSS](https://tailwindcss.com/) + [WebAssembly](https://webassembly.org/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with custom enum types
+- **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
+- **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
+- **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
+- **Testing**: Comprehensive test suite with 161 tests across all layers
+  - Coverage integration with [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov) and [cargo-tarpaulin](https://github.com/xd009642/tarpaulin)
+  - Backend tests: 73 tests (database, handlers, integration, configuration, edge cases)
+  - Frontend tests: 51 tests (logic, API client, validation, component behavior)
+  - Common tests: 37 tests (data structures, serialization, validation)
+  - Actual backend coverage: 82.6% (exceeds 70% minimum requirement)
+  - Database isolation with [serial_test](https://crates.io/crates/serial_test)
+- **Development Tools**: Custom scripts and Makefile
+
+## Testing
+
+### Running Tests
+
+```bash
+make test          # Run comprehensive test suite with coverage analysis (161 tests, 82.6% backend coverage)
 make test-only     # Run comprehensive test suite only (no coverage analysis)
 make coverage      # Generate test coverage report only (70% minimum)
 ```
 
 ### Test Coverage
 
-RustTracker maintains comprehensive test coverage with **142 tests across all layers**:
+RustTracker maintains comprehensive test coverage with **161 tests across all layers**:
 
-- **Total Tests**: 142 comprehensive tests
+- **Total Tests**: 161 comprehensive tests
 - **Backend Coverage**: 82.6% (exceeds 70% minimum requirement)
 - **Coverage Tools**: cargo-llvm-cov (primary) and cargo-tarpaulin (fallback)
 - **Test Distribution**:
   - Backend: 73 tests (database, handlers, integration, configuration, edge cases)
-  - Frontend: 32 tests (logic, API client, validation)  
+  - Frontend: 51 tests (logic, API client, validation, component behavior)  
   - Common: 37 tests (data structures, serialization, validation)
 
 ### Testing Architecture
@@ -284,7 +338,7 @@ The project includes **frontend logic tests** that don't require a browser:
 - **Logic Tests** (`frontend/src/tests/logic_tests.rs`)
   - Standard Rust tests that don't require browser
   - Test business logic, data validation, and API client logic
-  - Included in `make test` (32 tests)
+  - Included in `make test` (51 tests total)
 
 The logic tests cover:
 
@@ -294,9 +348,25 @@ The logic tests cover:
 - Component state management
 - Data formatting and serialization
 
-## Environment Configuration
+## API Reference
 
-### Security Notice
+Standard REST API for task management:
+
+- `GET /api/tasks` - List all tasks (supports filtering)
+  - `?status=Todo|InProgress|Completed`
+  - `?priority=Low|Medium|High|Urgent`
+  - `?due_before=2024-12-31T23:59:59Z`
+  - `?due_after=2024-01-01T00:00:00Z`
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/:id` - Update existing task
+- `DELETE /api/tasks/:id` - Delete task
+- `GET /health` - Health check endpoint
+
+All endpoints use JSON format and the Task model from the `common` crate. The API includes proper error handling, CORS support, and structured logging.
+
+## Configuration
+
+### Environment Configuration
 
 **Never commit `.env` files to version control!** The repository includes a `.env.example` template for setup.
 
@@ -326,7 +396,7 @@ ENVIRONMENT=development
 
 For production deployment and CI/CD security practices, see the [TODO](#todo) section for planned enhancements.
 
-## Volumes and Persistence
+### Volumes and Persistence
 
 PostgreSQL data is stored in a Docker volume defined in `docker/docker-compose.yml`.
 
@@ -336,7 +406,7 @@ To remove containers and volumes:
 docker compose down -v
 ```
 
-## Local Development
+## Development Workflow
 
 The project is designed to run with Docker using Makefile commands:
 
@@ -347,9 +417,17 @@ make logs       # View logs
 make test       # Run comprehensive tests
 ```
 
+### Local Development Tips
+
+- Use `make logs` to monitor all services
+- Use `make db` to access the PostgreSQL shell directly
+- Frontend changes require rebuilding with `make rebuild`
+- Backend changes are reflected automatically with hot reload
+- All tests include database setup and cleanup
+
 ## TODO
 
-- [x] **Make test command**: `make test` implemented - comprehensive test suite with coverage analysis (142 tests, 82.6% backend coverage)
+- [x] **Make test command**: `make test` implemented - comprehensive test suite with coverage analysis (161 tests, 82.6% backend coverage)
 - [x] **Coverage integration**: cargo-llvm-cov and cargo-tarpaulin integrated with 70% minimum coverage requirement
 - [x] **Simplified test architecture**: Unified test-runner.sh replacing complex test scripts
 - [x] **Frontend logic testing**: Frontend logic tests integrated into main test suite (no browser required)
@@ -390,7 +468,7 @@ make test       # Run comprehensive tests
 - Ensure Docker builds succeed
 - Maintain good test coverage
 
-See [Getting Started](#getting-started) for detailed setup instructions.
+For detailed setup instructions, see the [Development](#development) section.
 
 ## License
 
