@@ -246,8 +246,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create .env file
+      - name: Create .env file in repo root
         run: |
+          cd ${{ github.workspace }}
           cat > .env << EOF
           DATABASE_URL=postgres://postgres:password@localhost:5432/rusttracker
           POSTGRES_DB=rusttracker
