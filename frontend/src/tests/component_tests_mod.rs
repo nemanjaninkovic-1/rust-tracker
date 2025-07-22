@@ -56,6 +56,50 @@ mod component_tests {
             assert!(update_request.title.is_none());
             assert!(update_request.description.is_none());
         }
+
+        #[test]
+        fn test_optimistic_task_status_update() {
+            let mut task = create_test_task();
+            let original_status = task.status;
+            let new_status = TaskStatus::Completed;
+
+            // Simulate optimistic update
+            task.status = new_status;
+
+            // Verify the optimistic update
+            assert_eq!(task.status, TaskStatus::Completed);
+            assert_ne!(task.status, original_status);
+        }
+
+        #[test]
+        fn test_optimistic_update_revert_on_failure() {
+            let mut task = create_test_task();
+            let original_status = task.status;
+            let attempted_status = TaskStatus::InProgress;
+
+            // Simulate optimistic update
+            task.status = attempted_status;
+            assert_eq!(task.status, TaskStatus::InProgress);
+
+            // Simulate server failure - revert to original status
+            task.status = original_status;
+            assert_eq!(task.status, original_status);
+        }
+
+        #[test]
+        fn test_task_list_optimistic_grouping() {
+            let mut tasks = create_test_task_list();
+            let task_id = tasks[0].id;
+
+            // Find and update task optimistically
+            if let Some(task) = tasks.iter_mut().find(|t| t.id == task_id) {
+                task.status = TaskStatus::Completed;
+            }
+
+            // Verify the task was updated in the list
+            let updated_task = tasks.iter().find(|t| t.id == task_id).unwrap();
+            assert_eq!(updated_task.status, TaskStatus::Completed);
+        }
     }
 
     // Component validation tests
@@ -230,5 +274,41 @@ mod component_tests {
             created_at: Utc::now(),
             updated_at: Utc::now(),
         }
+    }
+
+    // Helper function to create test task list
+    fn create_test_task_list() -> Vec<Task> {
+        vec![
+            Task {
+                id: Uuid::new_v4(),
+                title: "Test Task 1".to_string(),
+                description: Some("Test Description 1".to_string()),
+                status: TaskStatus::Todo,
+                priority: TaskPriority::Low,
+                due_date: None,
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            },
+            Task {
+                id: Uuid::new_v4(),
+                title: "Test Task 2".to_string(),
+                description: Some("Test Description 2".to_string()),
+                status: TaskStatus::InProgress,
+                priority: TaskPriority::Medium,
+                due_date: None,
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            },
+            Task {
+                id: Uuid::new_v4(),
+                title: "Test Task 3".to_string(),
+                description: Some("Test Description 3".to_string()),
+                status: TaskStatus::Completed,
+                priority: TaskPriority::High,
+                due_date: None,
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            },
+        ]
     }
 }

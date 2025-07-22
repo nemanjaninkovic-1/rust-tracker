@@ -72,34 +72,34 @@ where
     view! {
         <form on:submit=on_form_submit class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-300 mb-2">
                     "Title"
                 </label>
                 <input
                     type="text"
                     prop:value=title
                     on:input=move |ev| set_title.set(event_target_value(&ev))
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-gray-600 dark:border-gray-600 bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter task title..."
                     required
                 />
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-300 mb-2">
                     "Description"
                 </label>
                 <textarea
                     prop:value=description
                     on:input=move |ev| set_description.set(event_target_value(&ev))
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    class="w-full px-3 py-2 border border-gray-600 dark:border-gray-600 bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     rows="3"
                     placeholder="Enter task description (optional)..."
                 ></textarea>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-300 mb-2">
                     "Priority"
                 </label>
                 <select
@@ -114,7 +114,7 @@ where
                         };
                         set_priority.set(prio);
                     }
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-gray-600 dark:border-gray-600 bg-gray-800 dark:bg-gray-800 text-gray-100 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                     <option value="Low">"Low"</option>
                     <option value="Medium" selected>"Medium"</option>
@@ -124,7 +124,7 @@ where
             </div>
 
             {move || error.get().map(|err| view! {
-                <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded-md p-3">
+                <div class="text-red-300 text-sm bg-red-900 border border-red-700 rounded-md p-3">
                     {err}
                 </div>
             })}

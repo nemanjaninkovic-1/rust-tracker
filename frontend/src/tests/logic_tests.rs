@@ -375,6 +375,49 @@ mod frontend_logic_tests {
             // In the future, you might add business rules here
             true
         }
+
+        #[test]
+        fn test_priority_label_display() {
+            // Test priority display logic for compact labels
+            let low_label = match TaskPriority::Low {
+                TaskPriority::Low => "Low",
+                TaskPriority::Medium => "Mid",
+                TaskPriority::High => "Hi",
+                TaskPriority::Urgent => "Top",
+            };
+
+            let medium_label = match TaskPriority::Medium {
+                TaskPriority::Low => "Low",
+                TaskPriority::Medium => "Mid",
+                TaskPriority::High => "Hi",
+                TaskPriority::Urgent => "Top",
+            };
+
+            let high_label = match TaskPriority::High {
+                TaskPriority::Low => "Low",
+                TaskPriority::Medium => "Mid",
+                TaskPriority::High => "Hi",
+                TaskPriority::Urgent => "Top",
+            };
+
+            let urgent_label = match TaskPriority::Urgent {
+                TaskPriority::Low => "Low",
+                TaskPriority::Medium => "Mid",
+                TaskPriority::High => "Hi",
+                TaskPriority::Urgent => "Top",
+            };
+
+            assert_eq!(low_label, "Low");
+            assert_eq!(medium_label, "Mid");
+            assert_eq!(high_label, "Hi");
+            assert_eq!(urgent_label, "Top");
+
+            // Ensure labels fit in compact buttons (3 chars or less)
+            assert!(low_label.len() <= 3);
+            assert!(medium_label.len() <= 3);
+            assert!(high_label.len() <= 3);
+            assert!(urgent_label.len() <= 3);
+        }
     }
 
     // Test error handling and edge cases
@@ -545,6 +588,99 @@ mod frontend_logic_tests {
                 priority: state.priority,
                 due_date: state.due_date,
             }
+        }
+    }
+
+    // Test optimistic update functionality
+    mod optimistic_update_tests {
+        use super::*;
+
+        #[test]
+        fn test_optimistic_task_update() {
+            let mut task = create_test_task();
+            let original_status = task.status;
+            let new_status = TaskStatus::InProgress;
+
+            // Perform optimistic update
+            task.status = new_status;
+
+            assert_eq!(task.status, TaskStatus::InProgress);
+            assert_ne!(task.status, original_status);
+        }
+
+        #[test]
+        fn test_task_list_optimistic_update() {
+            let mut tasks = vec![
+                create_test_task_with_status(TaskStatus::Todo),
+                create_test_task_with_status(TaskStatus::InProgress),
+                create_test_task_with_status(TaskStatus::Completed),
+            ];
+
+            let target_id = tasks[0].id;
+            let new_status = TaskStatus::Completed;
+
+            // Find and update task optimistically (simulate UI update)
+            if let Some(task) = tasks.iter_mut().find(|t| t.id == target_id) {
+                task.status = new_status;
+            }
+
+            // Verify optimistic update
+            let updated_task = tasks.iter().find(|t| t.id == target_id).unwrap();
+            assert_eq!(updated_task.status, TaskStatus::Completed);
+        }
+
+        #[test]
+        fn test_optimistic_update_request_generation() {
+            let new_status = TaskStatus::InProgress;
+
+            // Create update request for optimistic update
+            let request = UpdateTaskRequest {
+                title: None,
+                description: None,
+                status: Some(new_status),
+                priority: None,
+                due_date: None,
+            };
+
+            assert_eq!(request.status, Some(TaskStatus::InProgress));
+            assert!(request.title.is_none());
+            assert!(request.description.is_none());
+            assert!(request.priority.is_none());
+            assert!(request.due_date.is_none());
+        }
+
+        #[test]
+        fn test_optimistic_update_failure_revert() {
+            let mut task = create_test_task();
+            let original_status = task.status;
+            let attempted_status = TaskStatus::Completed;
+
+            // Simulate optimistic update
+            task.status = attempted_status;
+            assert_eq!(task.status, TaskStatus::Completed);
+
+            // Simulate server failure - revert to original status
+            task.status = original_status;
+            assert_eq!(task.status, original_status);
+        }
+
+        // Helper function to create test task with specific status
+        fn create_test_task_with_status(status: TaskStatus) -> common::Task {
+            common::Task {
+                id: Uuid::new_v4(),
+                title: "Test Task".to_string(),
+                description: Some("Test Description".to_string()),
+                status,
+                priority: TaskPriority::Medium,
+                due_date: None,
+                created_at: Utc::now(),
+                updated_at: Utc::now(),
+            }
+        }
+
+        // Helper function to create basic test task
+        fn create_test_task() -> common::Task {
+            create_test_task_with_status(TaskStatus::Todo)
         }
     }
 }

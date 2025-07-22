@@ -30,12 +30,13 @@ This simplified approach makes the project easier to understand and maintain whi
 RustTracker is a full-stack task management web application built entirely in Rust with:
 
 - Backend: Axum framework (authentication and rate limiting removed)
-- Frontend: Leptos reactive web application with Tailwind CSS
+- Frontend: Leptos reactive web application with Tailwind CSS and optimistic updates
 - Database: PostgreSQL with custom enum types
 - Containerization: Docker and Docker Compose
-- Testing: Comprehensive test suite with 142 tests and 82.6% backend coverage
+- Testing: Comprehensive test suite with 165+ tests and 82.6% backend coverage
 - CI/CD: GitHub Actions with automated testing and coverage reporting
 - Shared models between frontend and backend
+- User Experience: Optimistic updates for immediate UI feedback with error recovery
 
 ## Architecture
 
@@ -115,7 +116,7 @@ rust-tracker/
 - **Containerization**: Docker + Docker Compose
 - **Build System**: Cargo workspaces
 - **Web Server**: Nginx (for frontend static files)
-- **Testing**: Comprehensive test suite with 142+ tests
+- **Testing**: Comprehensive test suite with 165+ tests
 - **Coverage Integration**: cargo-llvm-cov with 70% minimum coverage requirement
 - **Development Tools**: Custom scripts and Makefile
 
@@ -151,8 +152,26 @@ Only use manual docker/cargo commands when the required functionality is not ava
 ### Component Architecture
 
 - **Backend**: Located in `backend/`, exposes REST API under `/api` prefix, connects to PostgreSQL at `db:5432`, runs on port 8080
-- **Frontend**: Located in `frontend/`, reactive Leptos application, makes API calls to backend, runs on port 3000
+- **Frontend**: Located in `frontend/`, reactive Leptos application with optimistic updates, makes API calls to backend, runs on port 3000
 - **Common**: Located in `common/`, contains shared data models and types used by both frontend and backend
+
+### User Experience Features
+
+#### Optimistic Updates
+
+The frontend implements optimistic updates for drag-and-drop operations:
+
+- **Immediate UI Updates**: Tasks move instantly between categories without waiting for server confirmation
+- **Background Sync**: Server requests happen asynchronously via `update_task_action`
+- **Error Recovery**: Automatic revert to previous state if server request fails
+- **Implementation**: Uses Leptos `WriteSignal<Vec<Task>>` for immediate local state changes
+- **Error Handling**: Falls back to `refresh_tasks()` to restore consistent state on failure
+
+**Key Components**:
+
+- `TaskList` component with `set_tasks` parameter for optimistic updates
+- `handle_drop` function with immediate state modification
+- Automatic error reversion mechanism
 
 ### Data Models
 
@@ -323,12 +342,13 @@ Key environment variables in `.env`:
 
 #### Test Coverage Maintenance:
 
-- **Target**: Maintain 142+ tests across all layers
+- **Target**: Maintain 165+ tests across all layers
 - **Coverage Requirement**: 70% minimum using cargo-llvm-cov and cargo-tarpaulin
 - **Actual Achievement**: 82.6% backend coverage (exceeds target)
 - **New Code**: Must include tests before being considered complete
 - **Failing Tests**: Fix immediately, never commit with failing tests
 - **Test Documentation**: Update README.md test coverage section when adding new test files
+- **Recent Enhancements**: Optimistic update test coverage added with comprehensive scenarios
 
 ### README.md Maintenance Workflow
 
@@ -358,7 +378,7 @@ Before any commit, verify:
 
 ### Comprehensive Test Coverage
 
-RustTracker includes a robust test suite with 142+ tests across all layers:
+RustTracker includes a robust test suite with 165+ tests across all layers:
 
 #### Backend Tests (73 tests)
 
@@ -370,11 +390,12 @@ RustTracker includes a robust test suite with 142+ tests across all layers:
 - **Integration Tests (5 tests)**: End-to-end API workflows, complex scenarios
 - **Additional Tests (4 tests)**: Various edge cases and validation tests
 
-#### Frontend Tests (32 tests)
+#### Frontend Tests (55+ tests)
 
 - **API Client Tests**: HTTP requests, error handling, response parsing
 - **Component Tests**: UI logic, state management, data validation
 - **Logic Tests**: Business logic, data validation, URL generation
+- **Optimistic Update Tests**: Immediate UI updates, error recovery, state reversion
 
 #### Common Crate Tests (37 tests)
 
@@ -447,6 +468,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
    - Create reusable Leptos components following reactive patterns
    - **REQUIRED**: Add component logic tests with `wasm-bindgen-test`
    - **REQUIRED**: Update API client tests if needed
+   - **Optimistic Updates**: Implement immediate UI feedback patterns with error recovery
 
 5. **Error handling**:
 
@@ -460,6 +482,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
    - Component tests with `wasm-bindgen-test` for frontend logic
    - Integration tests for end-to-end workflows
    - Functional database tests for data operations
+   - **Optimistic update tests**: Test immediate UI updates and error reversion scenarios
 
 ### Test Execution Guidelines
 
@@ -510,6 +533,7 @@ When working on this project, **ALWAYS follow the test-first workflow**:
 - **Environment Setup**: Test scripts handle database migrations and setup
 - **WASM Tests**: Frontend tests require `wasm-bindgen-test` environment
 - **Integration Tests**: Need full application stack running
+- **Optimistic Update Tests**: Frontend tests include comprehensive coverage for immediate UI updates and error recovery scenarios
 
 **Never run backend tests with bare `cargo test -p backend` - they will fail without database!**
 

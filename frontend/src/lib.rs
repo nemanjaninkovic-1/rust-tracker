@@ -4,6 +4,7 @@ use leptos_router::*;
 
 mod api;
 mod components;
+pub mod logic;
 mod pages;
 
 #[cfg(test)]
@@ -22,9 +23,9 @@ fn App() -> impl IntoView {
         <Title text="RustTracker - Task Management"/>
 
         <Router>
-            <main class="min-h-screen bg-gray-50">
-                <Header/>
-                <div class="container mx-auto px-4 py-8">
+            <main class="min-h-screen bg-gray-900 flex">
+                <Sidebar/>
+                <div class="flex-1 container mx-auto px-4 py-8 ml-64">
                     <Routes>
                         <Route path="" view=HomePage/>
                         <Route path="/*any" view=NotFound/>

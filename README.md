@@ -33,10 +33,11 @@ RustTracker is a full-stack task management web application built entirely in Ru
 - **Full-stack Rust** - Single language across the entire stack for consistency and performance
 - **Simplified Architecture** - Clean design without authentication complexity for easier maintenance
 - **Reactive UI** - Real-time updates with [Leptos signals](https://leptos.dev/) and WebAssembly
+- **Optimistic Updates** - Instant UI feedback with automatic error recovery for drag-and-drop operations
 - **Type Safety** - Shared models between frontend and backend prevent runtime errors
 - **Containerized** - Complete [Docker](https://www.docker.com/) setup with PostgreSQL database
 - **Production Ready** - Health checks, logging, error handling, and CORS support
-- **Comprehensive Testing** - 161 tests across all layers with 82.6% backend coverage
+- **Comprehensive Testing** - 165+ tests across all layers with 82.6% backend coverage
 - **Coverage Integration** - cargo-llvm-cov and cargo-tarpaulin with 70% minimum requirement
 - **CI/CD Ready** - GitHub Actions workflow with automated testing and coverage reporting
 - **Developer Friendly** - Make commands for all operations, unified test runner, hot reload support
@@ -272,7 +273,7 @@ make clean       # Stop services and clean up
 make db          # Connect to database shell
 
 # Testing & Quality
-make test        # Run comprehensive test suite with coverage analysis (161 tests, 82.6% backend coverage)
+make test        # Run comprehensive test suite with coverage analysis (165+ tests, 82.6% backend coverage)
 make test-only   # Run comprehensive test suite only (no coverage analysis)
 make coverage    # Generate test coverage report only (70% minimum)
 
@@ -290,10 +291,10 @@ make build-css   # Build Tailwind CSS
 - **Containerization**: [Docker](https://www.docker.com/) + [Docker Compose](https://docs.docker.com/compose/)
 - **Build System**: [Cargo workspaces](https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html)
 - **Web Server**: [Nginx](https://nginx.org/) (for frontend static files)
-- **Testing**: Comprehensive test suite with 161 tests across all layers
+- **Testing**: Comprehensive test suite with 165+ tests across all layers
   - Coverage integration with [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov) and [cargo-tarpaulin](https://github.com/xd009642/tarpaulin)
   - Backend tests: 73 tests (database, handlers, integration, configuration, edge cases)
-  - Frontend tests: 51 tests (logic, API client, validation, component behavior)
+  - Frontend tests: 55+ tests (logic, API client, validation, component behavior, optimistic updates)
   - Common tests: 37 tests (data structures, serialization, validation)
   - Actual backend coverage: 82.6% (exceeds 70% minimum requirement)
   - Database isolation with [serial_test](https://crates.io/crates/serial_test)
@@ -304,21 +305,21 @@ make build-css   # Build Tailwind CSS
 ### Running Tests
 
 ```bash
-make test          # Run comprehensive test suite with coverage analysis (161 tests, 82.6% backend coverage)
+make test          # Run comprehensive test suite with coverage analysis (165+ tests, 82.6% backend coverage)
 make test-only     # Run comprehensive test suite only (no coverage analysis)
 make coverage      # Generate test coverage report only (70% minimum)
 ```
 
 ### Test Coverage
 
-RustTracker maintains comprehensive test coverage with **161 tests across all layers**:
+RustTracker maintains comprehensive test coverage with **165+ tests across all layers**:
 
-- **Total Tests**: 161 comprehensive tests
+- **Total Tests**: 165+ comprehensive tests
 - **Backend Coverage**: 82.6% (exceeds 70% minimum requirement)
 - **Coverage Tools**: cargo-llvm-cov (primary) and cargo-tarpaulin (fallback)
 - **Test Distribution**:
   - Backend: 73 tests (database, handlers, integration, configuration, edge cases)
-  - Frontend: 51 tests (logic, API client, validation, component behavior)  
+  - Frontend: 55+ tests (logic, API client, validation, component behavior, optimistic updates)  
   - Common: 37 tests (data structures, serialization, validation)
 
 ### Testing Architecture
@@ -338,7 +339,7 @@ The project includes **frontend logic tests** that don't require a browser:
 - **Logic Tests** (`frontend/src/tests/logic_tests.rs`)
   - Standard Rust tests that don't require browser
   - Test business logic, data validation, and API client logic
-  - Included in `make test` (51 tests total)
+  - Included in `make test` (55+ tests total including optimistic update tests)
 
 The logic tests cover:
 
@@ -347,6 +348,7 @@ The logic tests cover:
 - Error handling and edge cases
 - Component state management
 - Data formatting and serialization
+- **Optimistic update patterns** with immediate UI feedback and error recovery
 
 ## API Reference
 
@@ -363,6 +365,40 @@ Standard REST API for task management:
 - `GET /health` - Health check endpoint
 
 All endpoints use JSON format and the Task model from the `common` crate. The API includes proper error handling, CORS support, and structured logging.
+
+## User Experience Features
+
+### Optimistic Updates
+
+RustTracker implements optimistic updates for drag-and-drop operations, providing instant UI feedback with automatic error recovery:
+
+#### **How It Works:**
+
+1. **Immediate Response**: When a user drags a task to a new category, the UI updates instantly
+2. **Background Sync**: API request is sent to the server asynchronously  
+3. **Error Recovery**: If the server request fails, the UI automatically reverts to the previous state
+4. **No Blocking**: Users can continue working without waiting for server confirmation
+
+#### **Technical Implementation:**
+
+- **Optimistic State Updates**: Uses Leptos `WriteSignal<Vec<Task>>` for immediate local state changes
+- **Background API Calls**: Server synchronization happens asynchronously via `update_task_action`
+- **Automatic Revert**: On server failure, calls `refresh_tasks()` to restore consistent state
+- **Error Resilience**: Network issues don't block the user interface
+
+#### **Benefits:**
+
+- ✓ **Responsive Interface**: No delay when moving tasks between categories
+- ✓ **Better UX**: Users get immediate visual feedback for their actions
+- ✓ **Resilient**: Automatic recovery from network or server issues
+- ✓ **Non-blocking**: UI remains interactive during background operations
+
+#### **Test Coverage:**
+
+- `test_optimistic_task_update()`: Validates immediate UI updates
+- `test_optimistic_update_request_generation()`: Tests server request formation  
+- `test_optimistic_update_failure_revert()`: Verifies error handling and state reversion
+- Component-level tests for drag-and-drop scenarios with failure simulation
 
 ## Configuration
 
