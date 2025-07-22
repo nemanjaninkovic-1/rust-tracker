@@ -438,7 +438,7 @@ mod frontend_logic_tests {
     mod component_state_tests {
         use super::*;
 
-        #[derive(Debug, Clone, PartialEq)]
+        #[derive(Debug, Clone, PartialEq, Eq)]
         struct TaskFormState {
             title: String,
             description: String,

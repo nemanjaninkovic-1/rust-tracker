@@ -37,7 +37,7 @@ pub enum TaskPriority {
     Urgent,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Task {
     pub id: Uuid,
     pub title: String,

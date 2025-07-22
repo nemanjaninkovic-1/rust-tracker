@@ -137,24 +137,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install latest stable Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ${{ runner.os }}-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Format Check
         run: cargo fmt --all -- --check
 
-      - name: Clippy Check
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Clippy Check (Comprehensive)
+        run: |
+          echo "Running comprehensive Clippy analysis..."
+          cargo clippy --workspace --all-targets --all-features -- \
+            -D warnings \
+            -D clippy::all \
+            -D clippy::pedantic \
+            -W clippy::nursery \
+            -W clippy::cargo \
+            -A clippy::multiple_crate_versions \
+            -A clippy::module_name_repetitions \
+            -A clippy::missing_errors_doc \
+            -A clippy::missing_panics_doc \
+            -A clippy::cargo_common_metadata \
+            -A clippy::too_many_lines \
+            -A clippy::wildcard_imports \
+            -A clippy::future_not_send \
+            -A clippy::needless_raw_string_hashes \
+            -A clippy::module_inception \
+            -A clippy::option_if_let_else \
+            -A clippy::single_match_else \
+            -A clippy::match_same_arms \
+            -A clippy::needless_pass_by_value \
+            -A clippy::single_char_pattern \
+            -A clippy::manual_string_new \
+            -A clippy::needless_continue \
+            -A clippy::if_same_then_else \
+            -A clippy::missing_const_for_fn \
+            -A clippy::use_self \
+            -A clippy::redundant_closure_for_method_calls \
+            -A clippy::ignored_unit_patterns \
+            -A clippy::unnecessary_literal_unwrap \
+            -A clippy::useless_vec \
+            -A clippy::branches_sharing_code
 
       - name: Check for unused dependencies
         run: |
-          cargo install cargo-machete
+          cargo install cargo-machete --quiet
           cargo machete --with-metadata
 
       - name: Security Audit
         run: |
-          cargo install cargo-audit
+          cargo install cargo-audit --quiet
           cargo audit || echo "Security audit completed with warnings"
 
   build:

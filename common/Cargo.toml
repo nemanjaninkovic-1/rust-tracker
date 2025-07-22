@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "RustTracker Common - Shared Types and Models"
+readme = "../README.md"
+keywords = ["rust", "types", "models", "shared", "task-management"]
+categories = ["data-structures", "development-tools"]
 repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
 
 [dependencies]

@@ -14,12 +14,8 @@ use uuid::Uuid;
 /// Helper to create a test database connection
 async fn create_test_database() -> Database {
     let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
-        // In GitHub Actions, use localhost. In Docker, use test-db
-        if std::env::var("GITHUB_ACTIONS").is_ok() {
-            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
-        } else {
-            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
-        }
+        // Default to localhost for both local development and CI
+        "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
     });
 
     let pool = PgPool::connect(&database_url)
@@ -650,7 +646,7 @@ async fn test_edge_case_database_connection_resilience() {
         if std::env::var("GITHUB_ACTIONS").is_ok() {
             "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
         } else {
-            "postgres://postgres:password@test-db:5432/rusttracker_test".to_string()
+            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
         }
     });
 

@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "RustTracker Frontend - Task Management Web Application"
+readme = "../README.md"
+keywords = ["rust", "leptos", "wasm", "frontend", "task-management"]
+categories = ["web-programming", "wasm", "gui"]
 repository = "https://github.com/nemanjaninkovic-1/rust-tracker"
 
 [package.metadata.cargo-machete]
