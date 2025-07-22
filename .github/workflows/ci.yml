@@ -102,8 +102,8 @@ jobs:
           echo "Excluding frontend package (WASM target incompatible with tarpaulin)"
 
           cargo tarpaulin \
-            --packages backend \
-            --packages common \
+            --workspace \
+            --exclude frontend \
             --timeout 120 \
             --exclude-files "*/tests/*" \
             --exclude-files "*/target/*" \
