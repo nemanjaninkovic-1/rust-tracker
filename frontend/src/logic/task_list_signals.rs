@@ -14,6 +14,7 @@ impl Default for TaskListSignals {
 }
 
 impl TaskListSignals {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             filter_priority: create_rw_signal(None::<TaskPriority>),
@@ -25,6 +26,7 @@ impl TaskListSignals {
 
 type UpdateTaskAction = Action<(uuid::Uuid, UpdateTaskRequest), Result<common::Task, String>>;
 
+#[must_use]
 pub fn use_update_task_action() -> (UpdateTaskAction, Box<dyn Fn()>) {
     let update_task_action = create_action(|(id, request): &(uuid::Uuid, UpdateTaskRequest)| {
         let id = *id;

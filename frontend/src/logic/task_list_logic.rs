@@ -1,6 +1,7 @@
 use common::{Task, TaskPriority, TaskStatus};
 use std::collections::HashMap;
 
+#[must_use]
 pub fn filter_and_group_tasks(
     tasks: &[Task],
     priority_filter: Option<TaskPriority>,
