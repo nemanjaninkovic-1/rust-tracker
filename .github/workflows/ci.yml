@@ -209,12 +209,19 @@ jobs:
           trunk build --release
 
       - name: Build Docker Images
-        run: make build
+        run: |
+          echo "Building Docker images..."
+          echo "Verifying .env file exists..."
+          ls -la .env
+          echo "Contents of .env file:"
+          cat .env
+          echo "Running docker compose build..."
+          docker compose -f docker/docker-compose.yml --env-file .env build --no-cache
 
       - name: Verify Application Startup
         run: |
           echo "Starting application for verification..."
-          make start
+          docker compose -f docker/docker-compose.yml --env-file .env up -d
 
           # Wait for services to be ready
           echo "Waiting for services to initialize..."
@@ -230,7 +237,7 @@ jobs:
 
           # Stop services
           echo "Stopping verification services..."
-          make stop
+          docker compose -f docker/docker-compose.yml --env-file .env down
 
   summary:
     name: Pipeline Summary
