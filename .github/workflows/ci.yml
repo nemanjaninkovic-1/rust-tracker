@@ -99,14 +99,15 @@ jobs:
         run: |
           echo "=== RustTracker Coverage Analysis ==="
           echo "Running cargo-tarpaulin with 70% minimum coverage requirement..."
-          echo "Excluding frontend package (WASM target incompatible with tarpaulin)"
+          echo "Running coverage only on backend and common packages (excluding WASM frontend)"
 
           cargo tarpaulin \
-            --workspace \
-            --exclude frontend \
+            --package backend \
+            --package common \
             --timeout 120 \
             --exclude-files "*/tests/*" \
             --exclude-files "*/target/*" \
+            --exclude-files "frontend/*" \
             --out Xml \
             --out Html \
             --output-dir ./coverage/ \
