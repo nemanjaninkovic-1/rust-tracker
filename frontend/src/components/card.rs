@@ -86,14 +86,14 @@ pub fn Card(task: Task, set_dragging_task_id: WriteSignal<Option<uuid::Uuid>>) -
                 </div>
             </div>
             {
-                if !date.is_empty() {
+                if date.is_empty() {
+                    view! { <div></div> }.into_view()
+                } else {
                     view! {
                         <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
                             <span>"Due: " {date}</span>
                         </div>
                     }.into_view()
-                } else {
-                    view! { <div></div> }.into_view()
                 }
             }
         </div>
