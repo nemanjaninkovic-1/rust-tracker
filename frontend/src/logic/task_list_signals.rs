@@ -7,6 +7,12 @@ pub struct TaskListSignals {
     pub dragging_task_id: RwSignal<Option<uuid::Uuid>>,
 }
 
+impl Default for TaskListSignals {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TaskListSignals {
     pub fn new() -> Self {
         Self {
@@ -17,14 +23,13 @@ impl TaskListSignals {
     }
 }
 
-pub fn use_update_task_action() -> (
-    Action<(uuid::Uuid, UpdateTaskRequest), Result<common::Task, String>>,
-    impl Fn() -> (),
-) {
+type UpdateTaskAction = Action<(uuid::Uuid, UpdateTaskRequest), Result<common::Task, String>>;
+
+pub fn use_update_task_action() -> (UpdateTaskAction, Box<dyn Fn()>) {
     let update_task_action = create_action(|(id, request): &(uuid::Uuid, UpdateTaskRequest)| {
         let id = *id;
         let request = request.clone();
-        async move { 
+        async move {
             leptos::logging::log!("Updating task {} with request: {:?}", id, request);
             let result = crate::api::update_task(id, request).await;
             leptos::logging::log!("Update result: {:?}", result);
@@ -43,5 +48,5 @@ pub fn use_update_task_action() -> (
             }
         }
     };
-    (update_task_action, on_success)
+    (update_task_action, Box::new(on_success))
 }
