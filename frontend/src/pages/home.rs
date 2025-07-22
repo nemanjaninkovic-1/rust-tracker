@@ -94,7 +94,7 @@ pub fn HomePage() -> impl IntoView {
                         }.into_view()
                     } else {
                         view! {
-                            <TaskList tasks=tasks set_tasks=set_tasks _refresh_tasks=refresh_tasks filter_priority=filter_priority />
+                            <TaskList tasks=tasks set_tasks=set_tasks refresh_tasks=refresh_tasks filter_priority=filter_priority />
                         }.into_view()
                     }
                 }}

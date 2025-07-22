@@ -9,7 +9,7 @@ use leptos::*;
 pub fn TaskList(
     tasks: ReadSignal<Vec<Task>>,
     set_tasks: WriteSignal<Vec<Task>>,
-    _refresh_tasks: impl Fn() + 'static + Copy,
+    refresh_tasks: impl Fn() + 'static + Copy,
     filter_priority: ReadSignal<Option<common::TaskPriority>>,
 ) -> impl IntoView {
     let signals = TaskListSignals::new();
@@ -31,7 +31,7 @@ pub fn TaskList(
                         e
                     );
                     // Revert the optimistic update by refreshing from server
-                    _refresh_tasks();
+                    refresh_tasks();
                 }
             }
         }

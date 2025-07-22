@@ -73,7 +73,7 @@ pub fn Card(task: Task, set_dragging_task_id: WriteSignal<Option<uuid::Uuid>>) -
                 })}>{priority_label}</span>
                 <div class="flex-1 min-w-0 mr-2">
                     <div class="font-semibold text-gray-900 dark:text-gray-100 leading-tight text-sm overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                        {task_name.clone()}
+                        {task_name}
                     </div>
                 </div>
                 <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Follow">
@@ -85,15 +85,17 @@ pub fn Card(task: Task, set_dragging_task_id: WriteSignal<Option<uuid::Uuid>>) -
                     {display_description}
                 </div>
             </div>
-            {move || if !date.is_empty() {
-                view! {
-                    <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
-                        <span>"Due: " {date.clone()}</span>
-                    </div>
-                }.into_view()
-            } else {
-                view! { <div></div> }.into_view()
-            }}
+            {
+                if !date.is_empty() {
+                    view! {
+                        <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 mt-auto">
+                            <span>"Due: " {date}</span>
+                        </div>
+                    }.into_view()
+                } else {
+                    view! { <div></div> }.into_view()
+                }
+            }
         </div>
     }
 }
