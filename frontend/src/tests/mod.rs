@@ -2,4 +2,4 @@
 pub mod logic_tests;
 
 #[cfg(test)]
-pub mod component_tests;
+pub mod component_tests_mod;

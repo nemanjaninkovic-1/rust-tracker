@@ -642,12 +642,8 @@ async fn test_edge_case_large_batch_operations() {
 async fn test_edge_case_database_connection_resilience() {
     // Test that operations handle database connection issues gracefully
     let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
-        // In GitHub Actions, use localhost. In Docker, use test-db
-        if std::env::var("GITHUB_ACTIONS").is_ok() {
-            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
-        } else {
-            "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
-        }
+        // Use localhost for both environments (redundant if-else removed)
+        "postgres://postgres:password@localhost:5432/rusttracker_test".to_string()
     });
 
     let pool = PgPool::connect(&database_url)
