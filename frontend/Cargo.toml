@@ -45,9 +45,6 @@ uuid = { workspace = true }
 chrono = { workspace = true, features = ["wasmbind"] }
 common = { path = "../common" }
 
-# Time library
-time = ">=0.3.36"
-
 # Logging for WASM
 console_error_panic_hook = "0.1"
 tracing = "0.1"

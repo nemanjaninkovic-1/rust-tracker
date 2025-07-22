@@ -262,6 +262,11 @@ jobs:
           ENVIRONMENT=production
           EOF
 
+          echo "✓ .env file created successfully"
+          ls -la .env
+          echo "Contents of .env file:"
+          cat .env
+
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
@@ -294,6 +299,11 @@ jobs:
         run: |
           echo "Building Docker images..."
           echo "Verifying .env file exists..."
+          if [ ! -f .env ]; then
+            echo "❌ .env file not found!"
+            exit 1
+          fi
+
           ls -la .env
           echo "Contents of .env file:"
           cat .env
