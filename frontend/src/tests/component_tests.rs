@@ -17,7 +17,7 @@ mod component_tests {
 
             let request = CreateTaskRequest {
                 title: title.to_string(),
-                description: description.map(|s| s.to_string()),
+                description: description.map(ToString::to_string),
                 priority,
                 due_date,
             };
@@ -80,16 +80,16 @@ mod component_tests {
             let valid_description = Some("Valid description");
             let empty_description: Option<String> = None;
             let long_string = "A".repeat(2000);
-            let long_description = Some(&long_string);
+            let long_description = &long_string;
 
             assert!(valid_description.is_some());
             assert!(empty_description.is_none());
-            assert!(long_description.unwrap().len() > 1000);
+            assert!(long_description.len() > 1000);
         }
 
         #[test]
         fn test_task_priority_validation() {
-            let priorities = vec![
+            let priorities = [
                 TaskPriority::Low,
                 TaskPriority::Medium,
                 TaskPriority::High,
@@ -102,7 +102,7 @@ mod component_tests {
 
         #[test]
         fn test_task_status_validation() {
-            let statuses = vec![
+            let statuses = [
                 TaskStatus::Todo,
                 TaskStatus::InProgress,
                 TaskStatus::Completed,

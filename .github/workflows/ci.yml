@@ -54,7 +54,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client bc
           cargo install sqlx-cli --version 0.7.4 --no-default-features --features postgres
+          
+          # Install cargo-tarpaulin with verbose output
+          echo "Installing cargo-tarpaulin..."
           cargo install cargo-tarpaulin --quiet
+          
+          # Verify installation
+          echo "Verifying cargo-tarpaulin installation..."
+          which cargo-tarpaulin || echo "cargo-tarpaulin not found in PATH"
+          cargo tarpaulin --version || echo "cargo-tarpaulin version check failed"
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -100,18 +108,44 @@ jobs:
           echo "=== RustTracker Coverage Analysis ==="
           echo "Running cargo-tarpaulin with 70% minimum coverage requirement..."
           echo "Running coverage only on backend and common packages (excluding WASM frontend)"
-
-          cargo tarpaulin 
-            --package backend 
-            --package common 
-            --timeout 120 
-            --exclude-files "*/tests/*" 
-            --exclude-files "*/target/*" 
-            --out Xml 
-            --out Html 
-            --output-dir ./coverage/ 
-            --fail-under ${MIN_COVERAGE} 
+          
+          # Create coverage directory
+          mkdir -p ./coverage/
+          
+          # Verify cargo-tarpaulin is available
+          echo "Checking cargo-tarpaulin availability..."
+          cargo tarpaulin --version
+          
+          # Run coverage analysis
+          echo "Starting coverage analysis..."
+          cargo tarpaulin \
+            --package backend \
+            --package common \
+            --timeout 120 \
+            --exclude-files "*/tests/*" \
+            --exclude-files "*/target/*" \
+            --out Xml \
+            --out Html \
+            --output-dir ./coverage/ \
+            --verbose \
             -- --test-threads 1
+          
+          # Check if we meet minimum coverage
+          echo "Checking coverage results..."
+          if [ -f ./coverage/tarpaulin-report.xml ]; then
+            echo "Coverage report generated successfully"
+            # Extract coverage percentage from XML
+            coverage=$(grep -o 'line-rate="[^"]*"' ./coverage/tarpaulin-report.xml | head -1 | cut -d'"' -f2 | awk '{print $1 * 100}')
+            echo "Current coverage: ${coverage}%"
+            if (( $(echo "$coverage < $MIN_COVERAGE" | bc -l) )); then
+              echo "WARNING: Coverage ${coverage}% is below minimum ${MIN_COVERAGE}%"
+            else
+              echo "SUCCESS: Coverage ${coverage}% meets minimum ${MIN_COVERAGE}%"
+            fi
+          else
+            echo "ERROR: Coverage report not generated"
+            exit 1
+          fi
         env:
           DATABASE_URL: postgres://postgres:password@localhost:5432/rusttracker_test
 
