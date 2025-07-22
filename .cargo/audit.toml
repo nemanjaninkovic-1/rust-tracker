@@ -1,0 +1,12 @@
+[advisories]
+# Ignore unmaintained proc-macro-error advisory - this is an INFO level advisory
+# for an unmaintained crate that comes through Leptos dependencies.
+# The crate is still functional and there are no security vulnerabilities.
+# 
+# Ignore RSA vulnerability that comes through SQLx MySQL support which we don't use
+# (we only use PostgreSQL). This is a transitive dependency that we don't control.
+ignore = [
+    "RUSTSEC-2024-0370", # proc-macro-error unmaintained
+    "RUSTSEC-2023-0071", # RSA Marvin attack (not used, comes through sqlx-mysql)
+    "RUSTSEC-2024-0436", # paste unmaintained (through leptos and sqlx)
+]

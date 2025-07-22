@@ -12,7 +12,7 @@ uuid = { workspace = true }
 chrono = { workspace = true }
 
 # Optional SQLx support for backend
-sqlx = { version = "0.7", features = ["postgres", "macros"], optional = true }
+sqlx = { version = "0.8.1", features = ["postgres", "macros"], optional = true }
 
 [features]
 default = []

@@ -12,7 +12,7 @@ axum = { version = "0.7", features = ["macros"] }
 tower-http = { version = "0.5", features = ["cors"] }
 
 # Database
-sqlx = { version = "0.7", features = [
+sqlx = { version = "0.8.1", features = [
     "runtime-tokio-rustls",
     "postgres",
     "uuid",
@@ -44,5 +44,4 @@ thiserror = "2.0"
 # Testing framework
 axum-test = "15.7"
 serial_test = "3.2"
-tokio-test = "0.4"
 futures = "0.3"
